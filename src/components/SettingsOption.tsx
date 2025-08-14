@@ -10,7 +10,7 @@ const SettingsOption = ({ label, isThemeToggle }: TSettingsOption) => {
   }; */
 
   return (
-    <aside className="settings-option border-light-border dark:border-dark-border h-button-mobile md:h-button-desktop mt-4 flex h-12 w-full items-center justify-between rounded-lg border px-3 md:h-16 md:rounded-xl md:px-4">
+    <aside className="settings-option border-light-border dark:border-dark-border mt-4 flex h-12 w-full items-center justify-between rounded-lg border px-3 md:h-16 md:rounded-xl md:px-4">
       <h6 className="settings-option__title hidden">Settings Option</h6>
       <span className="settings-option__label text-light-text dark:text-dark-text text-base font-normal md:text-lg">
         {label}
