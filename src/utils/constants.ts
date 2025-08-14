@@ -4,6 +4,7 @@ const THEME = {
 };
 
 const ACTION = {
+  NEW: 'New',
   EDIT: 'Edit',
   DELETE: 'Delete',
 };
@@ -17,7 +18,8 @@ const NOTE = {
 
 const SECTION = {
   SEARCH: 'Search',
-  NEW: 'New',
+  NEW: ACTION.NEW,
+  DETAILS: 'Note',
   SETTINGS: 'Settings',
 };
 
@@ -31,6 +33,7 @@ const SETTING = {
 const ARIA = {
   BACK: 'Go back',
   PIN: 'Pin note',
+  NEW: `Create ${ACTION.NEW.toLowerCase()} note`,
   EDIT: `${ACTION.EDIT} note`,
   DELETE: `${ACTION.DELETE} note`,
 };
@@ -41,8 +44,45 @@ const FORM = {
   },
 };
 
+const ROUTE = {
+  HOME: {
+    NAME: 'Notes',
+    PATH: '/',
+  },
+  DETAILS : {
+    NAME: '',
+    PATH: '/details'
+  },
+  NEW: {
+    NAME: 'New Note',
+    PATH: `/${ACTION.NEW.toLowerCase()}`,
+  },
+};
+
+const STATE = {
+  DEFAULT: {
+    HEADER: {
+      title: '',
+      showBack: false,
+      showPin: false,
+      showToggle: false,
+    },
+  },
+};
+
 const ERROR = {
   NOSCRIPT: 'You need to enable JavaScript to run this website.',
 };
 
-export { THEME, NOTE, SECTION, SETTING, ARIA, FORM, ACTION, ERROR };
+export {
+  THEME,
+  NOTE,
+  SECTION,
+  SETTING,
+  ARIA,
+  FORM,
+  ACTION,
+  ROUTE,
+  STATE,
+  ERROR,
+};

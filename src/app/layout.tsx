@@ -46,8 +46,8 @@ export default function RootLayout({
         <noscript>{ERROR.NOSCRIPT}</noscript>
       </head>
       <body className={`${inter.variable} antialiased`}>
-        <Header title="Notes" showToggle />
-        <main className="bg-light-bg dark:bg-dark-bg flex min-h-screen w-full flex-col items-center">
+        <Header />
+        <main className="bg-light-bg dark:bg-dark-bg flex min-h-screen w-full flex-col items-center flex-1">
           {children}
         </main>
       </body>

@@ -8,12 +8,12 @@ import { ACTION, ARIA } from '@/utils/constants';
  * @export
  * @returns {*}  {React.ReactNode}
  */
-export default function NoteDetailPage(): React.ReactNode {
+export default function Details(): React.ReactNode {
   const { EDIT, DELETE } = ACTION;
 
   return (
-    <section className="detail">
-      <div className="detail__note mx-4 mt-4 md:mx-12 md:mt-8">
+    <section className="details flex w-full flex-1 flex-col pb-4 md:pb-12">
+      <div className="details__note mx-4 mt-4 md:mx-12 md:mt-8 flex flex-col flex-1">
         <h2 className="note__title text-light-text dark:text-dark-text text-lg font-semibold md:text-xl">
           Sample Note
         </h2>
@@ -26,7 +26,7 @@ export default function NoteDetailPage(): React.ReactNode {
           </span>
         </div>
       </div>
-      <aside className="detail__actions mx-4 mt-4 flex flex-col gap-4 md:mx-12 md:mt-8 md:flex-row">
+      <aside className="details__actions mx-4 mt-4 flex flex-col gap-4 md:mx-12 md:mt-8 md:flex-row">
         <h6 className="actions__title hidden">Actions</h6>
         <CustomButton
           ariaLabel={ARIA.EDIT}

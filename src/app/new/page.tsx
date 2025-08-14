@@ -15,13 +15,11 @@ export default function New(): React.ReactNode {
   const fields = [
     {
       id: 'note-title',
-      height: 'h-10 md:h-12',
       label: TITLE,
       placeholder: TITLE,
     },
     {
       id: 'note-content',
-      height: 'h-10 md:h-12',
       label: CONTENT,
       placeholder: CONTENT,
       isTextarea: true,
@@ -29,9 +27,9 @@ export default function New(): React.ReactNode {
   ];
 
   return (
-    <section className="new w-full">
+    <section className="new flex w-full flex-1 flex-col pb-4 md:pb-12">
       <h6 className="new__title hidden">{NEW}</h6>
-      <div className="new__container mx-4 mt-4 md:mx-12 md:mt-8">
+      <div className="new__container mx-4 mt-4 flex flex-1 flex-col md:mx-12 md:mt-8">
         {fields.map((field, i) => (
           <CustomFormField key={crypto.randomUUID() + i} {...field} />
         ))}

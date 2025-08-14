@@ -1,28 +1,65 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { isThemeDark } from '@/utils/utilities';
 import { THeader } from '@/types/Header';
-import { ARIA, THEME } from '@/utils/constants';
+import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
 
 /**
  * @description Header component
  * @author Luca Cattide
  * @date 14/08/2025
- * @param {THeader} {
- *   title,
- *   showBack = false,
- *   showPin = false,
- *   showToggle = false,
- * }
  * @returns {*}  {React.ReactNode}
  */
-const Header = ({
-  title,
-  showBack = false,
-  showPin = false,
-  showToggle = false,
-}: THeader): React.ReactNode => {
+const Header = (): React.ReactNode => {
   const { BACK, PIN } = ARIA;
+  const { HOME, DETAILS, NEW } = ROUTE;
+  const pathname = usePathname();
+  const router = useRouter();
+  const [header, setHeader] = useState<THeader>(STATE.DEFAULT.HEADER);
+  const { title, showBack, showPin, showToggle } = header;
+
+  useEffect(() => {
+    initHeader();
+  }, [pathname]);
+
+  /**
+   * @description Header content initialization handler
+   * @author Luca Cattide
+   * @date 14/08/2025
+   */
+  const initHeader = (): void => {
+    const section = {
+      [HOME.PATH]: populateHeader(HOME.NAME, false, false, true),
+      [DETAILS.PATH]: populateHeader(DETAILS.NAME, true, true, false),
+      [NEW.PATH]: populateHeader(NEW.NAME, true, false, false),
+    };
+
+    setHeader(section[pathname as keyof typeof section]);
+  };
+
+  /**
+   * @description Header content helper
+   * @author Luca Cattide
+   * @date 14/08/2025
+   * @param {string} title
+   * @param {boolean} showBack
+   * @param {boolean} showPin
+   * @param {boolean} showToggle
+   * @returns {*}  {THeader}
+   */
+  const populateHeader = (
+    title: string,
+    showBack: boolean,
+    showPin: boolean,
+    showToggle: boolean,
+  ): THeader => ({
+    title,
+    showBack,
+    showPin,
+    showToggle,
+  });
 
   /**
    * @description Theme toggle helper
@@ -34,13 +71,18 @@ const Header = ({
     // TODO: setTheme(isThemeDark(theme!));
   };
 
+  const handleBack = (): void => {
+    router.push(HOME.PATH);
+  };
+
   return (
     <header className="header h-header-mobile md:h-header-desktop bg-light-bg dark:bg-dark-bg border-light-border dark:border-dark-border flex w-full items-center justify-between border-b px-4 py-6 md:px-8">
       <div className="header__container flex items-center">
         {showBack && (
           <button
             aria-label={BACK}
-            className="container__back mr-4 text-2xl text-blue-600 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="container__back mr-4 cursor-pointer text-2xl text-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            onClick={handleBack}
             type="button"
           >
             ←
@@ -53,7 +95,7 @@ const Header = ({
       {showPin && (
         <button
           aria-label={PIN}
-          className="header__pin text-2xl text-blue-600 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+          className="header__pin cursor-pointer text-2xl text-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
           type="button"
         >
           📌
@@ -62,11 +104,11 @@ const Header = ({
       {showToggle && (
         <button
           aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}
-          className="header__theme text-2xl text-blue-600 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+          className="header__theme cursor-pointer text-2xl text-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
           onClick={toggleTheme}
           type="button"
         >
-          {/* TODO: {theme === THEME.DARK ? '☀️' : '🌙'} */}
+          {/* TODO: {theme === THEME.DARK ? '☀️' : '🌙'} */}foo
         </button>
       )}
     </header>
