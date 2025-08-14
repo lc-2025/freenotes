@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-light-bg: #ffffff;
+  --color-dark-bg: #1f2937;
+  --color-light-border: #e5e7eb;
+  --color-dark-border: #374151;
+  --color-light-text: #1a1a1a;
+  --color-dark-text: #f3f4f6;
+  --color-light-subtext: #4b5563;
+  --color-dark-subtext: #d1d5db;
+  --color-light-placeholder: #aaaaaa;
+  --color-dark-placeholder: #9ca3af;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.light {
+  background-color: var(--color-light-bg);
+}
+
+.dark {
+  background-color: var(--color-dark-bg);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
