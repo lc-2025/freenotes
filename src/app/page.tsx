@@ -18,7 +18,7 @@ export default function Home(): React.ReactNode {
       </div>
       <button
         aria-label="Create new note"
-        className="home__new fixed right-4 bottom-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 focus-visible:outline focus-visible:outline-blue-600 md:right-12 md:bottom-8 md:h-16 md:w-16 dark:bg-blue-500"
+        className="home__new fixed right-4 bottom-4 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:right-12 md:bottom-8 md:h-16 md:w-16 dark:bg-blue-500"
         type="button"
       >
         <span className="new__title text-2xl font-bold text-white md:text-3xl">

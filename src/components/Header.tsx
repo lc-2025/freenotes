@@ -2,7 +2,7 @@
 
 import { isThemeDark } from '@/utils/utilities';
 import { THeader } from '@/types/Header';
-import { THEME } from '@/utils/constants';
+import { ARIA, THEME } from '@/utils/constants';
 
 /**
  * @description Header component
@@ -22,6 +22,8 @@ const Header = ({
   showPin = false,
   showToggle = false,
 }: THeader): React.ReactNode => {
+  const { BACK, PIN } = ARIA;
+
   /**
    * @description Theme toggle helper
    * Switches the current theme with its variant
@@ -37,8 +39,9 @@ const Header = ({
       <div className="header__container flex items-center">
         {showBack && (
           <button
-            aria-label="Go back"
+            aria-label={BACK}
             className="container__back mr-4 text-2xl text-blue-600 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            type="button"
           >
             ←
           </button>
@@ -49,7 +52,7 @@ const Header = ({
       </div>
       {showPin && (
         <button
-          aria-label="Pin note"
+          aria-label={PIN}
           className="header__pin text-2xl text-blue-600 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
           type="button"
         >

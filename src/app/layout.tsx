@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google';
 import Header from '@/components/Header';
+import { ERROR } from '@/utils/constants';
 import type { Metadata, Viewport } from 'next';
 import '../css/globals.css';
 
@@ -42,7 +43,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <noscript>You need to enable JavaScript to run this website.</noscript>
+        <noscript>{ERROR.NOSCRIPT}</noscript>
       </head>
       <body className={`${inter.variable} antialiased`}>
         <Header title="Notes" showToggle />

@@ -1,4 +1,5 @@
 import CustomButton from '@/components/CustomButton';
+import { ACTION, ARIA } from '@/utils/constants';
 
 /**
  * @description Note details page
@@ -8,6 +9,8 @@ import CustomButton from '@/components/CustomButton';
  * @returns {*}  {React.ReactNode}
  */
 export default function NoteDetailPage(): React.ReactNode {
+  const { EDIT, DELETE } = ACTION;
+
   return (
     <section className="detail">
       <div className="detail__note mx-4 mt-4 md:mx-12 md:mt-8">
@@ -26,14 +29,14 @@ export default function NoteDetailPage(): React.ReactNode {
       <aside className="detail__actions mx-4 mt-4 flex flex-col gap-4 md:mx-12 md:mt-8 md:flex-row">
         <h6 className="actions__title hidden">Actions</h6>
         <CustomButton
-          ariaLabel="Edit note"
+          ariaLabel={ARIA.EDIT}
           color="bg-blue-600 dark:bg-blue-500"
-          text="Edit"
+          text={EDIT}
         />
         <CustomButton
-          ariaLabel="Delete note"
+          ariaLabel={ARIA.DELETE}
           color="bg-red-600 dark:bg-red-500"
-          text="Delete"
+          text={DELETE}
         />
       </aside>
     </section>

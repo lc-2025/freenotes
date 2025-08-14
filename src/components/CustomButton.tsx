@@ -16,6 +16,7 @@ const CustomButton = ({
     <button
       aria-label={ariaLabel}
       className={`custom-button h-12 w-full md:h-16 ${color} h-button-mobile md:h-button-desktop flex items-center justify-center rounded-lg focus-visible:outline focus-visible:outline-blue-600 md:rounded-xl`}
+      type="button"
     >
       <span className="custom-button__label text-base font-bold text-white md:text-lg">
         {text}

@@ -1,3 +1,5 @@
+import { SECTION, FORM } from '@/utils/constants';
+
 /**
  * @description Search component
  * @author Luca Cattide
@@ -5,16 +7,18 @@
  * @returns {*}  {React.ReactNode}
  */
 const Search = (): React.ReactNode => {
+  const { SEARCH } = FORM.PLACEHOLDER;
+
   return (
     <aside className="search mx-4 mt-4 md:mx-12 md:mt-8">
-      <h6 className="search__title hidden">Search</h6>
+      <h6 className="search__title hidden">{SECTION.SEARCH}</h6>
       <label className="search__label sr-only" htmlFor="search">
-        Search notes
+        {SEARCH}
       </label>
       <input
         className="search__input text-1rem md:text-1.125rem text-light-placeholder dark:text-dark-placeholder h-10 w-full rounded-lg bg-gray-100 px-2 text-base font-normal focus-visible:outline focus-visible:outline-blue-600 md:h-12 md:rounded-xl md:px-4 md:text-lg dark:bg-gray-700"
         id="search"
-        placeholder="Search notes..."
+        placeholder={`${SEARCH}...`}
         type="text"
       />
     </aside>
