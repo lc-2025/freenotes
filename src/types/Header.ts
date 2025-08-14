@@ -3,6 +3,7 @@ type THeader = {
   showBack?: boolean;
   showPin?: boolean;
   showToggle?: boolean;
+  showSettings?: boolean;
 };
 
 export type { THeader };

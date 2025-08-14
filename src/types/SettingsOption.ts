@@ -1,5 +1,4 @@
 type TSettingsOption = {
-  isThemeToggle?: boolean;
   label: string;
 };
 

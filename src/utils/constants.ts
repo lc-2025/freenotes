@@ -25,7 +25,6 @@ const SECTION = {
 
 const SETTING = {
   LABEL: {
-    THEME: 'Theme',
     NOTIFICATIONS: 'Notifications',
   },
 };
@@ -36,26 +35,35 @@ const ARIA = {
   NEW: `Create ${ACTION.NEW.toLowerCase()} note`,
   EDIT: `${ACTION.EDIT} note`,
   DELETE: `${ACTION.DELETE} note`,
+  SETTINGS: 'Open settings',
 };
 
 const FORM = {
   PLACEHOLDER: {
-    SEARCH: ' Search notes',
+    SEARCH: 'Search notes',
   },
 };
 
 const ROUTE = {
+  AUTHENTICATION: {
+    NAME: 'Authentication',
+    PATH: '/'
+  },
   HOME: {
     NAME: 'Notes',
-    PATH: '/',
+    PATH: '/home',
   },
-  DETAILS : {
+  DETAILS: {
     NAME: '',
-    PATH: '/details'
+    PATH: '/details',
   },
   NEW: {
     NAME: 'New Note',
     PATH: `/${ACTION.NEW.toLowerCase()}`,
+  },
+  SETTINGS: {
+    NAME: 'Settings',
+    PATH: '/settings',
   },
 };
 
@@ -66,6 +74,7 @@ const STATE = {
       showBack: false,
       showPin: false,
       showToggle: false,
+      showSettings: false,
     },
   },
 };

@@ -1,10 +1,11 @@
 @import 'tailwindcss';
+
 @config '../../tailwind.config.ts';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-light-bg: #ffffff;
+  --color-light-bg: #fff;
   --color-dark-bg: #1f2937;
   --color-light-border: #e5e7eb;
   --color-dark-border: #374151;
@@ -12,20 +13,32 @@
   --color-dark-text: #f3f4f6;
   --color-light-subtext: #4b5563;
   --color-dark-subtext: #d1d5db;
-  --color-light-placeholder: #aaaaaa;
+  --color-light-placeholder: #aaa;
   --color-dark-placeholder: #9ca3af;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 16px;
 }
 
-.light {
-  background-color: var(--color-light-bg);
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--color-light-bg);
 }
 
-.dark {
-  background-color: var(--color-dark-bg);
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-bg);
+}
+
+input,
+textarea {
+  color: var(--color-light-text);
+
+  &::placeholder {
+    color: var(--color-light-placeholder);
+  }
 }
 
 button:focus-visible,
@@ -33,4 +46,26 @@ input:focus-visible,
 textarea:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
+}
+
+body {
+  font-family: Inter, sans-serif;
+}
+
+.dark {
+  background-color: var(--color-dark-bg);
+}
+
+.dark input,
+.dark textarea {
+  color: var(--color-dark-text);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-dark-placeholder);
+}
+
+.light {
+  background-color: var(--color-light-bg);
 }

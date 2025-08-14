@@ -40,16 +40,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.ReactNode {
   return (
-    <html lang="en">
+    <html className="max-h-dvh min-h-dvh" lang="en">
       <head>
         <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <noscript>{ERROR.NOSCRIPT}</noscript>
       </head>
-      <body className={`${inter.variable} antialiased`}>
-        <Header />
-        <main className="bg-light-bg dark:bg-dark-bg flex min-h-screen w-full flex-col items-center flex-1">
-          {children}
-        </main>
+      <body
+        className={`${inter.variable} max-h-dvh min-h-dvh overflow-hidden antialiased`}
+      >
+        <div className="main-container flex max-h-dvh min-h-dvh flex-col">
+          <Header />
+          <main className="main-container__wrapper bg-light-bg dark:bg-dark-bg flex w-full max-w-full flex-1 flex-col items-center overflow-x-hidden overflow-y-auto">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );

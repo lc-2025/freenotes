@@ -14,11 +14,11 @@ import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
  */
 const Header = (): React.ReactNode => {
   const { BACK, PIN } = ARIA;
-  const { HOME, DETAILS, NEW } = ROUTE;
+  const { HOME, DETAILS, NEW, SETTINGS } = ROUTE;
   const pathname = usePathname();
   const router = useRouter();
   const [header, setHeader] = useState<THeader>(STATE.DEFAULT.HEADER);
-  const { title, showBack, showPin, showToggle } = header;
+  const { title, showBack, showPin, showToggle, showSettings } = header;
 
   useEffect(() => {
     initHeader();
@@ -31,9 +31,10 @@ const Header = (): React.ReactNode => {
    */
   const initHeader = (): void => {
     const section = {
-      [HOME.PATH]: populateHeader(HOME.NAME, false, false, true),
-      [DETAILS.PATH]: populateHeader(DETAILS.NAME, true, true, false),
-      [NEW.PATH]: populateHeader(NEW.NAME, true, false, false),
+      [HOME.PATH]: populateHeader(HOME.NAME, false, false, true, true),
+      [DETAILS.PATH]: populateHeader(DETAILS.NAME, true, true, false, true),
+      [NEW.PATH]: populateHeader(NEW.NAME, true, false, false, true),
+      [SETTINGS.PATH]: populateHeader(SETTINGS.NAME, true, false, false, false),
     };
 
     setHeader(section[pathname as keyof typeof section]);
@@ -54,11 +55,13 @@ const Header = (): React.ReactNode => {
     showBack: boolean,
     showPin: boolean,
     showToggle: boolean,
+    showSettings: boolean,
   ): THeader => ({
     title,
     showBack,
     showPin,
     showToggle,
+    showSettings,
   });
 
   /**
@@ -71,46 +74,64 @@ const Header = (): React.ReactNode => {
     // TODO: setTheme(isThemeDark(theme!));
   };
 
-  const handleBack = (): void => {
-    router.push(HOME.PATH);
+  /**
+   * @description Navigation handler
+   * @author Luca Cattide
+   * @date 14/08/2025
+   * @param {string} path
+   */
+  const handleNavigation = (path: string): void => {
+    router.push(path);
   };
 
   return (
-    <header className="header h-header-mobile md:h-header-desktop bg-light-bg dark:bg-dark-bg border-light-border dark:border-dark-border flex w-full items-center justify-between border-b px-4 py-6 md:px-8">
-      <div className="header__container flex items-center">
+    <header className="header h-header-mobile md:h-header-desktop bg-light-bg dark:bg-dark-bg border-light-border dark:border-dark-border flex w-full items-center justify-between border-b px-4 md:px-8">
+      <aside className="header__container header__container--sx flex items-center">
         {showBack && (
           <button
             aria-label={BACK}
-            className="container__back mr-4 cursor-pointer text-2xl text-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
-            onClick={handleBack}
+            className="container__back mr-4 cursor-pointer pt-8 pb-8 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            onClick={() => handleNavigation(HOME.PATH)}
             type="button"
           >
             ←
           </button>
         )}
-        <h1 className="container__title text-light-text dark:text-dark-text text-xl font-bold md:text-2xl">
+        <h1 className="container__title text-light-text dark:text-dark-text text-xl font-bold md:text-2xl select-none">
           {title}
         </h1>
-      </div>
-      {showPin && (
-        <button
-          aria-label={PIN}
-          className="header__pin cursor-pointer text-2xl text-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
-          type="button"
-        >
-          📌
-        </button>
-      )}
-      {showToggle && (
-        <button
-          aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}
-          className="header__theme cursor-pointer text-2xl text-blue-600 transition-opacity hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
-          onClick={toggleTheme}
-          type="button"
-        >
-          {/* TODO: {theme === THEME.DARK ? '☀️' : '🌙'} */}foo
-        </button>
-      )}
+      </aside>
+      <aside className="header__container header__container--dx flex justify-end">
+        {showPin && (
+          <button
+            aria-label={PIN}
+            className="header__pin cursor-pointer pt-8 pr-4 pb-8 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            type="button"
+          >
+            📌
+          </button>
+        )}
+        {showToggle && (
+          <button
+            aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}
+            className="header__theme cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            onClick={toggleTheme}
+            type="button"
+          >
+            {/* TODO: {theme === THEME.DARK ? '☀️' : '🌙'} */}
+          </button>
+        )}
+        {showSettings && (
+          <button
+            aria-label={ARIA.SETTINGS}
+            className="header__settings cursor-pointer pt-8 pb-8 pl-4 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            onClick={() => handleNavigation(SETTINGS.PATH)}
+            type="button"
+          >
+            ⚙️
+          </button>
+        )}
+      </aside>
     </header>
   );
 };

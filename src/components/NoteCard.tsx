@@ -23,7 +23,7 @@ const NoteCard = ({ title }: TNote): React.ReactNode => {
       className="note dark:border-dark-border md:h-card-desktop bg-light-bg dark:bg-dark-bg border-light-border h-30 w-full cursor-pointer rounded-lg border pt-4 pl-2 transition-opacity hover:opacity-75 md:rounded-xl md:pl-4"
       onClick={handleDetails}
     >
-      <h2 className="note__title text-light-text dark:text-dark-text text-lg font-semibold md:text-xl">
+      <h2 className="note__title text-light-text dark:text-dark-text text-lg font-semibold md:text-xl select-none">
         {title}
       </h2>
     </article>

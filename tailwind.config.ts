@@ -5,11 +5,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'light-bg': '#FFFFFF',
+        'light-bg': '#FFF',
         'light-border': '#E5E7EB',
         'light-text': '#1A1A1A',
         'light-subtext': '#4B5563',
-        'light-placeholder': '#AAAAAA',
+        'light-placeholder': '#AAA',
         'dark-bg': '#1F2937',
         'dark-border': '#374151',
         'dark-text': '#F3F4F6',
