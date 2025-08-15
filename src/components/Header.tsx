@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  BookmarkIcon,
+  SunIcon,
+  MoonIcon,
+  Cog6ToothIcon,
+} from '@heroicons/react/16/solid';
 import { isThemeDark } from '@/utils/utilities';
 import { THeader } from '@/types/Header';
 import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
@@ -97,11 +105,11 @@ const Header = (): React.ReactNode => {
         {showBack && (
           <button
             aria-label={BACK}
-            className="container__back mr-4 cursor-pointer pt-8 pb-8 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="container__back mr-4 cursor-pointer pt-8 pb-8 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600"
             onClick={() => handleNavigation(HOME.PATH)}
             type="button"
           >
-            ←
+            <ArrowLeftIcon className="back__icon size-8 text-2xl text-blue-600 md:text-3xl dark:text-blue-400" />
           </button>
         )}
         <h1 className="container__title text-light-text dark:text-dark-text text-xl font-bold select-none md:text-2xl">
@@ -112,30 +120,31 @@ const Header = (): React.ReactNode => {
         {showPin && (
           <button
             aria-label={PIN}
-            className="header__pin cursor-pointer pt-8 pr-4 pb-8 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__pin cursor-pointer pt-8 pr-4 pb-8 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600"
             type="button"
           >
-            📌
+            {/* TODO: Pin system - switch icon */}
+            <BookmarkIconOutline className="pin__icon size-8 text-2xl text-blue-600 md:text-3xl dark:text-blue-400" />
           </button>
         )}
         {showToggle && (
           <button
             aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}
-            className="header__theme cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__theme cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
             onClick={toggleTheme}
             type="button"
           >
-            {/* TODO: {theme === THEME.DARK ? '☀️' : '🌙'} */}
+            {/* TODO: {theme === THEME.DARK ? <SunIcon /> : <MoonIcon />} */}
           </button>
         )}
         {showSettings && (
           <button
             aria-label={ARIA.SETTINGS}
-            className="header__settings cursor-pointer pt-8 pb-8 pl-4 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__settings cursor-pointer pt-8 pb-8 pl-4 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600"
             onClick={() => handleNavigation(SETTINGS.PATH)}
             type="button"
           >
-            ⚙️
+            <Cog6ToothIcon className="settings__icon size-8 text-2xl text-blue-600 md:text-3xl dark:text-blue-400" />
           </button>
         )}
       </aside>

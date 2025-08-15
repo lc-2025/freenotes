@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ARIA, ROUTE } from '@/utils/constants';
+import { PlusIcon } from '@heroicons/react/24/solid';
 
 /**
  * @description Note add button component
@@ -24,13 +25,11 @@ const NoteAdd = (): React.ReactNode => {
   return (
     <button
       aria-label={ARIA.NEW}
-      className="home__new fixed right-4 bottom-4 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-blue-600  hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:right-12 md:bottom-8 md:h-16 md:w-16 dark:bg-blue-500"
+      className="home__new fixed right-4 bottom-4 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-blue-600 hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:right-12 md:bottom-8 md:h-16 md:w-16 dark:bg-blue-500"
       onClick={handleNew}
       type="button"
     >
-      <span className="new__title text-2xl font-bold text-white md:text-3xl">
-        +
-      </span>
+      <PlusIcon className="action__ title size-6 text-2xl text-white md:text-3xl" />
     </button>
   );
 };
