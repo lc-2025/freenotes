@@ -24,7 +24,7 @@ const FormAuthentication = (): React.ReactNode => {
   const { formState, handleSubmit, reset } = methods;
   const formType = setInitial(type);
 
-  useEffect(() => {
+  useEffect(() => { console.log(formState.errors)
     if (formState.isSubmitSuccessful) {
       reset();
     }

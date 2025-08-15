@@ -32,43 +32,52 @@ const FormAuthenticationField = ({
     watch,
   } = useFormContext();
 
-  const handlePattern = (
+  const handleValidation = (
     field: string,
   ): RegisterOptions<FieldValues, TAutchenticationFieldType> | undefined => {
     const regexPassword =
       /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
     const fieldValidation = {
       [NAME.id]: {
-        maxLength: 20,
-        message: `Invalid ${NAME.id}. Cannot exceed 20 chars.`,
-        value: /^[a-zA-Z]+$/i,
+        maxLength: {
+          value: 20,
+          message: 'Cannot exceed 20 chars',
+        },
+        pattern: {
+          value: /^[a-zA-Z]+$/i,
+          message: `Invalid ${NAME.id}`,
+        },
       },
       [EMAIL.id]: {
-        message: `Invalid ${EMAIL.id} address`,
-        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+        pattern: {
+          value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+          message: `Invalid ${EMAIL.id} address`,
+        },
       },
       [PASSWORD.id]: {
-        message: `Invalid ${PASSWORD.id}. Cannot be less than 8 digits and must contain at least 1 uppercase letter, 1 number, 1 special char`,
-        minLength: 8,
-        value: regexPassword,
+        minLength: {
+          value: 8,
+          message: `Invalid ${PASSWORD.id}. Cannot be less than 8 digits`,
+        },
+        pattern: {
+          value: regexPassword,
+          message:
+            'Must contain at least 1 uppercase letter, 1 number, 1 special char',
+        },
       },
       [PASSWORD_CONFIRM.id]: {
-        message: `Invalid ${PASSWORD_CONFIRM.id}. Entered passwords must match`,
-        minLength: 8,
-        value: regexPassword,
+        minLength: {
+          value: 8,
+          message: `Invalid ${PASSWORD.id}. Cannot be less than 8 digits`,
+        },
+        pattern: {
+          value: regexPassword,
+          message: 'Entered passwords must match',
+        },
       },
     };
 
     return fieldValidation[field];
-  };
-
-  const handleValidation = (field: string) => {
-    const fieldValidation = {
-      [NAME.id]: `Invalid ${NAME.id}. Cannot exceed 20 chars.`,
-      [EMAIL.id]: `Invalid ${EMAIL.id} address`,
-      [PASSWORD.id]: `Invalid ${PASSWORD.id}. Cannot be less than 8 digits and must contain at least 1 uppercase letter, 1 number, 1 special char`,
-      [PASSWORD_CONFIRM.id]: `Invalid ${PASSWORD_CONFIRM.id}. Entered passwords must match`,
-    };
   };
 
   return (
@@ -98,10 +107,8 @@ const FormAuthenticationField = ({
         id={id}
         placeholder={label}
         {...register(id, {
-          pattern: handlePattern(type),
+          ...handleValidation(type),
           required: `${label} is required`,
-          validate: (value) =>
-            value === watch('password') || 'Passwords do not match',
         })}
         type={type}
       />
