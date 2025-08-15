@@ -1,89 +1,116 @@
 'use client';
 
-import { useState } from 'react';
+import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
+import FormAuthenticationField from './FormAuthenticationField';
 import CustomButton from './CustomButton';
+import { setInitial } from '@/utils/utilities';
+import { FORM } from '@/utils/constants';
+import {
+  TAutchenticationFields,
+  TAutchenticationFieldType,
+} from '@/types/Authentication';
+import { useEffect, useState } from 'react';
 
-export default function FormAuthentication({ type }: { type: 'login' | 'register' }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+/**
+ * @description Authentication form component
+ * @author Luca Cattide
+ * @date 15/08/2025
+ * @returns {*}  {React.ReactNode}
+ */
+const FormAuthentication = (): React.ReactNode => {
+  const { SIGNUP, LOGIN } = FORM.TYPE;
+  const [type, setType] = useState<string>(SIGNUP);
+  const methods = useForm<TAutchenticationFields>();
+  const { formState, handleSubmit, reset } = methods;
+  const formType = setInitial(type);
+
+  useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      reset();
+    }
+  }, [formState, reset]);
+
+  /**
+   * @description Form fields initialization helper
+   * @author Luca Cattide
+   * @date 15/08/2025
+   * @param {{ [x: string]: object }} field
+   * @returns {*}  {object}
+   */
+  const checkVersion = (field: { [x: string]: object }): object => {
+    if (type === LOGIN) {
+      const { EMAIL, PASSWORD } = field;
+
+      field = {
+        EMAIL,
+        PASSWORD,
+      };
+    }
+
+    return field;
+  };
+
+  /**
+   * @description Form type switch helper
+   * @author Luca Cattide
+   * @date 15/08/2025
+   */
+  const switchForm = (): void => {
+    reset();
+    setType(type === SIGNUP ? LOGIN : SIGNUP);
+  };
+
+  /**
+   * @description Form submission helper
+   * @author Luca Cattide
+   * @date 15/08/2025
+   */
+  const onSubmit: SubmitHandler<TAutchenticationFields> = (): void => {
+    console.log('ok');
+  };
 
   return (
-    <section className="max-w-mobile md:max-w-desktop bg-light-bg dark:bg-dark-bg flex h-[41.6875rem] min-h-screen w-full flex-col items-center">
-      <header className="h-header-mobile md:h-header-desktop bg-light-bg dark:bg-dark-bg border-light-border dark:border-dark-border flex w-full items-center justify-center border-b px-1 py-1.5 md:px-2">
-        <h1 className="text-1.25rem md:text-1.5rem text-light-text dark:text-dark-text font-bold">
-          {type === 'login' ? 'Login' : 'Register'}
-        </h1>
-      </header>
-      <section className="mx-1 mt-1 flex flex-col gap-1 md:mx-2 md:mt-2">
-        {type === 'register' && (
-          <div className="max-w-note-mobile md:max-w-note-desktop h-field-title-mobile md:h-field-title-desktop w-full">
-            <label htmlFor="name" className="sr-only">
-              Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="text-1rem md:text-1.125rem text-light-text dark:text-dark-text placeholder:text-light-placeholder dark:placeholder:text-dark-placeholder h-full w-full rounded-lg bg-gray-100 px-0.5 font-normal focus-visible:outline focus-visible:outline-blue-600 md:rounded-xl md:px-1 dark:bg-gray-700"
+    <FormProvider {...methods}>
+      <form
+        className="authentication-form mx-1 mt-4 flex flex-col gap-1 md:mx-2 md:mt-8"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <fieldset className="authentication-form__fieldset">
+          <legend className="fieldset__legend text-light-text dark:text-dark-text mb-4 text-center font-bold select-none md:mb-8">
+            {formType}
+          </legend>
+          {Object.values(checkVersion(FORM.FIELD)).map(({ id, ...rest }, i) => (
+            <FormAuthenticationField
+              key={crypto.randomUUID() + i}
+              id={id as TAutchenticationFieldType}
+              {...rest}
             />
-          </div>
-        )}
-        <div className="max-w-note-mobile md:max-w-note-desktop h-field-title-mobile md:h-field-title-desktop w-full">
-          <label htmlFor="email" className="sr-only">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="text-1rem md:text-1.125rem text-light-text dark:text-dark-text placeholder:text-light-placeholder dark:placeholder:text-dark-placeholder h-full w-full rounded-lg bg-gray-100 px-0.5 font-normal focus-visible:outline focus-visible:outline-blue-600 md:rounded-xl md:px-1 dark:bg-gray-700"
-          />
-        </div>
-        <div className="max-w-note-mobile md:max-w-note-desktop h-field-title-mobile md:h-field-title-desktop w-full">
-          <label htmlFor="password" className="sr-only">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="text-1rem md:text-1.125rem text-light-text dark:text-dark-text placeholder:text-light-placeholder dark:placeholder:text-dark-placeholder h-full w-full rounded-lg bg-gray-100 px-0.5 font-normal focus-visible:outline focus-visible:outline-blue-600 md:rounded-xl md:px-1 dark:bg-gray-700"
-          />
-        </div>
-        {type === 'register' && (
-          <div className="max-w-note-mobile md:max-w-note-desktop h-field-title-mobile md:h-field-title-desktop w-full">
-            <label htmlFor="confirm-password" className="sr-only">
-              Confirm Password
-            </label>
-            <input
-              id="confirm-password"
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="text-1rem md:text-1.125rem text-light-text dark:text-dark-text placeholder:text-light-placeholder dark:placeholder:text-dark-placeholder h-full w-full rounded-lg bg-gray-100 px-0.5 font-normal focus-visible:outline focus-visible:outline-blue-600 md:rounded-xl md:px-1 dark:bg-gray-700"
-            />
-          </div>
-        )}
+          ))}
+        </fieldset>
         <CustomButton
-          text={type === 'login' ? 'Login' : 'Register'}
-          color="bg-blue-600 dark:bg-blue-500"
-          ariaLabel={type === 'login' ? 'Submit login' : 'Submit registration'}
+          ariaLabel={`Submit ${type}`}
+          color="bg-blue-600 dark:bg-blue-500 mb-4"
+          text={formType}
+          type="submit"
         />
         <CustomButton
+          ariaLabel="Sign in with Google"
           text="Sign in with Google"
           color="bg-gray-100 dark:bg-gray-700"
-          ariaLabel="Sign in with Google"
+          type="button"
         />
-      </section>
-    </section>
+        <p className="form__variant mt-4 text-center select-none">
+          {type === SIGNUP ? 'Already signed?' : 'Account needed?'}{' '}
+          <span
+            className="variant__switch cursor-pointer text-base font-bold hover:opacity-75"
+            onClick={switchForm}
+          >
+            {formType}
+          </span>
+        </p>
+      </form>
+    </FormProvider>
   );
-}
+};
+
+export default FormAuthentication;

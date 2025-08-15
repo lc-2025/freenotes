@@ -42,12 +42,48 @@ const FORM = {
   PLACEHOLDER: {
     SEARCH: 'Search notes',
   },
+  TYPE: {
+    LOGIN: 'login',
+    SIGNUP: 'signup',
+  },
+  FIELD: {
+    NAME: {
+      id: 'name',
+      label: 'Name',
+      required: true,
+      type: 'text',
+    },
+    EMAIL: {
+      id: 'email',
+      label: 'Email',
+      required: true,
+      type: 'email',
+    },
+    PASSWORD: {
+      id: 'password',
+      label: 'Password',
+      required: true,
+      type: 'password',
+    },
+    PASSWORD_CONFIRM: {
+      id: 'password-confirm',
+      label: 'Confirm Password',
+      required: true,
+      type: 'password',
+    },
+    ACCEPTANCE: {
+      id: 'acceptance',
+      label: 'Accept',
+      required: true,
+      type: 'checkbox',
+    },
+  },
 };
 
 const ROUTE = {
   AUTHENTICATION: {
-    NAME: 'Authentication',
-    PATH: '/'
+    NAME: 'Notes',
+    PATH: '/',
   },
   HOME: {
     NAME: 'Notes',

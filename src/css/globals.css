@@ -29,7 +29,7 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--color-dark-bg);
+  background: var(--color-light-border);
 }
 
 input,

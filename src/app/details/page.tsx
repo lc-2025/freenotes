@@ -32,11 +32,13 @@ export default function Details(): React.ReactNode {
           ariaLabel={ARIA.EDIT}
           color="bg-blue-600 dark:bg-blue-500"
           text={EDIT}
+          type="button"
         />
         <CustomButton
           ariaLabel={ARIA.DELETE}
           color="bg-red-600 dark:bg-red-500"
           text={DELETE}
+          type="button"
         />
       </aside>
     </section>

@@ -12,4 +12,15 @@ const { LIGHT, DARK } = THEME;
  */
 const isThemeDark = (theme: string): string => (theme === DARK ? LIGHT : DARK);
 
-export { isThemeDark };
+/**
+ * @description Text case handler
+ * Capitalizes a word initial
+ * @author Luca Cattide
+ * @date 15/08/2025
+ * @param {string} text
+ * @returns {*}  {string}
+ */
+const setInitial = (text: string): string =>
+  `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
+export { isThemeDark, setInitial };

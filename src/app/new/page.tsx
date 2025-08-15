@@ -40,6 +40,7 @@ export default function New(): React.ReactNode {
           ariaLabel="Save note"
           color="bg-blue-600 dark:bg-blue-500"
           text="Save"
+          type="button"
         />
       </aside>
     </section>

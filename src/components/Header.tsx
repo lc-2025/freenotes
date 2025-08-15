@@ -14,7 +14,7 @@ import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
  */
 const Header = (): React.ReactNode => {
   const { BACK, PIN } = ARIA;
-  const { HOME, DETAILS, NEW, SETTINGS } = ROUTE;
+  const { AUTHENTICATION, HOME, DETAILS, NEW, SETTINGS } = ROUTE;
   const pathname = usePathname();
   const router = useRouter();
   const [header, setHeader] = useState<THeader>(STATE.DEFAULT.HEADER);
@@ -31,6 +31,13 @@ const Header = (): React.ReactNode => {
    */
   const initHeader = (): void => {
     const section = {
+      [AUTHENTICATION.PATH]: populateHeader(
+        AUTHENTICATION.NAME,
+        false,
+        false,
+        false,
+        false,
+      ),
       [HOME.PATH]: populateHeader(HOME.NAME, false, false, true, true),
       [DETAILS.PATH]: populateHeader(DETAILS.NAME, true, true, false, true),
       [NEW.PATH]: populateHeader(NEW.NAME, true, false, false, true),
@@ -90,14 +97,14 @@ const Header = (): React.ReactNode => {
         {showBack && (
           <button
             aria-label={BACK}
-            className="container__back mr-4 cursor-pointer pt-8 pb-8 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="container__back mr-4 cursor-pointer pt-8 pb-8 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
             onClick={() => handleNavigation(HOME.PATH)}
             type="button"
           >
             ←
           </button>
         )}
-        <h1 className="container__title text-light-text dark:text-dark-text text-xl font-bold md:text-2xl select-none">
+        <h1 className="container__title text-light-text dark:text-dark-text text-xl font-bold select-none md:text-2xl">
           {title}
         </h1>
       </aside>
@@ -105,7 +112,7 @@ const Header = (): React.ReactNode => {
         {showPin && (
           <button
             aria-label={PIN}
-            className="header__pin cursor-pointer pt-8 pr-4 pb-8 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__pin cursor-pointer pt-8 pr-4 pb-8 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
             type="button"
           >
             📌
@@ -114,7 +121,7 @@ const Header = (): React.ReactNode => {
         {showToggle && (
           <button
             aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}
-            className="header__theme cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__theme cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
             onClick={toggleTheme}
             type="button"
           >
@@ -124,7 +131,7 @@ const Header = (): React.ReactNode => {
         {showSettings && (
           <button
             aria-label={ARIA.SETTINGS}
-            className="header__settings cursor-pointer pt-8 pb-8 pl-4 text-2xl text-blue-600 transition-opacity select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__settings cursor-pointer pt-8 pb-8 pl-4 text-2xl text-blue-600  select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
             onClick={() => handleNavigation(SETTINGS.PATH)}
             type="button"
           >
