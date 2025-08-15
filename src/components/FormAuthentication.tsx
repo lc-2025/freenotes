@@ -83,7 +83,7 @@ const FormAuthentication = (): React.ReactNode => {
   return (
     <FormProvider {...methods}>
       <form
-        className="authentication-form mx-1 mt-4 flex flex-col gap-1 md:mx-2 md:mt-8"
+        className="authentication-form mt-4 flex w-full flex-col gap-1 px-4 md:mx-2 md:mt-8 sm:w-auto"
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset className="authentication-form__fieldset">
