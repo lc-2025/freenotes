@@ -1,15 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
 import FormAuthenticationField from './FormAuthenticationField';
 import CustomButton from './CustomButton';
 import { setInitial } from '@/utils/utilities';
-import { FORM } from '@/utils/constants';
+import { FORM, STATE } from '@/utils/constants';
 import {
   TAutchenticationFields,
   TAutchenticationFieldType,
 } from '@/types/Authentication';
-import { useEffect, useState } from 'react';
 
 /**
  * @description Authentication form component
@@ -19,12 +19,12 @@ import { useEffect, useState } from 'react';
  */
 const FormAuthentication = (): React.ReactNode => {
   const { SIGNUP, LOGIN } = FORM.TYPE;
-  const [type, setType] = useState<string>(SIGNUP);
+  const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
   const methods = useForm<TAutchenticationFields>();
   const { formState, handleSubmit, reset } = methods;
-  const formType = setInitial(type);
+  let formType = setInitial(type);
 
-  useEffect(() => { console.log(formState.errors)
+  useEffect(() => {
     if (formState.isSubmitSuccessful) {
       reset();
     }
@@ -51,13 +51,23 @@ const FormAuthentication = (): React.ReactNode => {
   };
 
   /**
+   * @description Form variant setter
+   * @author Luca Cattide
+   * @date 15/08/2025
+   * @returns {*}  {string}
+   */
+  const setVariant = (): string => (type === SIGNUP ? LOGIN : SIGNUP);
+
+  /**
    * @description Form type switch helper
    * @author Luca Cattide
    * @date 15/08/2025
    */
   const switchForm = (): void => {
+    formType = setVariant();
+
     reset();
-    setType(type === SIGNUP ? LOGIN : SIGNUP);
+    setType(formType);
   };
 
   /**
@@ -66,6 +76,7 @@ const FormAuthentication = (): React.ReactNode => {
    * @date 15/08/2025
    */
   const onSubmit: SubmitHandler<TAutchenticationFields> = (): void => {
+    // TODO:
     console.log('ok');
   };
 
@@ -81,8 +92,9 @@ const FormAuthentication = (): React.ReactNode => {
           </legend>
           {Object.values(checkVersion(FORM.FIELD)).map(({ id, ...rest }, i) => (
             <FormAuthenticationField
-              key={crypto.randomUUID() + i}
+              formType={type}
               id={id as TAutchenticationFieldType}
+              key={crypto.randomUUID() + i}
               {...rest}
             />
           ))}
@@ -93,19 +105,20 @@ const FormAuthentication = (): React.ReactNode => {
           text={formType}
           type="submit"
         />
-        <CustomButton
+        {/* TODO: Refactor with actual Google SSO */}
+        {/* <CustomButton
           ariaLabel="Sign in with Google"
           text="Sign in with Google"
           color="bg-gray-100 dark:bg-gray-700"
           type="button"
-        />
+        /> */}
         <p className="form__variant mt-4 text-center select-none">
-          {type === SIGNUP ? 'Already signed?' : 'Account needed?'}{' '}
+          {type === SIGNUP ? 'Already signed? ' : 'Account needed? '}
           <span
             className="variant__switch cursor-pointer text-base font-bold hover:opacity-75"
             onClick={switchForm}
           >
-            {formType}
+            {setInitial(setVariant())}
           </span>
         </p>
       </form>

@@ -7,6 +7,7 @@ type TAutchenticationFields = {
 };
 
 type TAutchenticationField = {
+  formType: string;
   id: TAutchenticationFieldType;
   label: string;
   required?: boolean;

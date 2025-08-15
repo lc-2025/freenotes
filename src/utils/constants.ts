@@ -38,7 +38,17 @@ const ARIA = {
   SETTINGS: 'Open settings',
 };
 
+const REGEX = {
+  NAME: /^[a-zA-Z]+$/i,
+  EMAIL: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+  PASSWORD: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
+};
+
 const FORM = {
+  AUTOCOMPLETE: {
+    PASSWORD: 'current-password',
+    PASSWORD_NEW: 'new-password',
+  },
   PLACEHOLDER: {
     SEARCH: 'Search notes',
   },
@@ -47,29 +57,69 @@ const FORM = {
     SIGNUP: 'signup',
   },
   FIELD: {
+    TYPE: {
+      CHECKBOX: 'checkbox',
+    },
     NAME: {
       id: 'name',
       label: 'Name',
       required: true,
       type: 'text',
+      validation: {
+        maxLength: {
+          value: 20,
+          message: 'Cannot exceed 20 chars',
+        },
+        pattern: {
+          value: REGEX.NAME,
+          message: 'Invalid name',
+        },
+      },
     },
     EMAIL: {
       id: 'email',
       label: 'Email',
       required: true,
       type: 'email',
+      validation: {
+        pattern: {
+          value: REGEX.EMAIL,
+          message: 'Invalid email address',
+        },
+      },
     },
     PASSWORD: {
       id: 'password',
       label: 'Password',
       required: true,
       type: 'password',
+      validation: {
+        minLength: {
+          value: 8,
+          message: 'Cannot be less than 8 digits',
+        },
+        pattern: {
+          value: REGEX.PASSWORD,
+          message:
+            'Must contain at least 1 uppercase letter, 1 number, 1 special char',
+        },
+      },
     },
     PASSWORD_CONFIRM: {
       id: 'password-confirm',
       label: 'Confirm Password',
       required: true,
       type: 'password',
+      validation: {
+        minLength: {
+          value: 8,
+          message: 'Cannot be less than 8 digits',
+        },
+        pattern: {
+          value: REGEX.PASSWORD,
+          message: 'Entered passwords must match',
+        },
+      },
     },
     ACCEPTANCE: {
       id: 'acceptance',
@@ -112,6 +162,9 @@ const STATE = {
       showToggle: false,
       showSettings: false,
     },
+    SEARCH: false,
+    FORM: FORM.TYPE.SIGNUP,
+    SETTINGS_OPTION: false,
   },
 };
 

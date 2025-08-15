@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SECTION, FORM } from '@/utils/constants';
+import { SECTION, FORM, STATE } from '@/utils/constants';
 
 /**
  * @description Search component
@@ -11,7 +11,7 @@ import { SECTION, FORM } from '@/utils/constants';
  */
 const Search = (): React.ReactNode => {
   const { SEARCH } = FORM.PLACEHOLDER;
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(STATE.DEFAULT.SEARCH);
 
   return (
     <>

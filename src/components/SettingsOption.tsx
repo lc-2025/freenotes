@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Switch } from '@headlessui/react';
 import { TSettingsOption } from '@/types/SettingsOption';
-import { SECTION } from '@/utils/constants';
+import { SECTION, STATE } from '@/utils/constants';
 
 /**
  * @description Settings option component
@@ -15,9 +15,7 @@ import { SECTION } from '@/utils/constants';
  * }
  * @returns {*}  {React.ReactNode}
  */
-const SettingsOption = ({
-  label,
-}: TSettingsOption): React.ReactNode => {
+const SettingsOption = ({ label }: TSettingsOption): React.ReactNode => {
   /* TODO: const { theme, setTheme } = useTheme();
 
 
@@ -26,7 +24,9 @@ const SettingsOption = ({
       setTheme(theme === 'dark' ? 'light' : 'dark');
     }
   }; */
-  const [enabled, setEnabled] = useState<boolean>(false);
+  const [enabled, setEnabled] = useState<boolean>(
+    STATE.DEFAULT.SETTINGS_OPTION,
+  );
 
   return (
     <aside className="settings-option border-light-border dark:border-dark-border mt-4 flex h-12 w-full items-center justify-between rounded-lg border px-3 md:h-16 md:rounded-xl md:px-4">
