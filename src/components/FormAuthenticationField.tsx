@@ -27,8 +27,8 @@ const FormAuthenticationField = ({
   required,
   type,
 }: TAutchenticationField): React.ReactNode => {
-  const { TYPE, NAME, EMAIL, PASSWORD, PASSWORD_CONFIRM } = FORM.FIELD;
-  const { CHECKBOX } = TYPE;
+  const { NAME, EMAIL, PASSWORD, PASSWORD_CONFIRM } = FORM.FIELD;
+  const { CHECKBOX } = FORM.FIELD_TYPE;
   const {
     formState: { errors },
     register,

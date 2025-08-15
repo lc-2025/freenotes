@@ -56,10 +56,10 @@ const FORM = {
     LOGIN: 'login',
     SIGNUP: 'signup',
   },
+  FIELD_TYPE: {
+    CHECKBOX: 'checkbox',
+  },
   FIELD: {
-    TYPE: {
-      CHECKBOX: 'checkbox',
-    },
     NAME: {
       id: 'name',
       label: 'Name',
