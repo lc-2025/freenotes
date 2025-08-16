@@ -1,4 +1,4 @@
-import SettingsOption from '@/components/SettingsOption';
+import SettingsOption from '@/components/Layout/SettingsOption';
 import { SECTION, SETTING } from '@/utils/constants';
 
 /**

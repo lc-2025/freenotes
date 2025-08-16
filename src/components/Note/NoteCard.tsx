@@ -15,7 +15,7 @@ const NoteCard = ({ title }: TNote): React.ReactNode => {
 
   const handleDetails = (): void => {
     // TODO: Update with ID
-    router.push(ROUTE.DETAILS.PATH);
+    router.push(ROUTE.NOTE.PATH + '/1');
   };
 
   return (

@@ -1,5 +1,6 @@
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/components/Layout/CustomButton';
 import { ACTION, ARIA } from '@/utils/constants';
+import { TPageParams } from '@/types/Page';
 
 /**
  * @description Note details page
@@ -8,8 +9,14 @@ import { ACTION, ARIA } from '@/utils/constants';
  * @export
  * @returns {*}  {React.ReactNode}
  */
-export default function Details(): React.ReactNode {
+export default async function Details({
+  params,
+}: TPageParams): Promise<React.ReactNode> {
   const { EDIT, DELETE } = ACTION;
+  const { id } = await params;
+
+  // TODO:
+  console.log(id);
 
   return (
     <section className="details flex w-full flex-1 flex-col pb-4 md:pb-12">

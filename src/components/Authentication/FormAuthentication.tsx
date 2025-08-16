@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
 import FormAuthenticationField from './FormAuthenticationField';
-import CustomButton from './CustomButton';
+import CustomButton from '../Layout/CustomButton';
 import { setInitial } from '@/utils/utilities';
 import { FORM, STATE } from '@/utils/constants';
 import {
@@ -19,6 +19,7 @@ import {
  */
 const FormAuthentication = (): React.ReactNode => {
   const { SIGNUP, LOGIN } = FORM.TYPE;
+  const { LOADING, SUBMIT } = FORM.MESSAGE;
   const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
   const methods = useForm<TAutchenticationFields>();
   const { formState, handleSubmit, reset } = methods;
@@ -83,7 +84,7 @@ const FormAuthentication = (): React.ReactNode => {
   return (
     <FormProvider {...methods}>
       <form
-        className="authentication-form mt-4 flex w-full flex-col gap-1 px-4 md:mx-2 md:mt-8 sm:w-auto"
+        className="authentication-form mt-4 flex w-full flex-col gap-1 px-4 sm:w-auto md:mx-2 md:mt-8"
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset className="authentication-form__fieldset">
@@ -102,7 +103,8 @@ const FormAuthentication = (): React.ReactNode => {
         <CustomButton
           ariaLabel={`Submit ${type}`}
           color="bg-blue-600 dark:bg-blue-500 mb-4"
-          text={formType}
+          disabled={formState.isSubmitting}
+          text={formState.isSubmitting ? LOADING : formType}
           type="submit"
         />
         {/* TODO: Refactor with actual Google SSO */}
@@ -112,6 +114,14 @@ const FormAuthentication = (): React.ReactNode => {
           color="bg-gray-100 dark:bg-gray-700"
           type="button"
         /> */}
+        {formState.isSubmitted && (
+          <p
+            aria-live="polite"
+            className={`form__message text-light-text dark:text-dark-text basis-full text-center text-base`}
+          >
+            {SUBMIT}
+          </p>
+        )}
         <p className="form__variant mt-4 text-center select-none">
           {type === SIGNUP ? 'Already signed? ' : 'Account needed? '}
           <span

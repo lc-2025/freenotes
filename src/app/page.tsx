@@ -1,4 +1,4 @@
-import FormAuthentication from '@/components/FormAuthentication';
+import FormAuthentication from '@/components/Authentication/FormAuthentication';
 
 /**
  * @description Authentication page

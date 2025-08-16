@@ -128,6 +128,10 @@ const FORM = {
       type: 'checkbox',
     },
   },
+  MESSAGE: {
+    LOADING: 'Sending...',
+    SUBMIT: 'Authentication succeeded',
+  },
 };
 
 const ROUTE = {
@@ -135,17 +139,17 @@ const ROUTE = {
     NAME: 'Notes',
     PATH: '/',
   },
-  HOME: {
+  NOTES: {
     NAME: 'Notes',
-    PATH: '/home',
+    PATH: '/notes',
   },
-  DETAILS: {
-    NAME: '',
-    PATH: '/details',
+  NOTE: {
+    NAME: 'Note',
+    PATH: '/note',
   },
   NEW: {
     NAME: 'New Note',
-    PATH: `/${ACTION.NEW.toLowerCase()}`,
+    PATH: '/new',
   },
   SETTINGS: {
     NAME: 'Settings',

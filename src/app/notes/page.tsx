@@ -1,6 +1,6 @@
-import Search from '@/components/Search';
-import NoteCard from '@/components/NoteCard';
-import NoteAdd from '@/components/NoteAdd';
+import Search from '@/components/Layout/Search';
+import NoteCard from '@/components/Note/NoteCard';
+import NoteAdd from '@/components/Note/NoteAdd';
 
 /**
  * @description Home Page

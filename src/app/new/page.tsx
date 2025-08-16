@@ -1,5 +1,5 @@
-import CustomFormField from '@/components/CustomFormField';
-import CustomButton from '@/components/CustomButton';
+import CustomFormField from '@/components/Layout/CustomFormField';
+import CustomButton from '@/components/Layout/CustomButton';
 import { NOTE, SECTION } from '@/utils/constants';
 
 /**

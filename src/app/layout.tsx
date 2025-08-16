@@ -1,5 +1,5 @@
 import { Inter } from 'next/font/google';
-import Header from '@/components/Header';
+import Header from '@/components/Layout/Header';
 import { ERROR } from '@/utils/constants';
 import type { Metadata, Viewport } from 'next';
 import '../css/globals.css';

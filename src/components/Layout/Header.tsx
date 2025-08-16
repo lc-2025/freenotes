@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/24/outline';
 import {
   ArrowLeftIcon,
@@ -22,8 +22,9 @@ import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
  */
 const Header = (): React.ReactNode => {
   const { BACK, PIN } = ARIA;
-  const { AUTHENTICATION, HOME, DETAILS, NEW, SETTINGS } = ROUTE;
+  const { AUTHENTICATION, NOTES, NOTE, NEW, SETTINGS } = ROUTE;
   const pathname = usePathname();
+  const params = useParams();
   const router = useRouter();
   const [header, setHeader] = useState<THeader>(STATE.DEFAULT.HEADER);
   const { title, showBack, showPin, showToggle, showSettings } = header;
@@ -46,8 +47,8 @@ const Header = (): React.ReactNode => {
         false,
         false,
       ),
-      [HOME.PATH]: populateHeader(HOME.NAME, false, false, true, true),
-      [DETAILS.PATH]: populateHeader(DETAILS.NAME, true, true, false, true),
+      [NOTES.PATH]: populateHeader(NOTES.NAME, false, false, true, true),
+      [`${NOTE.PATH}/${params.id}`]: populateHeader(NOTE.NAME, true, true, false, true),
       [NEW.PATH]: populateHeader(NEW.NAME, true, false, false, true),
       [SETTINGS.PATH]: populateHeader(SETTINGS.NAME, true, false, false, false),
     };
@@ -106,7 +107,7 @@ const Header = (): React.ReactNode => {
           <button
             aria-label={BACK}
             className="container__back mr-4 cursor-pointer pt-8 pb-8 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600"
-            onClick={() => handleNavigation(HOME.PATH)}
+            onClick={() => handleNavigation(NOTES.PATH)}
             type="button"
           >
             <ArrowLeftIcon className="back__icon size-8 text-2xl text-blue-600 md:text-3xl dark:text-blue-400" />
