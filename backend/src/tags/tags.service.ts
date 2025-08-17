@@ -1,9 +1,10 @@
-import mongoose, { Model, Connection } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Model, Connection } from 'mongoose';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Tag } from './schemas/tag.schema';
 import CreateTagDto from './create-tag.dto';
-import { setFilter } from 'src/utilities/utils';
+import { setError, setFilter } from 'src/utilities/utils';
+import { ERROR } from 'src/utilities/constants';
 
 /**
  * @description Tgs service
@@ -47,8 +48,15 @@ class TagsService {
    * @returns {*}  {Promise<Tag>}
    * @memberof TagsService
    */
-  async create(createTagDto: CreateTagDto): Promise<Tag> {
-    return new this.tagModel(createTagDto).save();
+  async create(createTagDto: CreateTagDto): Promise<Tag | undefined> {
+    try {
+      return new this.tagModel(createTagDto).save();
+    } catch (error) {
+      setError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `${ERROR.CREATE} the new tag ${createTagDto.label}`,
+      );
+    }
   }
 
   /**
@@ -56,11 +64,19 @@ class TagsService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string[]} ids
-   * @returns {*}  {Promise<Tag[]>}
+   * @returns {*}  {Promise<Tag[] | undefined>}
    * @memberof TagsService
    */
-  async findAll(ids: Array<string>): Promise<Tag[]> {
-    return this.tagModel.find(setFilter(ids)).exec();
+  async findAll(ids: Array<string>): Promise<Tag[] | undefined> {
+    if (!ids) {
+      setError(HttpStatus.BAD_REQUEST, ERROR.BAD_REQUEST);
+    }
+
+    try {
+      return this.tagModel.find(setFilter(ids)).exec();
+    } catch (error) {
+      setError(HttpStatus.FOUND, `Tags ${ERROR.FIND}`);
+    }
   }
 }
 

@@ -1,8 +1,10 @@
 import { Model, Connection } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import CreateUserDto from './create-user.dto';
+import { setError } from 'src/utilities/utils';
+import { ERROR } from 'src/utilities/constants';
 
 /**
  * @description User service
@@ -43,11 +45,19 @@ class UsersService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {CreateUserDto} createUserDto
-   * @returns {*}  {Promise<User>}
+   * @returns {*}  {Promise<User | undefined>}
    * @memberof UsersService
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    return new this.userModel(createUserDto).save();
+  async create(createUserDto: CreateUserDto): Promise<User | undefined> {
+    try {
+      return new this.userModel(createUserDto).save();
+    } catch (error) {
+      setError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `${ERROR.CREATE} the new user ${createUserDto.name}`,
+        error,
+      );
+    }
   }
 
   /**
@@ -55,11 +65,19 @@ class UsersService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} email
-   * @returns {*}  {Promise<User[]>}
+   * @returns {*}  {Promise<User[] | undefined>}
    * @memberof UsersService
    */
-  async find(email: string): Promise<User[]> {
-    return this.userModel.find({ email }).exec();
+  async find(email: string): Promise<User[] | undefined> {
+    if (!email) {
+      setError(HttpStatus.BAD_REQUEST, ERROR.BAD_REQUEST);
+    }
+
+    try {
+      return this.userModel.find({ email }).exec();
+    } catch (error) {
+      setError(HttpStatus.FOUND, `User ${email} ${ERROR.FIND}`, error);
+    }
   }
 }
 

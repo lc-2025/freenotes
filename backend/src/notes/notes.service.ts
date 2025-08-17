@@ -1,9 +1,10 @@
 import { Model, Connection } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Note } from './schemas/note.schema';
 import CreateNoteDto from './create-note.dto';
-import { setFilter } from 'src/utilities/utils';
+import { setFilter, setError } from 'src/utilities/utils';
+import { ERROR } from 'src/utilities/constants';
 
 /**
  * @description Note service
@@ -44,11 +45,19 @@ class NotesService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {CreateNoteDto} createNoteDto
-   * @returns {*}  {Promise<Note>}
+   * @returns {*}  {Promise<Note | undefined>}
    * @memberof NotesService
    */
-  async create(createNoteDto: CreateNoteDto): Promise<Note> {
-    return new this.noteModel(createNoteDto).save();
+  async create(createNoteDto: CreateNoteDto): Promise<Note | undefined> {
+    try {
+      return new this.noteModel(createNoteDto).save();
+    } catch (error) {
+      setError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `${ERROR.CREATE} the new note ${createNoteDto.title}`,
+        error,
+      );
+    }
   }
 
   /**
@@ -56,11 +65,19 @@ class NotesService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} id
-   * @returns {*}  {Promise<Note[]>}
+   * @returns {*}  {Promise<Note[] | undefined>}
    * @memberof NotesService
    */
-  async find(id: string): Promise<Note[]> {
-    return this.noteModel.find({ id }).exec();
+  async find(id: string): Promise<Note[] | undefined> {
+    if (!id) {
+      setError(HttpStatus.BAD_REQUEST, ERROR.BAD_REQUEST);
+    }
+
+    try {
+      return this.noteModel.find({ id }).exec();
+    } catch (error) {
+      setError(HttpStatus.FOUND, `Note ${id} ${ERROR.FIND}`, error);
+    }
   }
 
   /**
@@ -68,11 +85,19 @@ class NotesService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {Array<string>} ids
-   * @returns {*}  {Promise<Note[]>}
+   * @returns {*}  {Promise<Note[] | undefined>}
    * @memberof NotesService
    */
-  async findAll(ids: Array<string>): Promise<Note[]> {
-    return this.noteModel.find(setFilter(ids)).exec();
+  async findAll(ids: Array<string>): Promise<Note[] | undefined> {
+    if (!ids) {
+      setError(HttpStatus.BAD_REQUEST, ERROR.BAD_REQUEST);
+    }
+
+    try {
+      return this.noteModel.find(setFilter(ids)).exec();
+    } catch (error) {
+      setError(HttpStatus.FOUND, `Notes ${ERROR.FIND}`);
+    }
   }
 }
 

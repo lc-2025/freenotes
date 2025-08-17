@@ -56,6 +56,12 @@ const ROUTE = {
   },
 };
 
+const ERROR = {
+  CREATE: 'Cannot create',
+  FIND: 'not found',
+  BAD_REQUEST: 'Missing input',
+};
+
 export {
   HEADER,
   PROTOCOL,
@@ -67,4 +73,5 @@ export {
   CONNECTION,
   CONTROLLER,
   ROUTE,
+  ERROR,
 };
