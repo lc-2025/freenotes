@@ -51,7 +51,7 @@ class UsersService {
   }
 
   /**
-   * @description User retreive method
+   * @description User retrieve method
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} email

@@ -6,6 +6,13 @@ import { IUser } from '../types/users.type';
 
 type UserDocument = HydratedDocument<User>;
 
+/**
+ * @description User schema
+ * @author Luca Cattide
+ * @date 17/08/2025
+ * @class User
+ * @implements {IUser}
+ */
 @Schema()
 class User implements IUser {
   @Prop(SCHEMA_OPTIONS)

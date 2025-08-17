@@ -32,19 +32,6 @@ class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   /**
-   * @description User creation endpoint
-   * @author Luca Cattide
-   * @date 17/08/2025
-   * @param {CreateUserDto} createUserDto
-   * @memberof UsersController
-   */
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    // TODO: Validation + error handling
-    await this.usersService.create(createUserDto);
-  }
-
-  /**
    * @description User retrieve endpoint
    * Get decorator defines the route sub-path
    * Param decorator exposes querystring params
@@ -58,6 +45,19 @@ class UsersController {
   async find(@Param(PARAM) email: string): Promise<User[]> {
     // TODO: Validation + error handling
     return this.usersService.find(email);
+  }
+
+  /**
+   * @description User creation endpoint
+   * @author Luca Cattide
+   * @date 17/08/2025
+   * @param {CreateUserDto} createUserDto
+   * @memberof UsersController
+   */
+  @Post()
+  async create(@Body() createUserDto: CreateUserDto) {
+    // TODO: Validation + error handling
+    await this.usersService.create(createUserDto);
   }
 }
 

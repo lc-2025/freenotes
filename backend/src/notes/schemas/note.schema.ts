@@ -6,6 +6,12 @@ import { SCHEMA_OPTIONS } from 'src/utilities/constants';
 
 type NoteDocument = HydratedDocument<Note>;
 
+/**
+ * @description Note schema
+ * @author Luca Cattide
+ * @date 17/08/2025
+ * @class Note
+ */
 @Schema()
 class Note {
   @Prop(SCHEMA_OPTIONS)

@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Tag } from './schemas/tag.schema';
 import CreateTagDto from './create-tag.dto';
+import { setFilter } from 'src/utilities/utils';
 
 /**
  * @description Tgs service
@@ -59,13 +60,7 @@ class TagsService {
    * @memberof TagsService
    */
   async findAll(ids: Array<string>): Promise<Tag[]> {
-    return this.tagModel
-      .find({
-        _id: {
-          $in: ids.map((id: string) => new mongoose.Types.ObjectId(id)),
-        },
-      })
-      .exec();
+    return this.tagModel.find(setFilter(ids)).exec();
   }
 }
 

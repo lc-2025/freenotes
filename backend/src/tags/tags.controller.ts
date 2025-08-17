@@ -32,19 +32,6 @@ class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   /**
-   * @description Tag creation endpoint
-   * @author Luca Cattide
-   * @date 17/08/2025
-   * @param {CreateTagDto} createTagDto
-   * @memberof TagsController
-   */
-  @Post()
-  async create(@Body() createTagDto: CreateTagDto) {
-    // TODO: Validation + error handling
-    await this.tagsService.create(createTagDto);
-  }
-
-  /**
    * @description Tags retrieve endpoint
    * Get decorator defines the route sub-path
    * Param decorator exposes querystring params
@@ -58,6 +45,19 @@ class TagsController {
   async find(@Param(PARAM) ids: Array<string>): Promise<Tag[]> {
     // TODO: Validation + error handling
     return this.tagsService.findAll(ids);
+  }
+
+  /**
+   * @description Tag creation endpoint
+   * @author Luca Cattide
+   * @date 17/08/2025
+   * @param {CreateTagDto} createTagDto
+   * @memberof TagsController
+   */
+  @Post()
+  async create(@Body() createTagDto: CreateTagDto) {
+    // TODO: Validation + error handling
+    await this.tagsService.create(createTagDto);
   }
 }
 

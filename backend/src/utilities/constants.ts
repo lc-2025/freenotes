@@ -23,6 +23,7 @@ const CONNECTION = {
 
 const CONTROLLER = {
   USERS: 'users',
+  NOTES: 'notes',
   TAGS: 'tags',
 };
 
@@ -31,9 +32,15 @@ const ROUTE = {
     GET: 'user/:email',
     PARAM: 'email',
   },
-  TAGS: {
-    GET: 'tag/:id',
+  NOTES: {
+    GET: 'note/:id',
+    GET_ALL: 'note/:ids',
     PARAM: 'id',
+    PARAM_ALL: 'ids',
+  },
+  TAGS: {
+    GET: 'tag/:ids',
+    PARAM: 'ids',
   },
 };
 
