@@ -50,7 +50,7 @@ class TagsService {
    */
   async create(createTagDto: CreateTagDto): Promise<Tag | undefined> {
     try {
-      return new this.tagModel(createTagDto).save();
+      return await new this.tagModel(createTagDto).save();
     } catch (error) {
       setError(
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -73,7 +73,7 @@ class TagsService {
     }
 
     try {
-      return this.tagModel.find(setFilter(ids)).exec();
+      return await this.tagModel.find(setFilter(ids)).exec();
     } catch (error) {
       setError(HttpStatus.FOUND, `Tags ${ERROR.FIND}`);
     }

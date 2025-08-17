@@ -1,3 +1,4 @@
+import { IsBoolean, IsString } from 'class-validator';
 import { IUser } from './types/users.type';
 import { Note } from 'src/notes/schemas/note.schema';
 
@@ -10,9 +11,13 @@ import { Note } from 'src/notes/schemas/note.schema';
  * @implements {IUser}
  */
 class CreateUserDto implements IUser {
+  @IsString()
   name: string;
+  @IsString()
   email: string;
+  @IsString()
   password: string;
+  @IsBoolean()
   acceptance: boolean;
   notes: Array<Note>;
 }

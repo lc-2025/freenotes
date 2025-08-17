@@ -60,6 +60,7 @@ const ERROR = {
   CREATE: 'Cannot create',
   FIND: 'not found',
   BAD_REQUEST: 'Missing input',
+  VALIDATION: 'Validation failed',
 };
 
 export {

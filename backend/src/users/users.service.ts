@@ -50,7 +50,7 @@ class UsersService {
    */
   async create(createUserDto: CreateUserDto): Promise<User | undefined> {
     try {
-      return new this.userModel(createUserDto).save();
+      return await new this.userModel(createUserDto).save();
     } catch (error) {
       setError(
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -74,7 +74,7 @@ class UsersService {
     }
 
     try {
-      return this.userModel.find({ email }).exec();
+      return await this.userModel.find({ email }).exec();
     } catch (error) {
       setError(HttpStatus.FOUND, `User ${email} ${ERROR.FIND}`, error);
     }

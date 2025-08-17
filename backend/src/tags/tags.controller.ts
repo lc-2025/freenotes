@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, ParseArrayPipe } from '@nestjs/common';
 import TagsService from './tags.service';
 import CreateTagDto from './create-tag.dto';
 import { Tag } from './schemas/tag.schema';
@@ -38,13 +38,12 @@ class TagsController {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string[]} ids
-   * @returns {*}  {Promise<Tag[]>}
+   * @returns {*}  {Promise<Tag[] | undefined>}
    * @memberof TagsController
    */
   @Get(GET)
-  async find(@Param(PARAM) ids: Array<string>): Promise<Tag[]> {
-    // TODO: Validation + error handling
-    return this.tagsService.findAll(ids);
+  async find(@Param(PARAM, ParseArrayPipe) ids: Array<string>): Promise<Tag[] | undefined> {
+    return await this.tagsService.findAll(ids);
   }
 
   /**
@@ -56,7 +55,6 @@ class TagsController {
    */
   @Post()
   async create(@Body() createTagDto: CreateTagDto) {
-    // TODO: Validation + error handling
     await this.tagsService.create(createTagDto);
   }
 }

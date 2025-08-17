@@ -1,3 +1,4 @@
+import { IsString, IsBoolean } from 'class-validator';
 import { Tag } from 'src/tags/schemas/tag.schema';
 import { User } from 'src/users/schemas/user.schema';
 import { INote } from './types/note.types';
@@ -11,8 +12,11 @@ import { INote } from './types/note.types';
  * @implements {INote}
  */
 class CreateNoteDto implements INote {
+  @IsString()
   title: string;
+  @IsString()
   body: string;
+  @IsBoolean()
   pinned: boolean;
   tags: Array<Tag>;
   user: User;

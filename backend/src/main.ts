@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { APP } from './utilities/constants';
+import { ValidationPipe } from '@nestjs/common';
 
 /**
  * @description Server
@@ -14,6 +15,16 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   // Getting app configuration via service
   const configService = app.get(ConfigService);
+
+  // Global pipes
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // Validate expected data only
+      whitelist: true,
+      // Security
+      disableErrorMessages: process.env.NODE_ENV === 'production',
+    }),
+  );
 
   await app.listen(configService.get(APP.PORT)!);
 }

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  ParseArrayPipe,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import NotesService from './notes.service';
 import CreateNoteDto from './create-note.dto';
 import { Note } from './schemas/note.schema';
@@ -40,9 +48,10 @@ class NotesController {
    * @memberof NotesController
    */
   @Get(GET_ALL)
-  async findAll(@Param(PARAM_ALL) ids: Array<string>): Promise<Note[]> {
-    // TODO: Validation + error handling
-    return this.notesService.findAll(ids);
+  async findAll(
+    @Param(PARAM_ALL, ParseArrayPipe) ids: Array<string>,
+  ): Promise<Note[] | undefined> {
+    return await this.notesService.findAll(ids);
   }
 
   /**
@@ -54,7 +63,6 @@ class NotesController {
    */
   @Post()
   async create(@Body() createNoteDto: CreateNoteDto) {
-    // TODO: Validation + error handling
     await this.notesService.create(createNoteDto);
   }
 
@@ -63,13 +71,14 @@ class NotesController {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} id
-   * @returns {*}  {Promise<Note[]>}
+   * @returns {*}  {Promise<Note[] | undefined>}
    * @memberof NotesController
    */
   @Get(GET)
-  async find(@Param(PARAM) id: string): Promise<Note[]> {
-    // TODO: Validation + error handling
-    return this.notesService.find(id);
+  async find(
+    @Param(PARAM, new ParseUUIDPipe()) id: string,
+  ): Promise<Note[] | undefined> {
+    return await this.notesService.find(id);
   }
 }
 

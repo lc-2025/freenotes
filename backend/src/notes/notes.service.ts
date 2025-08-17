@@ -50,7 +50,7 @@ class NotesService {
    */
   async create(createNoteDto: CreateNoteDto): Promise<Note | undefined> {
     try {
-      return new this.noteModel(createNoteDto).save();
+      return await new this.noteModel(createNoteDto).save();
     } catch (error) {
       setError(
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -74,7 +74,7 @@ class NotesService {
     }
 
     try {
-      return this.noteModel.find({ id }).exec();
+      return await this.noteModel.find({ id }).exec();
     } catch (error) {
       setError(HttpStatus.FOUND, `Note ${id} ${ERROR.FIND}`, error);
     }
@@ -94,7 +94,7 @@ class NotesService {
     }
 
     try {
-      return this.noteModel.find(setFilter(ids)).exec();
+      return await this.noteModel.find(setFilter(ids)).exec();
     } catch (error) {
       setError(HttpStatus.FOUND, `Notes ${ERROR.FIND}`);
     }
