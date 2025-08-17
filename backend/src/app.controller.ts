@@ -1,12 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
 
+/**
+ * @description Root controller
+ * The required decorator links metadata to class
+ * by binding requests to the correspondent controller.
+ * The param defines the route prefix.
+ * CRUD actions are defined by decorators as well
+ * @author Luca Cattide
+ * @date 17/08/2025
+ * @export
+ * @class AppController
+ */
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
 }
