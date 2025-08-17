@@ -1,6 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import compression from 'compression';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import ExpressMongoSanitize from 'express-mongo-sanitize';
 import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,10 +17,18 @@ import UsersService from './users/users.service';
 import TagsModule from './tags/tags.module';
 import TagsController from './tags/tags.controller';
 import TagsService from './tags/tags.service';
-import { CONFIGURATION_NAME, CONNECTION } from './utilities/constants';
+import SslMiddleware from './middlewares/ssl.middleware';
+import {
+  RATE_LIMIT,
+  CONFIGURATION_NAME,
+  CONNECTION,
+  CONTROLLER,
+} from './utilities/constants';
 
+const { WINDOW, MAX_REQUESTS } = RATE_LIMIT;
 const { CONNECTED, OPEN, DISCONNECTED, RECONNECTED, DISCONNECTION } =
   CONNECTION;
+const { USERS, NOTES, TAGS } = CONTROLLER;
 
 /**
  * @description Root module
@@ -57,7 +70,37 @@ const { CONNECTED, OPEN, DISCONNECTED, RECONNECTED, DISCONNECTION } =
   // Related providers registration
   providers: [AppService, UsersService, TagsService],
 })
-export class AppModule {
-  // Exposes config service on `main`
+export class AppModule implements NestModule {
+  /**
+   * @description Middlewares configuration
+   * @author Luca Cattide
+   * @date 17/08/2025
+   * @param {MiddlewareConsumer} consumer
+   * @memberof AppModule
+   */
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        compression(),
+        cors(),
+        helmet(),
+        rateLimit({
+          windowMs: WINDOW,
+          max: MAX_REQUESTS,
+        }),
+        ExpressMongoSanitize(),
+        SslMiddleware,
+      )
+      .forRoutes(USERS, NOTES, TAGS);
+  }
+
+  /**
+   * Creates an instance of AppModule.
+   * Exposes config service on `main`
+   * @author Luca Cattide
+   * @date 17/08/2025
+   * @param {ConfigService} configService
+   * @memberof AppModule
+   */
   constructor(private configService: ConfigService) {}
 }

@@ -1,5 +1,17 @@
+const HEADER = {
+  XFP: 'x-forwarded-proto',
+};
+const PROTOCOL = {
+  HTTPS: 'https',
+};
+
 const APP = {
   PORT: 'port',
+};
+
+const RATE_LIMIT = {
+  WINDOW: 15 * 60 * 1000,
+  MAX_REQUESTS: 100,
 };
 
 const CONFIGURATION_NAME = {
@@ -45,7 +57,10 @@ const ROUTE = {
 };
 
 export {
+  HEADER,
+  PROTOCOL,
   APP,
+  RATE_LIMIT,
   CONFIGURATION_NAME,
   ENVIRONMENTS,
   SCHEMA_OPTIONS,
