@@ -24,6 +24,8 @@ import {
   CONNECTION,
   CONTROLLER,
 } from './utilities/constants';
+import {APP_GUARD} from '@nestjs/core';
+import {AuthGuard} from './guards/auth.guard';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -68,7 +70,12 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     TagsModule,
   ],
   // Related providers registration
-  providers: [AppService, UsersService, TagsService],
+  providers: [AppService, UsersService, TagsService,
+  // Global Guards injected as dependencies
+  {
+    provide: APP_GUARD,
+    useClass: AuthGuard
+  }],
 })
 export class AppModule implements NestModule {
   /**
