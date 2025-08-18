@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { APP } from './utilities/constants';
-import { ValidationPipe } from '@nestjs/common';
+import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 
 /**
  * @description Server
@@ -11,8 +11,21 @@ import { ValidationPipe } from '@nestjs/common';
  * @date 17/08/2025
  */
 async function bootstrap() {
+  const env = process.env.NODE_ENV;
   // Create Express server and expose its API
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new ConsoleLogger({
+      json: true,
+      logLevels:
+        env === 'production'
+          ? ['error', 'warn', 'fatal']
+          : ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
+      prefix: 'FreeNotes',
+      showHidden: env === 'development',
+      sorted: true,
+      timestamp: env === 'development',
+    }),
+  });
   // Getting app configuration via service
   const configService = app.get(ConfigService);
 
@@ -20,7 +33,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       // Security
-      disableErrorMessages: process.env.NODE_ENV === 'production',
+      disableErrorMessages: env === 'production',
       // Validate expected data only
       whitelist: true,
     }),
