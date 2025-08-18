@@ -1,4 +1,5 @@
 import { IsBoolean, IsString } from 'class-validator';
+import { Exclude } from 'class-transformer';
 import { IUser } from './types/users.type';
 import { Note } from 'src/notes/schemas/note.schema';
 
@@ -11,6 +12,7 @@ import { Note } from 'src/notes/schemas/note.schema';
  * @implements {IUser}
  */
 class CreateUserDto implements IUser {
+  @Exclude()
   @IsBoolean()
   acceptance: boolean;
 
@@ -20,6 +22,7 @@ class CreateUserDto implements IUser {
   @IsString()
   name: string;
 
+  @Exclude()
   @IsString()
   password: string;
 
