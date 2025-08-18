@@ -12,6 +12,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
+import NotesController from './notes/notes.controller';
+import NotesService from './notes/notes.service';
+import NotesModule from './notes/notes.modules';
 import UsersModule from './users/users.module';
 import UsersController from './users/users.controller';
 import UsersService from './users/users.service';
@@ -47,7 +50,12 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
  */
 @Module({
   // Related controllers registration
-  controllers: [AppController, UsersController, TagsController],
+  controllers: [
+    AppController,
+    NotesController,
+    TagsController,
+    UsersController,
+  ],
   imports: [
     ConfigModule.forRoot({
       load: [appConfig, databaseConfig],
@@ -68,14 +76,16 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
       }),
       inject: [ConfigService],
     }),
-    UsersModule,
+    NotesModule,
     TagsModule,
+    UsersModule,
   ],
   // Related providers registration
   providers: [
     AppService,
-    UsersService,
+    NotesService,
     TagsService,
+    UsersService,
     // Global Guards injected as dependencies
     {
       provide: APP_GUARD,
