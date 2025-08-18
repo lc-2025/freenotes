@@ -14,7 +14,7 @@ import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import NotesController from './notes/notes.controller';
 import NotesService from './notes/notes.service';
-import NotesModule from './notes/notes.modules';
+import NotesModule from './notes/notes.module';
 import UsersModule from './users/users.module';
 import UsersController from './users/users.controller';
 import UsersService from './users/users.service';
@@ -26,11 +26,13 @@ import AuthGuard from './guards/auth.guard';
 import LoggingInterceptor from './interceptors/logging.interceptor';
 import TimeoutInterceptor from './interceptors/timeout.interceptor';
 import {
+  CACHE,
   RATE_LIMIT,
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
 } from './utilities/constants';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -62,6 +64,7 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         onConnectionCreate: (connection: Connection) => {
           connection.on('connected', () => console.log(CONNECTED));
@@ -74,11 +77,16 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
         },
         uri: configService.get(CONFIGURATION_NAME.DATABASE).url,
       }),
-      inject: [ConfigService],
     }),
     NotesModule,
     TagsModule,
     UsersModule,
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        configService.get(CONFIGURATION_NAME.CACHE),
+    }),
   ],
   // Related providers registration
   providers: [
@@ -99,6 +107,11 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,
+    },
+    // Global Auto-Cache (`GET` only)
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
     },
   ],
 })

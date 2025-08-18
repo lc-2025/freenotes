@@ -4,8 +4,10 @@ const APP = {
 
 const CONFIGURATION_NAME = {
   APP: 'app',
+  CACHE: 'cache',
   DATABASE: 'database',
 };
+
 const CONNECTION = {
   CONNECTED: 'DB connected',
   DISCONNECTED: 'DB connection disconnected',
@@ -72,6 +74,7 @@ const SCHEMA_OPTIONS = {
 
 export {
   APP,
+  CACHE,
   CONNECTION,
   CONFIGURATION_NAME,
   CONTROLLER,
