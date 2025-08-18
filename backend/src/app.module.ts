@@ -1,6 +1,7 @@
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import compression from 'compression';
 import cors from 'cors';
@@ -26,13 +27,11 @@ import AuthGuard from './guards/auth.guard';
 import LoggingInterceptor from './interceptors/logging.interceptor';
 import TimeoutInterceptor from './interceptors/timeout.interceptor';
 import {
-  CACHE,
   RATE_LIMIT,
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
 } from './utilities/constants';
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
