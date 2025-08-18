@@ -15,6 +15,7 @@ import NotesController from './notes.controller';
  * @class NotesModule
  */
 @Module({
+  controllers: [NotesController],
   imports: [
     MongooseModule.forFeature([
       {
@@ -24,7 +25,6 @@ import NotesController from './notes.controller';
     ]),
   ],
   providers: [NotesService],
-  controllers: [NotesController],
 })
 class NotesModule {}
 

@@ -19,10 +19,10 @@ async function bootstrap() {
   // Global pipes
   app.useGlobalPipes(
     new ValidationPipe({
-      // Validate expected data only
-      whitelist: true,
       // Security
       disableErrorMessages: process.env.NODE_ENV === 'production',
+      // Validate expected data only
+      whitelist: true,
     }),
   );
 

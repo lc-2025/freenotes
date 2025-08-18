@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Note } from 'src/notes/schemas/note.schema';
-import { SCHEMA_OPTIONS } from 'src/utilities/constants';
+import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { IUser } from '../types/users.type';
 
 type UserDocument = HydratedDocument<User>;
@@ -16,19 +16,23 @@ type UserDocument = HydratedDocument<User>;
 @Schema()
 class User implements IUser {
   @Prop(SCHEMA_OPTIONS)
-  name: string;
+  acceptance: boolean;
 
   @Prop(SCHEMA_OPTIONS)
   email: string;
 
   @Prop(SCHEMA_OPTIONS)
-  password: string;
+  name: string;
+
+  @Prop({
+    default: [],
+    ref: SCHEMA.NOTE,
+    type: [{ type: mongoose.Schema.Types.ObjectId }],
+  })
+  notes: Array<Note>;
 
   @Prop(SCHEMA_OPTIONS)
-  acceptance: boolean;
-
-  @Prop()
-  notes: Array<Note>;
+  password: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

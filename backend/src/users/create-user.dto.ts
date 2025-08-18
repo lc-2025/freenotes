@@ -11,14 +11,18 @@ import { Note } from 'src/notes/schemas/note.schema';
  * @implements {IUser}
  */
 class CreateUserDto implements IUser {
-  @IsString()
-  name: string;
-  @IsString()
-  email: string;
-  @IsString()
-  password: string;
   @IsBoolean()
   acceptance: boolean;
+
+  @IsString()
+  email: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  password: string;
+
   notes: Array<Note>;
 }
 

@@ -1,11 +1,12 @@
 import { Note } from 'src/notes/schemas/note.schema';
 
 interface IUser {
-  name: string;
-  email: string;
-  password: string;
   acceptance: boolean;
+
+  email: string;
+  name: string;
   notes: Array<Note>;
+  password: string;
 }
 
 export type { IUser };

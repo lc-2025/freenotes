@@ -2,9 +2,11 @@ import { Model, Connection } from 'mongoose';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Note } from './schemas/note.schema';
-import CreateNoteDto from './create-note.dto';
+import CreateNoteDto, { UpdateNoteDto } from './create-note.dto';
 import { setFilter, setError } from 'src/utilities/utils';
 import { ERROR } from 'src/utilities/constants';
+
+const { BAD_REQUEST, CREATE, DELETE, FIND, UPDATE } = ERROR;
 
 /**
  * @description Note service
@@ -33,13 +35,6 @@ class NotesService {
     @InjectModel(Note.name) private noteModel: Model<Note>,
   ) {}
 
-  async startTransaction() {
-    const session = await this.connection.startSession();
-
-    session.startTransaction();
-    // TODO: Your transaction logic here
-  }
-
   /**
    * @description Note creation method
    * @author Luca Cattide
@@ -54,7 +49,31 @@ class NotesService {
     } catch (error) {
       setError(
         HttpStatus.INTERNAL_SERVER_ERROR,
-        `${ERROR.CREATE} the new note ${createNoteDto.title}`,
+        `${CREATE} the new note ${createNoteDto.title}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * @description Note deletion method
+   * @author Luca Cattide
+   * @date 18/08/2025
+   * @param {string} id
+   * @returns {*}  {(Promise<Note | null | undefined>)}
+   * @memberof NotesService
+   */
+  async delete(id: string): Promise<Note | null | undefined> {
+    if (!id) {
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    try {
+      return await this.noteModel.findByIdAndDelete({ id }).exec();
+    } catch (error) {
+      setError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `${DELETE} the note ${id}`,
         error,
       );
     }
@@ -70,13 +89,13 @@ class NotesService {
    */
   async find(id: string): Promise<Note[] | undefined> {
     if (!id) {
-      setError(HttpStatus.BAD_REQUEST, ERROR.BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
     try {
       return await this.noteModel.find({ id }).exec();
     } catch (error) {
-      setError(HttpStatus.FOUND, `Note ${id} ${ERROR.FIND}`, error);
+      setError(HttpStatus.FOUND, `Note ${id} ${FIND}`, error);
     }
   }
 
@@ -90,14 +109,51 @@ class NotesService {
    */
   async findAll(ids: Array<string>): Promise<Note[] | undefined> {
     if (!ids) {
-      setError(HttpStatus.BAD_REQUEST, ERROR.BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
     try {
       return await this.noteModel.find(setFilter(ids)).exec();
     } catch (error) {
-      setError(HttpStatus.FOUND, `Notes ${ERROR.FIND}`);
+      setError(HttpStatus.FOUND, `Notes ${FIND}`);
     }
+  }
+
+  /**
+   * @description Note update method
+   * @author Luca Cattide
+   * @date 18/08/2025
+   * @param {UpdateNoteDto} updateNoteDto
+   * @returns {*}  {(Promise<Note | null | undefined>)}
+   * @memberof NotesService
+   */
+  async update(updateNoteDto: UpdateNoteDto): Promise<Note | null | undefined> {
+    if (!updateNoteDto) {
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    try {
+      const { id } = updateNoteDto;
+
+      return await this.noteModel
+        .findOneAndUpdate({ id }, updateNoteDto, {
+          new: true,
+        })
+        .exec();
+    } catch (error) {
+      setError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        `${UPDATE} the note ${updateNoteDto.title}`,
+        error,
+      );
+    }
+  }
+
+  async startTransaction() {
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    // TODO: Your transaction logic here
   }
 }
 

@@ -15,6 +15,7 @@ import UsersService from './users.service';
  * @class UsersModule
  */
 @Module({
+  controllers: [UsersController],
   imports: [
     MongooseModule.forFeature([
       {
@@ -24,7 +25,6 @@ import UsersService from './users.service';
     ]),
   ],
   providers: [UsersService],
-  controllers: [UsersController],
 })
 class UsersModule {}
 

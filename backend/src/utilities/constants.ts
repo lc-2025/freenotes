@@ -1,49 +1,49 @@
-const HEADER = {
-  XFP: 'x-forwarded-proto',
-};
-const PROTOCOL = {
-  HTTPS: 'https',
-};
-
 const APP = {
   PORT: 'port',
-};
-
-const RATE_LIMIT = {
-  WINDOW: 15 * 60 * 1000,
-  MAX_REQUESTS: 100,
 };
 
 const CONFIGURATION_NAME = {
   APP: 'app',
   DATABASE: 'database',
 };
-
-const ENVIRONMENTS = ['development', 'production'];
-
-const SCHEMA_OPTIONS = {
-  required: true,
-};
-
 const CONNECTION = {
   CONNECTED: 'DB connected',
-  OPEN: 'DB connection open',
   DISCONNECTED: 'DB connection disconnected',
-  RECONNECTED: 'DB reconnected',
   DISCONNECTION: 'DB is disconnecting...',
+  OPEN: 'DB connection open',
+  RECONNECTED: 'DB reconnected',
 };
 
 const CONTROLLER = {
-  USERS: 'users',
   NOTES: 'notes',
   TAGS: 'tags',
+  USERS: 'users',
+};
+const ENVIRONMENTS = ['development', 'production'];
+
+const ERROR = {
+  BAD_REQUEST: 'Missing input',
+  CREATE: 'Cannot create',
+  DELETE: 'Cannot delete',
+  FIND: 'not found',
+  UPDATE: 'Cannot update',
+  VALIDATION: 'Validation failed',
+};
+
+const HEADER = {
+  XFP: 'x-forwarded-proto',
+};
+
+const PROTOCOL = {
+  HTTPS: 'https',
+};
+
+const RATE_LIMIT = {
+  MAX_REQUESTS: 100,
+  WINDOW: 15 * 60 * 1000,
 };
 
 const ROUTE = {
-  USERS: {
-    GET: 'user/:email',
-    PARAM: 'email',
-  },
   NOTES: {
     GET: 'note/:id',
     GET_ALL: 'note/:ids',
@@ -54,25 +54,33 @@ const ROUTE = {
     GET: 'tag/:ids',
     PARAM: 'ids',
   },
+  USERS: {
+    GET: 'user/:email',
+    PARAM: 'email',
+  },
 };
 
-const ERROR = {
-  CREATE: 'Cannot create',
-  FIND: 'not found',
-  BAD_REQUEST: 'Missing input',
-  VALIDATION: 'Validation failed',
+const SCHEMA = {
+  NOTE: 'Note',
+  TAG: 'Tag',
+  USER: 'User',
+};
+
+const SCHEMA_OPTIONS = {
+  required: true,
 };
 
 export {
+  APP,
+  CONNECTION,
+  CONFIGURATION_NAME,
+  CONTROLLER,
+  ENVIRONMENTS,
+  ERROR,
   HEADER,
   PROTOCOL,
-  APP,
   RATE_LIMIT,
-  CONFIGURATION_NAME,
-  ENVIRONMENTS,
-  SCHEMA_OPTIONS,
-  CONNECTION,
-  CONTROLLER,
   ROUTE,
-  ERROR,
+  SCHEMA,
+  SCHEMA_OPTIONS,
 };

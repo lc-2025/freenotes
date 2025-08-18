@@ -2,7 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 import { Tag } from '../../tags/schemas/tag.schema';
-import { SCHEMA_OPTIONS } from 'src/utilities/constants';
+import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
+import { INote } from '../types/note.types';
 
 type NoteDocument = HydratedDocument<Note>;
 
@@ -13,23 +14,26 @@ type NoteDocument = HydratedDocument<Note>;
  * @class Note
  */
 @Schema()
-class Note {
-  @Prop(SCHEMA_OPTIONS)
-  title: string;
-
+class Note implements INote {
   @Prop(SCHEMA_OPTIONS)
   body: string;
 
-  @Prop()
+  @Prop({
+    default: false,
+  })
   pinned: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' })
+  @Prop({ default: [], ref: 'Tag', type: mongoose.Schema.Types.ObjectId })
   tags: Array<Tag>;
+
+  @Prop({ ...SCHEMA_OPTIONS, unique: true })
+  title: string;
 
   @Prop({
     ...SCHEMA_OPTIONS,
+    default: [],
+    ref: SCHEMA.USER,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
   })
   user: User;
 }

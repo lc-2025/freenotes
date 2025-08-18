@@ -25,10 +25,10 @@ import {
   CONTROLLER,
 } from './utilities/constants';
 
-const { WINDOW, MAX_REQUESTS } = RATE_LIMIT;
-const { CONNECTED, OPEN, DISCONNECTED, RECONNECTED, DISCONNECTION } =
+const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
-const { USERS, NOTES, TAGS } = CONTROLLER;
+const { NOTES, TAGS, USERS } = CONTROLLER;
+const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
 
 /**
  * @description Root module
@@ -42,6 +42,8 @@ const { USERS, NOTES, TAGS } = CONTROLLER;
  * @class AppModule
  */
 @Module({
+  // Related controllers registration
+  controllers: [AppController, UsersController, TagsController],
   imports: [
     ConfigModule.forRoot({
       load: [appConfig, databaseConfig],
@@ -49,24 +51,22 @@ const { USERS, NOTES, TAGS } = CONTROLLER;
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get(CONFIGURATION_NAME.DATABASE).url,
         onConnectionCreate: (connection: Connection) => {
           connection.on('connected', () => console.log(CONNECTED));
-          connection.on('open', () => console.log(OPEN));
           connection.on('disconnected', () => console.log(DISCONNECTED));
-          connection.on('reconnected', () => console.log(RECONNECTED));
           connection.on('disconnecting', () => console.log(DISCONNECTION));
+          connection.on('open', () => console.log(OPEN));
+          connection.on('reconnected', () => console.log(RECONNECTED));
 
           return connection;
         },
+        uri: configService.get(CONFIGURATION_NAME.DATABASE).url,
       }),
       inject: [ConfigService],
     }),
     UsersModule,
     TagsModule,
   ],
-  // Related controllers registration
-  controllers: [AppController, UsersController, TagsController],
   // Related providers registration
   providers: [AppService, UsersService, TagsService],
 })
@@ -83,15 +83,15 @@ export class AppModule implements NestModule {
       .apply(
         compression(),
         cors(),
+        ExpressMongoSanitize(),
         helmet(),
         rateLimit({
           windowMs: WINDOW,
           max: MAX_REQUESTS,
         }),
-        ExpressMongoSanitize(),
         SslMiddleware,
       )
-      .forRoutes(USERS, NOTES, TAGS);
+      .forRoutes(NOTES, TAGS, USERS);
   }
 
   /**

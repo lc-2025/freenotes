@@ -1,12 +1,18 @@
+import { UUID } from 'mongodb';
 import { Tag } from 'src/tags/schemas/tag.schema';
 import { User } from 'src/users/schemas/user.schema';
+import { UpdateNoteDto } from '../create-note.dto';
 
 interface INote {
-  title: string;
   body: string;
   pinned: boolean;
   tags: Array<Tag>;
+  title: string;
   user: User;
 }
 
-export type { INote };
+type TNoteDecorator = {
+  id: UUID;
+} & UpdateNoteDto;
+
+export type { INote, TNoteDecorator };

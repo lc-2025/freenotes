@@ -32,14 +32,6 @@ class UsersService {
     @InjectConnection() private readonly connection: Connection,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
-
-  async startTransaction() {
-    const session = await this.connection.startSession();
-
-    session.startTransaction();
-    // TODO: Your transaction logic here
-  }
-
   /**
    * @description User creation method
    * @author Luca Cattide
@@ -78,6 +70,13 @@ class UsersService {
     } catch (error) {
       setError(HttpStatus.FOUND, `User ${email} ${ERROR.FIND}`, error);
     }
+  }
+
+  async startTransaction() {
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    // TODO: Your transaction logic here
   }
 }
 
