@@ -1,3 +1,4 @@
+import { APP_GUARD } from '@nestjs/core';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -18,14 +19,13 @@ import TagsModule from './tags/tags.module';
 import TagsController from './tags/tags.controller';
 import TagsService from './tags/tags.service';
 import SslMiddleware from './middlewares/ssl.middleware';
+import { AuthGuard } from './guards/auth.guard';
 import {
   RATE_LIMIT,
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
 } from './utilities/constants';
-import {APP_GUARD} from '@nestjs/core';
-import {AuthGuard} from './guards/auth.guard';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -70,12 +70,16 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     TagsModule,
   ],
   // Related providers registration
-  providers: [AppService, UsersService, TagsService,
-  // Global Guards injected as dependencies
-  {
-    provide: APP_GUARD,
-    useClass: AuthGuard
-  }],
+  providers: [
+    AppService,
+    UsersService,
+    TagsService,
+    // Global Guards injected as dependencies
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   /**
