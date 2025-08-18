@@ -1,4 +1,4 @@
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -19,7 +19,9 @@ import TagsModule from './tags/tags.module';
 import TagsController from './tags/tags.controller';
 import TagsService from './tags/tags.service';
 import SslMiddleware from './middlewares/ssl.middleware';
-import { AuthGuard } from './guards/auth.guard';
+import AuthGuard from './guards/auth.guard';
+import LoggingInterceptor from './interceptors/logging.interceptor';
+import TimeoutInterceptor from './interceptors/timeout.interceptor';
 import {
   RATE_LIMIT,
   CONFIGURATION_NAME,
@@ -78,6 +80,15 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    // Global Interceptors injected as dependencies
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TimeoutInterceptor,
     },
   ],
 })
