@@ -67,13 +67,13 @@ class NotesController {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} id
-   * @returns {*}  {Promise<Note[] | undefined>}
+   * @returns {*}  {Promise<Note | null | undefined>}
    * @memberof NotesController
    */
   @Get(GET)
   async find(
     @Param(PARAM, new ParseUUIDPipe()) id: string,
-  ): Promise<Note[] | undefined> {
+  ): Promise<Note | null | undefined> {
     return await this.notesService.find(id);
   }
 

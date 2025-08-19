@@ -98,10 +98,10 @@ class NotesService {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} id
-   * @returns {*}  {Promise<Note[] | undefined>}
+   * @returns {*}  {Promise<Note | null | undefined>}
    * @memberof NotesService
    */
-  async find(id: string): Promise<Note[] | undefined> {
+  async find(id: string): Promise<Note | null | undefined> {
     if (!id) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
@@ -110,7 +110,7 @@ class NotesService {
     try {
       this.logger.log(`${MESSAGE.READ} the note ${id}...`);
 
-      return await this.noteModel.find({ id }).exec();
+      return await this.noteModel.findOne({ id }).exec();
     } catch (error) {
       const message = `Note ${id} ${FIND}`;
 

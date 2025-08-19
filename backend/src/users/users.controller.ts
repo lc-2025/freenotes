@@ -50,11 +50,11 @@ class UsersController {
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} email
-   * @returns {*}  {Promise<User[] | undefined>}
+   * @returns {*}  {Promise<User | null | undefined>}
    * @memberof UsersController
    */
   @Get(GET)
-  async find(@Param(PARAM) email: string): Promise<User[] | undefined> {
+  async find(@Param(PARAM) email: string): Promise<User | null | undefined> {
     return await this.usersService.find(email);
   }
 }

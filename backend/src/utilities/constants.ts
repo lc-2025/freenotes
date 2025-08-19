@@ -18,6 +18,7 @@ const CONNECTION = {
 };
 
 const CONTROLLER = {
+  AUTH: 'auth',
   NOTES: 'notes',
   TAGS: 'tags',
   USERS: 'users',
@@ -29,6 +30,7 @@ const ERROR = {
   CREATE: 'Cannot create',
   DELETE: 'Cannot delete',
   FIND: 'not found',
+  UNAUTHORIZED: 'Permission denied',
   UPDATE: 'Cannot update',
   VALIDATION: 'Validation failed',
 };
@@ -37,7 +39,12 @@ const HEADER = {
   XFP: 'x-forwarded-proto',
 };
 
+const JWT = {
+  EXPIRATION: '60s',
+};
+
 const MESSAGE = {
+  AUTH: 'Generating user access token',
   CREATE: 'Creating',
   DELETE: 'Deleting',
   READ: 'Searching',
@@ -54,6 +61,10 @@ const RATE_LIMIT = {
 };
 
 const ROUTE = {
+  AUTH: {
+    GET: 'login',
+    POST: 'login',
+  },
   NOTES: {
     GET: 'note/:id',
     GET_ALL: 'note/:ids',
@@ -88,6 +99,7 @@ export {
   ENVIRONMENTS,
   ERROR,
   HEADER,
+  JWT,
   MESSAGE,
   PROTOCOL,
   RATE_LIMIT,

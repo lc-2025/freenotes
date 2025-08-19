@@ -5,6 +5,7 @@ import { User } from './schemas/user.schema';
 import CreateUserDto from './create-user.dto';
 import { setError } from 'src/utilities/utils';
 import { ERROR, MESSAGE } from 'src/utilities/constants';
+import { Transform } from 'class-transformer';
 
 const { BAD_REQUEST, FIND } = ERROR;
 
@@ -68,13 +69,20 @@ class UsersService {
 
   /**
    * @description User retrieve method
+   * Returns a serialized response to avoid
+   * password exposure
    * @author Luca Cattide
    * @date 17/08/2025
    * @param {string} email
-   * @returns {*}  {Promise<User[] | undefined>}
+   * @returns {*}  {Promise<User | null | undefined>}
    * @memberof UsersService
    */
-  async find(email: string): Promise<User[] | undefined> {
+  @Transform(({ value }) => {
+    const { password, ...rest } = value;
+
+    return rest;
+  })
+  async find(email: string): Promise<User | null | undefined> {
     if (!email) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
@@ -83,13 +91,33 @@ class UsersService {
     try {
       this.logger.log(`${MESSAGE.READ} the user ${email}...`);
 
-      return await this.userModel.find({ email }).exec();
+      return await this.userModel.findOne({ email }).exec();
     } catch (error) {
       const message = `User ${email} ${FIND}`;
 
       this.logger.error(message);
       setError(HttpStatus.FOUND, message, error);
     }
+  }
+
+  /**
+   * @description User search method
+   * User during authentication to get
+   * all the user info
+   * @author Luca Cattide
+   * @date 19/08/2025
+   * @param {string} email
+   * @returns {*}  {(Promise<User | null | undefined>)}
+   * @memberof UsersService
+   */
+  async search(email: string): Promise<User | null | undefined> {
+    if (!email) {
+      this.logger.error(BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    // Return the full User (including password)
+    return await this.find(email);
   }
 
   async startTransaction() {

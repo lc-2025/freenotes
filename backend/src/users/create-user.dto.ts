@@ -22,7 +22,6 @@ class CreateUserDto implements IUser {
   @IsString()
   name: string;
 
-  @Exclude()
   @IsString()
   password: string;
 
