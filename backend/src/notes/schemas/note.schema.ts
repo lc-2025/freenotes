@@ -13,7 +13,7 @@ type NoteDocument = HydratedDocument<Note>;
  * @date 17/08/2025
  * @class Note
  */
-@Schema()
+@Schema({ timestamps: true })
 class Note implements INote {
   @Prop(SCHEMA_OPTIONS)
   body: string;

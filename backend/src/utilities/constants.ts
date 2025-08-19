@@ -1,4 +1,5 @@
 const APP = {
+  NAME: 'FreeNotes',
   PORT: 'port',
 };
 
@@ -34,6 +35,13 @@ const ERROR = {
 
 const HEADER = {
   XFP: 'x-forwarded-proto',
+};
+
+const MESSAGE = {
+  CREATE: 'Creating',
+  DELETE: 'Deleting',
+  READ: 'Searching',
+  UPDATE: 'Updating',
 };
 
 const PROTOCOL = {
@@ -80,6 +88,7 @@ export {
   ENVIRONMENTS,
   ERROR,
   HEADER,
+  MESSAGE,
   PROTOCOL,
   RATE_LIMIT,
   ROUTE,

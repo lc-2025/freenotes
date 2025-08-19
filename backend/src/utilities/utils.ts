@@ -34,4 +34,13 @@ const setFilter = (ids: Array<string>): TQueryFilter => ({
   },
 });
 
-export { setFilter, setError };
+/**
+ * @description Array to string conversion handler
+ * @author Luca Cattide
+ * @date 19/08/2025
+ * @param {Array<string>} ids
+ * @returns {*}  {string}
+ */
+const setList = (ids: Array<string>): string => ids.join(', ');
+
+export { setFilter, setError, setList };
