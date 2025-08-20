@@ -7,6 +7,7 @@ const CONFIGURATION_NAME = {
   APP: 'app',
   CACHE: 'cache',
   DATABASE: 'database',
+  THROTTLE: 'throttle',
 };
 
 const CONNECTION = {
@@ -108,5 +109,5 @@ export {
   ROUTE,
   SCHEMA,
   SCHEMA_OPTIONS,
-  TOKEN
+  TOKEN,
 };

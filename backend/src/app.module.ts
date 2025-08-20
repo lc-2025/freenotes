@@ -3,10 +3,9 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import compression from 'compression';
-import cors from 'cors';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
@@ -59,6 +58,12 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     UsersController,
   ],
   imports: [
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        configService.get(CONFIGURATION_NAME.CACHE),
+    }),
     ConfigModule.forRoot({
       load: [appConfig, databaseConfig],
     }),
@@ -80,13 +85,17 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     }),
     NotesModule,
     TagsModule,
-    UsersModule,
-    CacheModule.registerAsync({
+    ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) =>
-        configService.get(CONFIGURATION_NAME.CACHE),
+      useFactory: async (configService: ConfigService) => [
+        {
+          ttl: configService.get(CONFIGURATION_NAME.THROTTLE).ttl,
+          limit: configService.get(CONFIGURATION_NAME.THROTTLE).limit,
+        },
+      ],
     }),
+    UsersModule,
   ],
   // Related providers registration
   providers: [
@@ -97,13 +106,17 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     // Global Guards injected as dependencies
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard
+      useClass: JwtAuthGuard,
     },
     // Vanilla authentication
     /* {
       provide: APP_GUARD,
       useClass: AuthGuard,
     }, */
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     // Global Interceptors injected as dependencies
     {
       provide: APP_INTERCEPTOR,
@@ -130,16 +143,7 @@ export class AppModule implements NestModule {
    */
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(
-        compression(),
-        ExpressMongoSanitize(),
-        helmet(),
-        rateLimit({
-          windowMs: WINDOW,
-          max: MAX_REQUESTS,
-        }),
-        SslMiddleware,
-      )
+      .apply(compression(), ExpressMongoSanitize(), helmet(), SslMiddleware)
       .forRoutes(NOTES, TAGS, USERS);
   }
 
