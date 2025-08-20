@@ -14,6 +14,7 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const { DESCRIPTION, ENDPOINT, NAME, PORT, VERSION } = APP;
   const env = process.env.NODE_ENV;
+  const isDevelopment = env === ENVIRONMENTS[0];
   const isProduction = env === ENVIRONMENTS[1];
   // Create Express server and expose its API
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,10 +24,11 @@ async function bootstrap() {
         ? ['error', 'warn', 'fatal']
         : ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
       prefix: NAME,
-      showHidden: env === ENVIRONMENTS[0],
+      showHidden: isDevelopment,
       sorted: true,
       timestamp: true,
     }),
+    snapshot: isDevelopment,
   });
   // Getting app configuration via service
   const configService = app.get(ConfigService);

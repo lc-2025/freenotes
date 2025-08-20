@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 import compression from 'compression';
 import helmet from 'helmet';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
@@ -27,16 +28,15 @@ import JwtAuthGuard from './guards/jwt-auth.guard';
 import LoggingInterceptor from './interceptors/logging.interceptor';
 import TimeoutInterceptor from './interceptors/timeout.interceptor';
 import {
-  RATE_LIMIT,
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
+  ENVIRONMENTS,
 } from './utilities/constants';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
 const { NOTES, TAGS, USERS } = CONTROLLER;
-const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
 
 /**
  * @description Root module
@@ -66,6 +66,9 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     }),
     ConfigModule.forRoot({
       load: [appConfig, databaseConfig],
+    }),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV === ENVIRONMENTS[0],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
