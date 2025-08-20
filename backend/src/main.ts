@@ -10,6 +10,7 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
  * @description Server
  * @author Luca Cattide
  * @date 17/08/2025
+ * TODO: See https://docs.nestjs.com/recipes/terminus
  */
 async function bootstrap() {
   const { DESCRIPTION, ENDPOINT, NAME, PORT, VERSION } = APP;
