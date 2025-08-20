@@ -15,6 +15,7 @@ import TagsService from './tags.service';
  * @class TagsModule
  */
 @Module({
+  controllers: [TagsController],
   imports: [
     MongooseModule.forFeature([
       {
@@ -24,7 +25,6 @@ import TagsService from './tags.service';
     ]),
   ],
   providers: [TagsService],
-  controllers: [TagsController],
 })
 class TagsModule {}
 

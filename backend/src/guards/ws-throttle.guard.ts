@@ -18,14 +18,14 @@ export class WsThrottlerGuard extends ThrottlerGuard {
 
     const client = context.switchToWs().getClient();
     const tracker = client._socket.remoteAddress;
-    const key = generateKey(context, tracker, throttler.name);
+    const key = generateKey(context, tracker, throttler.name!);
     const { totalHits, timeToExpire, isBlocked, timeToBlockExpire } =
       await this.storageService.increment(
         key,
         ttl,
         limit,
         blockDuration,
-        throttler.name,
+        throttler.name!,
       );
 
     const getThrottlerSuffix = (name: string) =>

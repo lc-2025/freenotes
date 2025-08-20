@@ -12,6 +12,7 @@ import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import appConfig from './config/app.config';
+import cacheConfig from './config/cache.config';
 import databaseConfig from './config/database.config';
 import NotesController from './notes/notes.controller';
 import NotesService from './notes/notes.service';
@@ -33,6 +34,7 @@ import {
   CONTROLLER,
   ENVIRONMENTS,
 } from './utilities/constants';
+import throttleConfig from './config/throttle.config';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -53,9 +55,6 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
   // Related controllers registration
   controllers: [
     AppController,
-    NotesController,
-    TagsController,
-    UsersController,
   ],
   imports: [
     CacheModule.registerAsync({
@@ -65,7 +64,7 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
         configService.get(CONFIGURATION_NAME.CACHE),
     }),
     ConfigModule.forRoot({
-      load: [appConfig, databaseConfig],
+      load: [appConfig, cacheConfig, databaseConfig, throttleConfig],
     }),
     DevtoolsModule.register({
       http: process.env.NODE_ENV === ENVIRONMENTS[0],
@@ -103,9 +102,6 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
   // Related providers registration
   providers: [
     AppService,
-    NotesService,
-    TagsService,
-    UsersService,
     // Global Guards injected as dependencies
     {
       provide: APP_GUARD,

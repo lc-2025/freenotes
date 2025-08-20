@@ -66,11 +66,11 @@ class AuthGuard implements CanActivate {
    * @author Luca Cattide
    * @date 19/08/2025
    * @private
-   * @param {Request} request
+   * @param request
    * @returns {*}  {(string | undefined)}
    * @memberof AuthGuard
    */
-  private extractTokenFromHeader(request: Request): string | undefined {
+  private extractTokenFromHeader(request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
     return type === TOKEN ? token : undefined;
