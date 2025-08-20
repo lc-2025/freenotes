@@ -1,16 +1,17 @@
 import {
-  Body,
+  // Body,
   Controller,
   Post,
-  HttpCode,
-  HttpStatus,
+  /* HttpCode,
+  HttpStatus, */
   Get,
   Request,
 } from '@nestjs/common';
 import AuthService from './auth.service';
-import SignInDto from './sign-in.dto';
+// import SignInDto from './sign-in.dto';
 import { User } from 'src/users/schemas/user.schema';
 import { CONTROLLER, ROUTE } from 'src/utilities/constants';
+import { TJWT } from './types/auth.type';
 
 const { AUTH } = CONTROLLER;
 const { GET, POST } = ROUTE.AUTH;
@@ -42,17 +43,30 @@ class AuthController {
   /**
    * @description Authentication login endpoint
    * @author Luca Cattide
-   * @date 19/08/2025
-   * @param {Record<string, any>} signInDto
-   * @returns {*}
+   * @date 20/08/2025
+   * @param {*} request
+   * @returns {*}  {Promise<TJWT>}
    * @memberof AuthController
    */
-  // TODO: return status type
-  @HttpCode(HttpStatus.OK)
   @Post(POST)
-  async signIn(@Body() signInDto: SignInDto): Promise<any> {
-    return await this.authService.signIn(signInDto.email, signInDto.password);
+  async login(@Request() request): Promise<TJWT> {
+    return await this.authService.login(request.user);
   }
+
+  /**
+   * @description Authentication login endpoint
+   * Used by vanilla authentication only
+   * @author Luca Cattide
+   * @date 19/08/2025
+   * @param {Record<string, any>} signInDto
+   * @returns {*}  {Promise<TJWT | undefined>}
+   * @memberof AuthController
+   */
+  /* @HttpCode(HttpStatus.OK)
+  @Post(POST)
+  async signIn(@Body() signInDto: SignInDto): Promise<TJWT | undefined> {
+    return await this.authService.signIn(signInDto.email, signInDto.password);
+  } */
 
   /**
    * @description Authenticated user endpoint

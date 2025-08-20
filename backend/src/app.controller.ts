@@ -14,5 +14,12 @@ import { AppService } from './app.service';
  */
 @Controller()
 export class AppController {
+  /**
+   * Creates an instance of AppController.
+   * @author Luca Cattide
+   * @date 20/08/2025
+   * @param {AppService} appService
+   * @memberof AppController
+   */
   constructor(private readonly appService: AppService) {}
 }

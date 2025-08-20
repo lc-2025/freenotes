@@ -5,9 +5,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { SCHEMA, TOKEN } from 'src/utilities/constants';
 
 /**
  * @description Authentication guard
+ * Used by vanilla authentication only
  * @author Luca Cattide
  * @date 19/08/2025
  * @class AuthGuard
@@ -44,9 +46,12 @@ class AuthGuard implements CanActivate {
 
     try {
       // Assigning to the request object in order to access it on route handlers
-      request['user'] = await this.jwtService.verifyAsync(token, {
-        secret: process.env.SECRET,
-      });
+      request[SCHEMA.USER.toLowerCase()] = await this.jwtService.verifyAsync(
+        token,
+        {
+          secret: process.env.SECRET,
+        },
+      );
     } catch {
       throw new UnauthorizedException();
     }
@@ -68,7 +73,7 @@ class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
-    return type === 'Bearer' ? token : undefined;
+    return type === TOKEN ? token : undefined;
   }
 }
 

@@ -1,6 +1,7 @@
 import { Model, Connection } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
+import bcrypt from 'bcrypt';
 import { User } from './schemas/user.schema';
 import CreateUserDto from './create-user.dto';
 import { setError } from 'src/utilities/utils';
@@ -52,13 +53,18 @@ class UsersService {
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
-    const { name } = createUserDto;
+    const { name, password } = createUserDto;
     const messageSuffix = `the new user ${name}`;
 
     try {
       this.logger.log(`${MESSAGE.CREATE} ${messageSuffix}...`);
 
-      return await new this.userModel(createUserDto).save();
+      const passwordEncrypted = await bcrypt.hash(password, 10);
+
+      return await new this.userModel({
+        ...createUserDto,
+        password: passwordEncrypted,
+      }).save();
     } catch (error) {
       const message = `${ERROR.CREATE} ${messageSuffix}`;
 

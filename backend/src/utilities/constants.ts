@@ -91,6 +91,8 @@ const SCHEMA_OPTIONS = {
   required: true,
 };
 
+const TOKEN = 'Bearer';
+
 export {
   APP,
   CONNECTION,
@@ -106,4 +108,5 @@ export {
   ROUTE,
   SCHEMA,
   SCHEMA_OPTIONS,
+  TOKEN
 };

@@ -2,7 +2,9 @@ import { Injectable, Logger, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import bcrypt from 'bcrypt';
 import UsersService from '../users/users.service';
+import { User } from 'src/users/schemas/user.schema';
 import { setError } from 'src/utilities/utils';
 import { ERROR, MESSAGE } from 'src/utilities/constants';
 import { TJWT } from './types/auth.type';
@@ -41,7 +43,22 @@ class AuthService {
   ) {}
 
   /**
-   * @description
+   * @description Authentication login method
+   * @author Luca Cattide
+   * @date 20/08/2025
+   * @param {User} user
+   * @returns {*}  {Promise<TJWT>}
+   * @memberof AuthService
+   */
+  async login(user: User): Promise<TJWT> {
+    return {
+      access_token: this.jwtService.sign({ email: user.email, sub: user._id }),
+    };
+  }
+
+  /**
+   * @description Authentication sign-in method
+   * Used by vanilla authentication only
    * @author Luca Cattide
    * @date 19/08/2025
    * @param {string} email
@@ -56,13 +73,21 @@ class AuthService {
     }
 
     const messageSuffix = `the user ${email}`;
+    const message = `${ERROR.FIND} ${messageSuffix}`;
 
     try {
       this.logger.log(`${MESSAGE.READ} ${messageSuffix}...`);
 
       const user = await this.usersService.search(email);
 
-      if (user && user.password !== password) {
+      if (!user) {
+        this.logger.error(message);
+        setError(HttpStatus.FOUND, message);
+      }
+
+      const match = await bcrypt.compare(password, user!.password!);
+
+      if (!match) {
         this.logger.error(UNAUTHORIZED);
         setError(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
       }
@@ -71,13 +96,11 @@ class AuthService {
 
       return {
         access_token: await this.jwtService.signAsync({
-          sub: user!._id,
           email: user!.email,
+          sub: user!._id,
         }),
       };
     } catch (error) {
-      const message = `${ERROR.FIND} ${messageSuffix}`;
-
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     }
@@ -88,6 +111,55 @@ class AuthService {
 
     session.startTransaction();
     // TODO: Your transaction logic here
+  }
+
+  /**
+   * @description Authentication user validation method
+   * @author Luca Cattide
+   * @date 20/08/2025
+   * @param {string} email
+   * @param {string} passwordEntered
+   * @returns {*}  {Promise<Omit<User, 'password'> | undefined>}
+   * @memberof AuthService
+   */
+  async validateUser(
+    email: string,
+    passwordEntered: string,
+  ): Promise<Omit<User, 'password'> | undefined> {
+    if (!email || !passwordEntered) {
+      this.logger.error(BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    const messageSuffix = `the user ${email}`;
+    const message = `${ERROR.FIND} ${messageSuffix}`;
+
+    try {
+      this.logger.log(`${MESSAGE.READ} ${messageSuffix}...`);
+
+      const user = await this.usersService.search(email);
+
+      if (!user) {
+        this.logger.error(message);
+        setError(HttpStatus.FOUND, message);
+      }
+
+      const match = await bcrypt.compare(passwordEntered, user!.password!);
+
+      if (!match) {
+        this.logger.error(UNAUTHORIZED);
+        setError(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
+      }
+
+      this.logger.log(`${MESSAGE.AUTH}...`);
+
+      const { password, ...rest } = user!;
+
+      return rest;
+    } catch (error) {
+      this.logger.error(message);
+      setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { /* APP_GUARD, */ APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
@@ -23,7 +23,8 @@ import TagsModule from './tags/tags.module';
 import TagsController from './tags/tags.controller';
 import TagsService from './tags/tags.service';
 import SslMiddleware from './middlewares/ssl.middleware';
-import AuthGuard from './guards/auth.guard';
+import JwtAuthGuard from './guards/jwt-auth.guard';
+//import AuthGuard from './guards/auth.guard';
 import LoggingInterceptor from './interceptors/logging.interceptor';
 import TimeoutInterceptor from './interceptors/timeout.interceptor';
 import {
@@ -96,8 +97,13 @@ const { MAX_REQUESTS, WINDOW } = RATE_LIMIT;
     // Global Guards injected as dependencies
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: JwtAuthGuard
     },
+    // Vanilla authentication
+    /* {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    }, */
     // Global Interceptors injected as dependencies
     {
       provide: APP_INTERCEPTOR,
