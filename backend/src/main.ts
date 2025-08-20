@@ -18,10 +18,9 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLogger({
       json: true,
-      logLevels:
-        isProduction
-          ? ['error', 'warn', 'fatal']
-          : ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
+      logLevels: isProduction
+        ? ['error', 'warn', 'fatal']
+        : ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
       prefix: NAME,
       showHidden: env === ENVIRONMENTS[0],
       sorted: true,
@@ -40,6 +39,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  // CORS
+  app.enableCors();
 
   await app.listen(configService.get(PORT)!);
 }
