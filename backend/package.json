@@ -1,6 +1,6 @@
 {
-  "name": "abc",
-  "version": "0.0.1",
+  "name": "freenotes",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "private": true,
@@ -29,6 +29,7 @@
     "@nestjs/mongoose": "^11.0.3",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.0",
     "@nestjs/throttler": "^6.4.0",
     "@swc/jest": "^0.2.39",
     "bcrypt": "^6.0.0",
@@ -86,7 +87,9 @@
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": ["@swc/jest"]
+      "^.+\\.(t|j)s$": [
+        "@swc/jest"
+      ]
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

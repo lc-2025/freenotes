@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { APP, ENVIRONMENTS } from './utilities/constants';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
@@ -11,7 +12,7 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
  * @date 17/08/2025
  */
 async function bootstrap() {
-  const { NAME, PORT } = APP;
+  const { DESCRIPTION, ENDPOINT, NAME, PORT, VERSION } = APP;
   const env = process.env.NODE_ENV;
   const isProduction = env === ENVIRONMENTS[1];
   // Create Express server and expose its API
@@ -41,6 +42,19 @@ async function bootstrap() {
   );
   // CORS
   app.enableCors();
+
+  // OpenAPI
+  const swagger = new DocumentBuilder()
+    .setTitle(NAME)
+    .setDescription(DESCRIPTION)
+    .setVersion(VERSION)
+    .addTag(NAME)
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, swagger);
+
+  SwaggerModule.setup(ENDPOINT, app, documentFactory, {
+    jsonDocumentUrl: `${ENDPOINT}/json`,
+  });
 
   await app.listen(configService.get(PORT)!);
 }

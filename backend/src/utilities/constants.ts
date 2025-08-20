@@ -1,5 +1,12 @@
+import * as packageJson from '../../package.json';
+
+const { description, version } = packageJson;
+
 const APP = {
+  DESCRIPTION: description,
+  ENDPOINT: 'swagger',
   NAME: 'FreeNotes',
+  VERSION: version,
   PORT: 'port',
 };
 
