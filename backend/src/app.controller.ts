@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
 /**
@@ -22,4 +22,16 @@ export class AppController {
    * @memberof AppController
    */
   constructor(private readonly appService: AppService) {}
+
+  /**
+   * @description Root endpoint
+   * @author Luca Cattide
+   * @date 24/08/2025
+   * @returns {*}  {string}
+   * @memberof AppController
+   */
+  @Get()
+  getRoot(): string {
+    return this.appService.getRoot();
+  }
 }

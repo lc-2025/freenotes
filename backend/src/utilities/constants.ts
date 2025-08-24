@@ -3,6 +3,7 @@ import * as packageJson from '../../package.json';
 const { description, version } = packageJson;
 
 const APP = {
+  CONFIGURATION: 'app',
   DESCRIPTION: description,
   ENDPOINT: 'swagger',
   NAME: 'FreeNotes',
@@ -53,9 +54,11 @@ const JWT = {
 
 const MESSAGE = {
   AUTH: 'Generating user access token',
+  BASE_URL: 'http://localhost',
   CREATE: 'Creating',
   DELETE: 'Deleting',
   READ: 'Searching',
+  START: 'Server started and listening in',
   UPDATE: 'Updating',
 };
 
@@ -68,23 +71,25 @@ const RATE_LIMIT = {
   WINDOW: 15 * 60 * 1000,
 };
 
+const ROOT = 'OK';
+
 const ROUTE = {
   AUTH: {
     GET: 'login',
     POST: 'login',
   },
   NOTES: {
-    GET: 'note/:id',
-    GET_ALL: 'note/:ids',
+    GET: '/:id',
+    GET_ALL: '/:ids',
     PARAM: 'id',
     PARAM_ALL: 'ids',
   },
   TAGS: {
-    GET: 'tag/:ids',
+    GET: '/:ids',
     PARAM: 'ids',
   },
   USERS: {
-    GET: 'user/:email',
+    GET: '/:email',
     PARAM: 'email',
   },
 };
@@ -113,6 +118,7 @@ export {
   MESSAGE,
   PROTOCOL,
   RATE_LIMIT,
+  ROOT,
   ROUTE,
   SCHEMA,
   SCHEMA_OPTIONS,

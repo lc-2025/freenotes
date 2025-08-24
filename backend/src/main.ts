@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { APP, ENVIRONMENTS } from './utilities/constants';
+import { APP, ENVIRONMENTS, MESSAGE } from './utilities/constants';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 
 /**
@@ -13,14 +13,15 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
  * TODO: See https://docs.nestjs.com/recipes/terminus
  */
 async function bootstrap() {
-  const { DESCRIPTION, ENDPOINT, NAME, PORT, VERSION } = APP;
+  const { CONFIGURATION, DESCRIPTION, ENDPOINT, NAME, PORT, VERSION } = APP;
+  const { BASE_URL, START } = MESSAGE;
   const env = process.env.NODE_ENV;
   const isDevelopment = env === ENVIRONMENTS[0];
   const isProduction = env === ENVIRONMENTS[1];
   // Create Express server and expose its API
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLogger({
-      json: true,
+      colors: true,
       logLevels: isProduction
         ? ['error', 'warn', 'fatal']
         : ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
@@ -33,6 +34,7 @@ async function bootstrap() {
   });
   // Getting app configuration via service
   const configService = app.get(ConfigService);
+  const port = configService.get(CONFIGURATION)[PORT];
 
   // Global pipes
   app.useGlobalPipes(
@@ -59,7 +61,9 @@ async function bootstrap() {
     jsonDocumentUrl: `${ENDPOINT}/json`,
   });
 
-  await app.listen(configService.get(PORT)!);
+  await app.listen(port, () => {
+    console.log(`${START} ${BASE_URL}:${port}`);
+  });
 }
 
 bootstrap();

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ROOT } from './utilities/constants';
 
 /**
  * @description Root service
@@ -10,4 +11,15 @@ import { Injectable } from '@nestjs/common';
  * @class AppService
  */
 @Injectable()
-export class AppService {}
+export class AppService {
+  /**
+   * @description Root retrieve method
+   * @author Luca Cattide
+   * @date 24/08/2025
+   * @returns {*}
+   * @memberof AppService
+   */
+  getRoot() {
+    return ROOT;
+  }
+}
