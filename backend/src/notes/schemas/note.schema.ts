@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 import { Tag } from '../../tags/schemas/tag.schema';
@@ -15,20 +16,25 @@ type NoteDocument = HydratedDocument<Note>;
  */
 @Schema({ timestamps: true })
 class Note implements INote {
+  @ApiProperty()
   @Prop(SCHEMA_OPTIONS)
   body: string;
 
+  @ApiProperty()
   @Prop({
     default: false,
   })
   pinned: boolean;
 
+  @ApiProperty()
   @Prop({ default: [], ref: 'Tag', type: mongoose.Schema.Types.ObjectId })
   tags: Array<Tag>;
 
+  @ApiProperty()
   @Prop({ ...SCHEMA_OPTIONS, unique: true })
   title: string;
 
+  @ApiProperty()
   @Prop({
     ...SCHEMA_OPTIONS,
     default: [],

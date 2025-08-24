@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { ITag } from './types/tag.types';
 import { Note } from 'src/notes/schemas/note.schema';
@@ -11,8 +12,11 @@ import { Note } from 'src/notes/schemas/note.schema';
  * @implements {ITag}
  */
 class CreateTagDto implements ITag {
+  @ApiProperty()
   @IsString()
   label: string;
+
+  @ApiProperty()
   notes: Array<Note>;
 }
 

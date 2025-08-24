@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Note } from '../../notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
@@ -8,8 +9,11 @@ type TagDocument = HydratedDocument<Tag>;
 
 @Schema()
 class Tag implements ITag {
+  @ApiProperty()
   @Prop({ ...SCHEMA_OPTIONS, unique: true })
   label: string;
+
+  @ApiProperty()
   @Prop({
     default: [],
     ref: SCHEMA.NOTE,
