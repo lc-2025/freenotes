@@ -55,6 +55,14 @@ class NotesController {
     await this.notesService.create(createNoteDto);
   }
 
+  /**
+   * @description Note deletion method
+   * @author Luca Cattide
+   * @date 24/08/2025
+   * @param {string} id
+   * @returns {*}  {(Promise<Note | null | undefined>)}
+   * @memberof NotesController
+   */
   @Delete()
   async delete(
     @Param(PARAM, new ParseUUIDPipe()) id: string,

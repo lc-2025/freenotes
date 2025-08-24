@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Param, Body, ParseArrayPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  ParseArrayPipe,
+} from '@nestjs/common';
 import TagsService from './tags.service';
 import CreateTagDto from './create-tag.dto';
 import { Tag } from './schemas/tag.schema';
@@ -32,6 +39,18 @@ class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   /**
+   * @description Tag creation endpoint
+   * @author Luca Cattide
+   * @date 17/08/2025
+   * @param {CreateTagDto} createTagDto
+   * @memberof TagsController
+   */
+  @Post()
+  async create(@Body() createTagDto: CreateTagDto) {
+    await this.tagsService.create(createTagDto);
+  }
+
+  /**
    * @description Tags retrieve endpoint
    * Get decorator defines the route sub-path
    * Param decorator exposes querystring params
@@ -42,20 +61,10 @@ class TagsController {
    * @memberof TagsController
    */
   @Get(GET)
-  async find(@Param(PARAM, ParseArrayPipe) ids: Array<string>): Promise<Tag[] | undefined> {
+  async find(
+    @Param(PARAM, ParseArrayPipe) ids: Array<string>,
+  ): Promise<Tag[] | undefined> {
     return await this.tagsService.findAll(ids);
-  }
-
-  /**
-   * @description Tag creation endpoint
-   * @author Luca Cattide
-   * @date 17/08/2025
-   * @param {CreateTagDto} createTagDto
-   * @memberof TagsController
-   */
-  @Post()
-  async create(@Body() createTagDto: CreateTagDto) {
-    await this.tagsService.create(createTagDto);
   }
 }
 
