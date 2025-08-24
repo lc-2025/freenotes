@@ -9,12 +9,14 @@ import {
   Patch,
   ValidationPipe,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import NotesService from './notes.service';
 import CreateNoteDto, { UpdateNoteDto } from './create-note.dto';
 import { Note } from './schemas/note.schema';
 import { Note as NoteDecorator } from './notes.decorator';
 import { CONTROLLER, ROUTE } from 'src/utilities/constants';
+import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 
 const { NOTES } = CONTROLLER;
 const { GET, GET_ALL, PARAM, PARAM_ALL } = ROUTE.NOTES;
@@ -50,6 +52,7 @@ class NotesController {
    * @param {CreateNoteDto} createNoteDto
    * @memberof NotesController
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createNoteDto: CreateNoteDto) {
     await this.notesService.create(createNoteDto);
@@ -63,6 +66,7 @@ class NotesController {
    * @returns {*}  {(Promise<Note | null | undefined>)}
    * @memberof NotesController
    */
+  @UseGuards(JwtAuthGuard)
   @Delete()
   async delete(
     @Param(PARAM, new ParseUUIDPipe()) id: string,
@@ -78,6 +82,7 @@ class NotesController {
    * @returns {*}  {Promise<Note | null | undefined>}
    * @memberof NotesController
    */
+  @UseGuards(JwtAuthGuard)
   @Get(GET)
   async find(
     @Param(PARAM, new ParseUUIDPipe()) id: string,
@@ -93,6 +98,7 @@ class NotesController {
    * @returns {*}  {Promise<Note[]>}
    * @memberof NotesController
    */
+  @UseGuards(JwtAuthGuard)
   @Get(GET_ALL)
   async findAll(
     @Param(PARAM_ALL, ParseArrayPipe) ids: Array<string>,
@@ -107,6 +113,7 @@ class NotesController {
    * @param {UpdateNoteDto} updateNoteDto
    * @memberof NotesController
    */
+  @UseGuards(JwtAuthGuard)
   @Patch(GET)
   async update(
     @NoteDecorator(new ValidationPipe({ validateCustomDecorators: true }))

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import UsersService from './users.service';
 import CreateUserDto from './create-user.dto';
 import { User } from './schemas/user.schema';
 import { CONTROLLER, ROUTE } from 'src/utilities/constants';
+import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 
 const { USERS } = CONTROLLER;
 const { GET, PARAM } = ROUTE.USERS;
@@ -38,6 +39,7 @@ class UsersController {
    * @param {CreateUserDto} createUserDto
    * @memberof UsersController
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     await this.usersService.create(createUserDto);
@@ -53,6 +55,7 @@ class UsersController {
    * @returns {*}  {Promise<User | null | undefined>}
    * @memberof UsersController
    */
+  @UseGuards(JwtAuthGuard)
   @Get(GET)
   async find(@Param(PARAM) email: string): Promise<User | null | undefined> {
     return await this.usersService.find(email);

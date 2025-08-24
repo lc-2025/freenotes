@@ -14,17 +14,10 @@ import { AppService } from './app.service';
 import appConfig from './config/app.config';
 import cacheConfig from './config/cache.config';
 import databaseConfig from './config/database.config';
-import NotesController from './notes/notes.controller';
-import NotesService from './notes/notes.service';
 import NotesModule from './notes/notes.module';
 import UsersModule from './users/users.module';
-import UsersController from './users/users.controller';
-import UsersService from './users/users.service';
 import TagsModule from './tags/tags.module';
-import TagsController from './tags/tags.controller';
-import TagsService from './tags/tags.service';
 import SslMiddleware from './middlewares/ssl.middleware';
-import JwtAuthGuard from './guards/jwt-auth.guard';
 //import AuthGuard from './guards/auth.guard';
 import LoggingInterceptor from './interceptors/logging.interceptor';
 import TimeoutInterceptor from './interceptors/timeout.interceptor';
@@ -103,10 +96,6 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
   providers: [
     AppService,
     // Global Guards injected as dependencies
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
     // Vanilla authentication
     /* {
       provide: APP_GUARD,

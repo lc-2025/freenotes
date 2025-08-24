@@ -5,11 +5,13 @@ import {
   Param,
   Body,
   ParseArrayPipe,
+  UseGuards,
 } from '@nestjs/common';
 import TagsService from './tags.service';
 import CreateTagDto from './create-tag.dto';
 import { Tag } from './schemas/tag.schema';
 import { CONTROLLER, ROUTE } from 'src/utilities/constants';
+import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 
 const { TAGS } = CONTROLLER;
 const { GET, PARAM } = ROUTE.TAGS;
@@ -45,6 +47,7 @@ class TagsController {
    * @param {CreateTagDto} createTagDto
    * @memberof TagsController
    */
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createTagDto: CreateTagDto) {
     await this.tagsService.create(createTagDto);
@@ -60,6 +63,7 @@ class TagsController {
    * @returns {*}  {Promise<Tag[] | undefined>}
    * @memberof TagsController
    */
+  @UseGuards(JwtAuthGuard)
   @Get(GET)
   async find(
     @Param(PARAM, ParseArrayPipe) ids: Array<string>,
