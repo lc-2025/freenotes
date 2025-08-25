@@ -20,8 +20,8 @@ import {
 import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 
 const { USERS } = CONTROLLER;
-const { CREATE, BAD_REQUEST, DELETE, UNAUTHORIZED, UPDATE } = ERROR;
-const { CREATED, DELETED, FOUND, UPDATED } = MESSAGE;
+const { CREATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
+const { CREATED, FOUND } = MESSAGE;
 const { GET, PARAM } = ROUTE.USERS;
 const { USER } = SCHEMA;
 

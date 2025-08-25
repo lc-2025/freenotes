@@ -8,8 +8,9 @@ import { User } from 'src/users/schemas/user.schema';
 import { setError } from 'src/utilities/utils';
 import { ERROR, MESSAGE } from 'src/utilities/constants';
 import { TJWT } from './types/auth.type';
+import CreateUserDto from 'src/users/create-user.dto';
 
-const { BAD_REQUEST, UNAUTHORIZED } = ERROR;
+const { AUTHENTICATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
 
 /**
  * @description Authentication service
@@ -47,13 +48,39 @@ class AuthService {
    * @author Luca Cattide
    * @date 20/08/2025
    * @param {User} user
-   * @returns {*}  {Promise<TJWT>}
+   * @returns {*}  {Promise<TJWT | undefined>}
    * @memberof AuthService
    */
-  async login(user: User): Promise<TJWT> {
-    return {
-      access_token: this.jwtService.sign({ email: user.email, sub: user._id }),
-    };
+  async login(user: User): Promise<TJWT | undefined> {
+    if (!user) {
+      this.logger.error(BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    try {
+      return {
+        access_token: this.jwtService.sign({
+          email: user.email,
+          sub: user._id,
+        }),
+      };
+    } catch (error) {
+      const message = `${AUTHENTICATE} the user`;
+
+      this.logger.error(message);
+      setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    }
+  }
+
+  /**
+   * @description Authentication registration method
+   * @author Luca Cattide
+   * @date 25/08/2025
+   * @param {CreateUserDto} createUserDto
+   * @memberof AuthService
+   */
+  async register(createUserDto: CreateUserDto) {
+    await this.usersService.create(createUserDto);
   }
 
   /**

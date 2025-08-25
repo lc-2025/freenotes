@@ -35,10 +35,12 @@ const CONTROLLER = {
 const ENVIRONMENTS = ['development', 'production'];
 
 const ERROR = {
+  AUTHENTICATE: 'Cannot authenticate',
   BAD_REQUEST: 'Missing input',
   CREATE: 'Cannot create',
   DELETE: 'Cannot delete',
   FIND: 'not found',
+  REGISTER: 'Cannot register',
   UNAUTHORIZED: 'Permission denied',
   UPDATE: 'Cannot update',
   VALIDATION: 'Validation failed',
@@ -54,6 +56,7 @@ const JWT = {
 
 const MESSAGE = {
   AUTH: 'Generating user access token',
+  AUTHENTICATED: 'successfully authenticated',
   BASE_URL: 'http://localhost',
   CREATE: 'Creating',
   CREATED: 'successfully created',
@@ -79,8 +82,11 @@ const ROOT = 'OK';
 
 const ROUTE = {
   AUTH: {
-    GET: 'login',
-    POST: 'login',
+    LOGIN_LOCAL: 'login/local',
+    LOGIN_JWT: 'login',
+    LOGOUT: 'logout',
+    REGISTER: 'register',
+    SIGNIN: 'signin'
   },
   NOTES: {
     GET: '/:id',
@@ -108,6 +114,11 @@ const SCHEMA_OPTIONS = {
   required: true,
 };
 
+const STRATEGY = {
+  LOCAL: 'local',
+  JWT: 'jwt',
+};
+
 const TOKEN = 'Bearer';
 
 export {
@@ -126,5 +137,6 @@ export {
   ROUTE,
   SCHEMA,
   SCHEMA_OPTIONS,
+  STRATEGY,
   TOKEN,
 };

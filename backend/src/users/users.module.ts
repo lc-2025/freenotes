@@ -16,6 +16,7 @@ import UsersService from './users.service';
  */
 @Module({
   controllers: [UsersController],
+  exports: [UsersService],
   imports: [
     MongooseModule.forFeature([
       {

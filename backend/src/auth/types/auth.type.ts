@@ -3,13 +3,11 @@ interface ISignIn {
   password: string;
 }
 
-type TAuthentication = TAuthenticationData & {
+type TAuthentication = Omit<TAuthenticationData, 'password'> & {
   userId: string;
 };
 
-type TAuthenticationData = {
-  email: string;
-};
+type TAuthenticationData = ISignIn;
 
 type TAuthenticationToken = TAuthenticationData & {
   sub: string;

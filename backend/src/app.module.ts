@@ -14,6 +14,7 @@ import { AppService } from './app.service';
 import appConfig from './config/app.config';
 import cacheConfig from './config/cache.config';
 import databaseConfig from './config/database.config';
+import AuthModule from './auth/auth.module';
 import NotesModule from './notes/notes.module';
 import UsersModule from './users/users.module';
 import TagsModule from './tags/tags.module';
@@ -46,10 +47,9 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
  */
 @Module({
   // Related controllers registration
-  controllers: [
-    AppController,
-  ],
+  controllers: [AppController],
   imports: [
+    AuthModule,
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
