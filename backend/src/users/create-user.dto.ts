@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsString } from 'class-validator';
+import { UUID } from 'mongodb';
 import { Exclude } from 'class-transformer';
 import { IUser } from './types/users.type';
-import { Note } from 'src/notes/schemas/note.schema';
 
 /**
  * @description User Data Transfer Object class
@@ -29,9 +29,6 @@ class CreateUserDto implements IUser {
   @ApiProperty()
   @IsString()
   password: string;
-
-  @ApiProperty()
-  notes: Array<Note>;
 }
 
 export default CreateUserDto;

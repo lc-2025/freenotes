@@ -1,11 +1,11 @@
-import { Note } from 'src/notes/schemas/note.schema';
+import { UUID } from 'mongodb';
 
 interface IUser {
   acceptance: boolean;
 
   email: string;
   name: string;
-  notes: Array<Note>;
+  noteIds?: Array<UUID>;
   password: string;
 }
 

@@ -1,12 +1,29 @@
-import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiFoundResponse,
+  ApiInternalServerErrorResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import UsersService from './users.service';
 import CreateUserDto from './create-user.dto';
 import { User } from './schemas/user.schema';
-import { CONTROLLER, ROUTE } from 'src/utilities/constants';
+import {
+  CONTROLLER,
+  ERROR,
+  MESSAGE,
+  ROUTE,
+  SCHEMA,
+} from 'src/utilities/constants';
 import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 
 const { USERS } = CONTROLLER;
+const { CREATE, BAD_REQUEST, DELETE, UNAUTHORIZED, UPDATE } = ERROR;
+const { CREATED, DELETED, FOUND, UPDATED } = MESSAGE;
 const { GET, PARAM } = ROUTE.USERS;
+const { USER } = SCHEMA;
 
 /**
  * @description User controller
@@ -18,6 +35,7 @@ const { GET, PARAM } = ROUTE.USERS;
  * @date 17/08/2025
  * @class UsersController
  */
+@ApiBearerAuth()
 @Controller(USERS)
 class UsersController {
   /**
@@ -41,6 +59,10 @@ class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiCreatedResponse({ description: `${USER} ${CREATED}` })
+  @ApiInternalServerErrorResponse({ description: `${CREATE} the new user` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async create(@Body() createUserDto: CreateUserDto) {
     await this.usersService.create(createUserDto);
   }
@@ -57,7 +79,11 @@ class UsersController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(GET)
-  async find(@Param(PARAM) email: string): Promise<User | null | undefined> {
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiFoundResponse({ description: `${USER} ${FOUND}` })
+  @ApiInternalServerErrorResponse({ description: `${USER} ${ERROR.FIND}` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
+  async find(@Query(PARAM) email: string): Promise<User | null | undefined> {
     return await this.usersService.find(email);
   }
 }

@@ -3,7 +3,6 @@ import { OmitType } from '@nestjs/mapped-types';
 import { IsString, IsBoolean } from 'class-validator';
 import { UUID } from 'mongodb';
 import { Tag } from 'src/tags/schemas/tag.schema';
-import { User } from 'src/users/schemas/user.schema';
 import { INote } from './types/note.types';
 
 /**
@@ -24,14 +23,14 @@ class CreateNoteDto implements INote {
   pinned: boolean;
 
   @ApiProperty()
-  tags: Array<Tag>;
+  tags?: Array<Tag>;
 
   @ApiProperty()
   @IsString()
   title: string;
 
   @ApiProperty()
-  user: User;
+  userId: UUID;
 }
 
 /**
@@ -41,7 +40,7 @@ class CreateNoteDto implements INote {
  * @class UpdateNoteDto
  * @extends {OmitType(CreateNoteDto, ['user'])}
  */
-class UpdateNoteDto extends OmitType(CreateNoteDto, ['user']) {
+class UpdateNoteDto extends OmitType(CreateNoteDto, ['userId']) {
   id: UUID;
 }
 

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UUID } from 'mongodb';
 import { IsString } from 'class-validator';
 import { ITag } from './types/tag.types';
-import { Note } from 'src/notes/schemas/note.schema';
 
 /**
  * @description Tag Data Transfer Object class
@@ -17,7 +17,7 @@ class CreateTagDto implements ITag {
   label: string;
 
   @ApiProperty()
-  notes: Array<Note>;
+  noteIds: Array<UUID>;
 }
 
 export default CreateTagDto;

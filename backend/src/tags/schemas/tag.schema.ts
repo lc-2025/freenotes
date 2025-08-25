@@ -1,12 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Note } from '../../notes/schemas/note.schema';
+import { UUID } from 'mongodb';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { ITag } from '../types/tag.types';
 
 type TagDocument = HydratedDocument<Tag>;
 
+/**
+ * @description Tag schema
+ * @author Luca Cattide
+ * @date 25/08/2025
+ * @class Tag
+ * @implements {ITag}
+ */
+@ApiSchema()
 @Schema()
 class Tag implements ITag {
   @ApiProperty()
@@ -19,7 +27,7 @@ class Tag implements ITag {
     ref: SCHEMA.NOTE,
     type: [{ type: mongoose.Schema.Types.ObjectId }],
   })
-  notes: Array<Note>;
+  noteIds: Array<UUID>;
 }
 
 const TagSchema = SchemaFactory.createForClass(Tag);

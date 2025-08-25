@@ -1,5 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { ROOT } from './utilities/constants';
 
 /**
  * @description Root controller
@@ -31,6 +33,7 @@ export class AppController {
    * @memberof AppController
    */
   @Get()
+  @ApiOkResponse({ description: ROOT })
   getRoot(): string {
     return this.appService.getRoot();
   }

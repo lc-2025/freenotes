@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { UUID } from 'mongodb';
+import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from '../../users/schemas/user.schema';
 import { Tag } from '../../tags/schemas/tag.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { INote } from '../types/note.types';
+import {IsOptional} from 'class-validator';
 
 type NoteDocument = HydratedDocument<Note>;
 
@@ -14,6 +15,7 @@ type NoteDocument = HydratedDocument<Note>;
  * @date 17/08/2025
  * @class Note
  */
+@ApiSchema()
 @Schema({ timestamps: true })
 class Note implements INote {
   @ApiProperty()
@@ -26,9 +28,10 @@ class Note implements INote {
   })
   pinned: boolean;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @Prop({ default: [], ref: 'Tag', type: mongoose.Schema.Types.ObjectId })
-  tags: Array<Tag>;
+  tags?: Array<Tag>;
 
   @ApiProperty()
   @Prop({ ...SCHEMA_OPTIONS, unique: true })
@@ -41,7 +44,7 @@ class Note implements INote {
     ref: SCHEMA.USER,
     type: mongoose.Schema.Types.ObjectId,
   })
-  user: User;
+  userId: UUID;
 }
 
 const NoteSchema = SchemaFactory.createForClass(Note);

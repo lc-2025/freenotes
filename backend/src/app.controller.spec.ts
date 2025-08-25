@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ROOT } from './utilities/constants';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -15,8 +16,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "OK"', () => {
-      expect(appController.getHello()).toBe('OK');
+    it(`should return "${ROOT}"`, () => {
+      expect(appController.getRoot()).toBe(ROOT);
     });
   });
 });

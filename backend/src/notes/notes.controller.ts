@@ -10,16 +10,34 @@ import {
   ValidationPipe,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiFoundResponse,
+  ApiInternalServerErrorResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import NotesService from './notes.service';
 import CreateNoteDto, { UpdateNoteDto } from './create-note.dto';
 import { Note } from './schemas/note.schema';
 import { Note as NoteDecorator } from './notes.decorator';
-import { CONTROLLER, ROUTE } from 'src/utilities/constants';
+import {
+  CONTROLLER,
+  ERROR,
+  MESSAGE,
+  ROUTE,
+  SCHEMA,
+} from 'src/utilities/constants';
 import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 
 const { NOTES } = CONTROLLER;
+const { CREATE, BAD_REQUEST, DELETE, UNAUTHORIZED, UPDATE } = ERROR;
+const { CREATED, DELETED, FOUND, UPDATED } = MESSAGE;
 const { GET, GET_ALL, PARAM, PARAM_ALL } = ROUTE.NOTES;
+const { NOTE } = SCHEMA;
 
 /**
  * @description Notes controller
@@ -31,6 +49,7 @@ const { GET, GET_ALL, PARAM, PARAM_ALL } = ROUTE.NOTES;
  * @date 17/08/2025
  * @class NotesController
  */
+@ApiBearerAuth()
 @Controller(NOTES)
 class NotesController {
   /**
@@ -54,6 +73,10 @@ class NotesController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiCreatedResponse({ description: `${NOTE} ${CREATED}` })
+  @ApiInternalServerErrorResponse({ description: `${CREATE} the new note` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async create(@Body() createNoteDto: CreateNoteDto) {
     await this.notesService.create(createNoteDto);
   }
@@ -68,6 +91,10 @@ class NotesController {
    */
   @UseGuards(JwtAuthGuard)
   @Delete()
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiCreatedResponse({ description: `${NOTE} ${DELETED}` })
+  @ApiInternalServerErrorResponse({ description: `${DELETE} the note` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async delete(
     @Param(PARAM, new ParseUUIDPipe()) id: string,
   ): Promise<Note | null | undefined> {
@@ -84,6 +111,10 @@ class NotesController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(GET)
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiFoundResponse({ description: `${NOTE} ${FOUND}` })
+  @ApiInternalServerErrorResponse({ description: `${NOTE} ${ERROR.FIND}` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async find(
     @Param(PARAM, new ParseUUIDPipe()) id: string,
   ): Promise<Note | null | undefined> {
@@ -100,8 +131,12 @@ class NotesController {
    */
   @UseGuards(JwtAuthGuard)
   @Get(GET_ALL)
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiFoundResponse({ description: `${NOTE}s ${FOUND}` })
+  @ApiInternalServerErrorResponse({ description: `${NOTE}s ${ERROR.FIND}` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async findAll(
-    @Param(PARAM_ALL, ParseArrayPipe) ids: Array<string>,
+    @Query(PARAM_ALL, ParseArrayPipe) ids: Array<string>,
   ): Promise<Note[] | undefined> {
     return await this.notesService.findAll(ids);
   }
@@ -115,6 +150,10 @@ class NotesController {
    */
   @UseGuards(JwtAuthGuard)
   @Patch(GET)
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiCreatedResponse({ description: `${NOTE} ${UPDATED}` })
+  @ApiInternalServerErrorResponse({ description: `${UPDATE} the note` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async update(
     @NoteDecorator(new ValidationPipe({ validateCustomDecorators: true }))
     updateNoteDto: UpdateNoteDto,

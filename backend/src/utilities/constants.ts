@@ -56,10 +56,14 @@ const MESSAGE = {
   AUTH: 'Generating user access token',
   BASE_URL: 'http://localhost',
   CREATE: 'Creating',
+  CREATED: 'successfully created',
   DELETE: 'Deleting',
+  DELETED: 'successfully deleted',
+  FOUND: 'successfully found',
   READ: 'Searching',
   START: 'Server started and listening in',
   UPDATE: 'Updating',
+  UPDATED: 'successfully updated',
 };
 
 const PROTOCOL = {
