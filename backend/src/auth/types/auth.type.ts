@@ -15,6 +15,7 @@ type TAuthenticationToken = TAuthenticationData & {
 
 type TJWT = {
   access_token: string;
+  refresh_token?: string;
 };
 
 export type { ISignIn, TAuthentication, TAuthenticationToken, TJWT };

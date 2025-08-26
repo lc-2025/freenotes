@@ -1,4 +1,4 @@
-import { Model, Connection } from 'mongoose';
+import { Model, Connection, Types } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
@@ -65,7 +65,8 @@ class UsersService {
         ...createUserDto,
         password: passwordEncrypted,
       }).save();
-    } catch (error) { console.log(error)
+    } catch (error) {
+      console.log(error);
       const message = `${ERROR.CREATE} ${messageSuffix}`;
 
       this.logger.error(message);
@@ -79,7 +80,7 @@ class UsersService {
    * password exposure
    * @author Luca Cattide
    * @date 17/08/2025
-   * @param {string} email
+   * @param {string} element
    * @returns {*}  {Promise<User | null | undefined>}
    * @memberof UsersService
    */
@@ -88,18 +89,23 @@ class UsersService {
 
     return rest;
   })
-  async find(email: string): Promise<User | null | undefined> {
-    if (!email) {
+  async find(element: string): Promise<User | null | undefined> {
+    if (!element) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
     try {
-      this.logger.log(`${MESSAGE.READ} the user ${email}...`);
+      const property = {
+        email: { email: element },
+        refreshToken: { refreshToken: element },
+      };
 
-      return await this.userModel.findOne({ email }).exec();
+      this.logger.log(`${MESSAGE.READ} the user...`);
+
+      return await this.userModel.findOne(property[element]).exec();
     } catch (error) {
-      const message = `User ${email} ${FIND}`;
+      const message = `User ${FIND}`;
 
       this.logger.error(message);
       setError(HttpStatus.FOUND, message, error);
@@ -122,8 +128,15 @@ class UsersService {
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
-    // Return the full User (including password)
-    return await this.find(email);
+    try {
+      // Return the full User (including password)
+      return await this.find(email);
+    } catch (error) {
+      const message = `User ${email} ${FIND}`;
+
+      this.logger.error(message);
+      setError(HttpStatus.FOUND, message, error);
+    }
   }
 
   async startTransaction() {
@@ -131,6 +144,31 @@ class UsersService {
 
     session.startTransaction();
     // TODO: Your transaction logic here
+  }
+
+  /**
+   * @description User update method
+   * @author Luca Cattide
+   * @date 26/08/2025
+   * @param {Types.ObjectId} id
+   * @param {string} refreshToken
+   * @returns {*}  {Promise<void>}
+   * @memberof UsersService
+   */
+  async update(id: Types.ObjectId, refreshToken: string): Promise<void> {
+    try {
+      // TODO: Const
+      this.logger.log('Updating the user...');
+
+      await this.userModel
+        .findOneAndUpdate({ _id: id }, { refreshToken })
+        .exec();
+    } catch (error) {
+      const message = `User ${FIND}`;
+
+      this.logger.error(message);
+      setError(HttpStatus.FOUND, message, error);
+    }
   }
 }
 

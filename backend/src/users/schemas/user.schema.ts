@@ -45,6 +45,10 @@ class User implements IUser {
   @ApiProperty()
   @Prop(SCHEMA_OPTIONS)
   password: string;
+
+  @ApiProperty()
+  @IsOptional()
+  refreshToken?: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

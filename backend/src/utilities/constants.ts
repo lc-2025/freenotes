@@ -47,6 +47,7 @@ const ERROR = {
   DELETE: 'Cannot delete',
   FIND: 'not found',
   REGISTER: 'Cannot register',
+  TOKEN: 'Cannot refresh',
   UNAUTHORIZED: 'Permission denied',
   UPDATE: 'Cannot update',
   VALIDATION: 'Validation failed',
@@ -58,10 +59,12 @@ const HEADER = {
 
 const JWT = {
   EXPIRATION: '60s',
+  EXPIRATION_REFRESH: '7d',
 };
 
 const MESSAGE = {
   AUTH: 'Generating user access token',
+  AUTH_REFRESH: 'Generating user refresh token',
   AUTHENTICATED: 'successfully authenticated',
   BASE_URL: 'http://localhost',
   CREATE: 'Creating',
@@ -90,6 +93,7 @@ const ROUTE = {
   AUTH: {
     LOGIN: 'login',
     LOGOUT: 'logout',
+    REFRESH_TOKEN: 'refresh',
     REGISTER: 'register',
     SIGNIN: 'signin',
   },

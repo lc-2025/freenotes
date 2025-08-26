@@ -6,6 +6,7 @@ interface IUser {
   name: string;
   noteIds?: Array<UUID>;
   password: string;
+  refreshToken?: string;
 }
 
 export type { IUser };

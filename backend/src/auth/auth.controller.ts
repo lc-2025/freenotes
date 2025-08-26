@@ -23,8 +23,8 @@ import Public from 'src/decorators/public.decorator';
 import { CONTROLLER, ERROR, ROUTE } from 'src/utilities/constants';
 
 const { AUTH } = CONTROLLER;
-const { AUTHENTICATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
-const { LOGIN, LOGOUT, REGISTER, SIGNIN } = ROUTE.AUTH;
+const { AUTHENTICATE, BAD_REQUEST, TOKEN, UNAUTHORIZED } = ERROR;
+const { LOGIN, LOGOUT, REFRESH_TOKEN, REGISTER, SIGNIN } = ROUTE.AUTH;
 
 /**
  * @description Authentication controller
@@ -80,6 +80,22 @@ class AuthController {
   @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async logout(@Request() request) {
     return request.logout();
+  }
+
+  /**
+   * @description Authentication refresh token endpoint
+   * @author Luca Cattide
+   * @date 26/08/2025
+   * @param {*} request
+   * @returns {*}  {(Promise<TJWT | undefined>)}
+   * @memberof AuthController
+   */
+  @UseGuards(LocalAuthGuard)
+  @Get(REFRESH_TOKEN)
+  @ApiBadRequestResponse({ description: BAD_REQUEST })
+  @ApiInternalServerErrorResponse({ description: `${TOKEN} the token` })
+  async refreshToken(@Req() request): Promise<TJWT | undefined> {
+    return await this.authService.refreshAccessToken(request.refreshToken);
   }
 
   /**

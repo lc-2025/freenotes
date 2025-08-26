@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import UsersService from '../users/users.service';
 import { User } from 'src/users/schemas/user.schema';
 import { setError } from 'src/utilities/utils';
-import { ERROR, MESSAGE } from 'src/utilities/constants';
+import { ERROR, JWT, MESSAGE } from 'src/utilities/constants';
 import { TJWT } from './types/auth.type';
 import CreateUserDto from 'src/users/create-user.dto';
 import SignInDto from './sign-in.dto';
@@ -79,6 +79,39 @@ class AuthService {
           email: user!.email,
           sub: _id,
         }),
+        refresh_token: await this.setRefreshToken(user!),
+      };
+    } catch (error) {
+      this.logger.error(message);
+      setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    }
+  }
+
+  async refreshAccessToken(refreshToken: string) {
+    const message = `${ERROR.FIND} the user`;
+
+    if (!refreshToken) {
+      this.logger.error(BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    try {
+      // TODO: Const
+      this.logger.log('Verifying refresh token...');
+
+      const decoded = this.jwtService.verify(refreshToken);
+      console.log(decoded); // TODO: ?
+      const user = await this.usersService.find(refreshToken);
+
+      if (!user) {
+        this.logger.error(message);
+        setError(HttpStatus.FOUND, message);
+      }
+
+      const { _id, email } = user!;
+
+      return {
+        access_token: await this.jwtService.signAsync({ email, sub: _id }),
       };
     } catch (error) {
       this.logger.error(message);
@@ -114,8 +147,47 @@ class AuthService {
         setError(HttpStatus.BAD_REQUEST, message);
       }
 
+      // TODO: Const
+      this.logger.log('Authenticating the user...');
+
       return this.login({ email: user!.email, password });
     } catch (error) {
+      this.logger.error(message);
+      setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    }
+  }
+
+  /**
+   * @description Refresh token setter method
+   * @author Luca Cattide
+   * @date 26/08/2025
+   * @param {User} user
+   * @returns {*}  {(Promise<string | undefined>)}
+   * @memberof AuthService
+   */
+  async setRefreshToken(user: User): Promise<string | undefined> {
+    if (!user) {
+      this.logger.error(BAD_REQUEST);
+      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
+    }
+
+    try {
+      this.logger.log(`${MESSAGE.AUTH_REFRESH}...`);
+
+      const refreshToken = await this.jwtService.signAsync(
+        {},
+        { expiresIn: JWT.EXPIRATION_REFRESH },
+      );
+
+      user.refreshToken = refreshToken;
+
+      this.usersService.update(user._id, refreshToken);
+
+      return refreshToken;
+    } catch (error) {
+      // TODO: Const
+      const message = 'Cannot generate the token';
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     }
