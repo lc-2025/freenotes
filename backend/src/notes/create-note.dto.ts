@@ -1,8 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OmitType } from '@nestjs/mapped-types';
-import { IsString, IsBoolean } from 'class-validator';
+import { IsString, IsBoolean, IsUUID, IsArray, IsOptional, ArrayContains } from 'class-validator';
 import { UUID } from 'mongodb';
-import { Tag } from 'src/tags/schemas/tag.schema';
 import { INote } from './types/note.types';
 
 /**
@@ -22,14 +21,16 @@ class CreateNoteDto implements INote {
   @IsBoolean()
   pinned: boolean;
 
-  @ApiProperty()
-  tags?: Array<Tag>;
+  @ApiPropertyOptional()
+  @IsArray()
+  tagIds?: Array<UUID>;
 
   @ApiProperty()
   @IsString()
   title: string;
 
   @ApiProperty()
+  @IsUUID()
   userId: UUID;
 }
 

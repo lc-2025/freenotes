@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsEmail, IsStrongPassword } from 'class-validator';
 import { ISignIn } from './types/auth.type';
 
 /**
@@ -12,11 +12,11 @@ import { ISignIn } from './types/auth.type';
  */
 class SignInDto implements ISignIn {
   @ApiProperty()
-  @IsString()
+  @IsEmail()
   email: string;
 
   @ApiProperty()
-  @IsString()
+  @IsStrongPassword()
   password: string;
 }
 

@@ -9,8 +9,9 @@ import { setError } from 'src/utilities/utils';
 import { ERROR, MESSAGE } from 'src/utilities/constants';
 import { TJWT } from './types/auth.type';
 import CreateUserDto from 'src/users/create-user.dto';
+import SignInDto from './sign-in.dto';
 
-const { AUTHENTICATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
+const { ALREADY_EXIST, BAD_REQUEST, UNAUTHORIZED } = ERROR;
 
 /**
  * @description Authentication service
@@ -46,27 +47,40 @@ class AuthService {
   /**
    * @description Authentication login method
    * @author Luca Cattide
-   * @date 20/08/2025
-   * @param {User} user
-   * @returns {*}  {Promise<TJWT | undefined>}
+   * @date 26/08/2025
+   * @param {SignInDto} signInDto
+   * @returns {*}  {(Promise<Omit<User, 'password'> | null | undefined>)}
    * @memberof AuthService
    */
-  async login(user: User): Promise<TJWT | undefined> {
-    if (!user) {
+  async login(signInDto: SignInDto): Promise<TJWT | undefined> {
+    if (!signInDto) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
+    const { email } = signInDto;
+    const messageSuffix = `the user ${email}`;
+    const message = `${ERROR.FIND} ${messageSuffix}`;
+
     try {
+      const user = await this.usersService.search(email);
+
+      if (!user) {
+        this.logger.error(message);
+        setError(HttpStatus.FOUND, message);
+      }
+
+      const { _id } = user!;
+
+      this.logger.log(`${MESSAGE.AUTH}...`);
+
       return {
-        access_token: this.jwtService.sign({
-          email: user.email,
-          sub: user._id,
+        access_token: await this.jwtService.signAsync({
+          email: user!.email,
+          sub: _id,
         }),
       };
     } catch (error) {
-      const message = `${AUTHENTICATE} the user`;
-
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     }
@@ -75,12 +89,36 @@ class AuthService {
   /**
    * @description Authentication registration method
    * @author Luca Cattide
-   * @date 25/08/2025
+   * @date 26/08/2025
    * @param {CreateUserDto} createUserDto
+   * @returns {*}  {(Promise<TJWT | undefined>)}
    * @memberof AuthService
    */
-  async register(createUserDto: CreateUserDto) {
-    await this.usersService.create(createUserDto);
+  async register(createUserDto: CreateUserDto): Promise<TJWT | undefined> {
+    const { password } = createUserDto;
+    let message = `${ERROR.CREATE} the user`;
+    let user = await this.usersService.search(createUserDto.email);
+
+    if (user) {
+      message = `User ${ALREADY_EXIST}`;
+
+      this.logger.error(message);
+      setError(HttpStatus.BAD_REQUEST, message);
+    }
+
+    try {
+      user = await this.usersService.create(createUserDto);
+
+      if (!user) {
+        this.logger.error(message);
+        setError(HttpStatus.BAD_REQUEST, message);
+      }
+
+      return this.login({ email: user!.email, password });
+    } catch (error) {
+      this.logger.error(message);
+      setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    }
   }
 
   /**
@@ -94,40 +132,22 @@ class AuthService {
    * @memberof AuthService
    */
   async signIn(email: string, password: string): Promise<TJWT | undefined> {
-    if (!email || !password) {
-      this.logger.error(BAD_REQUEST);
-      setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
-    }
-
-    const messageSuffix = `the user ${email}`;
-    const message = `${ERROR.FIND} ${messageSuffix}`;
-
     try {
-      this.logger.log(`${MESSAGE.READ} ${messageSuffix}...`);
-
-      const user = await this.usersService.search(email);
-
-      if (!user) {
-        this.logger.error(message);
-        setError(HttpStatus.FOUND, message);
-      }
-
-      const match = await bcrypt.compare(password, user!.password!);
-
-      if (!match) {
-        this.logger.error(UNAUTHORIZED);
-        setError(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
-      }
+      const user = await this.validateUser(email, password);
+      const { _id } = user!;
 
       this.logger.log(`${MESSAGE.AUTH}...`);
 
       return {
         access_token: await this.jwtService.signAsync({
           email: user!.email,
-          sub: user!._id,
+          sub: _id,
         }),
       };
     } catch (error) {
+      const messageSuffix = `the user ${email}`;
+      const message = `${ERROR.FIND} ${messageSuffix}`;
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     }
@@ -177,8 +197,6 @@ class AuthService {
         this.logger.error(UNAUTHORIZED);
         setError(HttpStatus.UNAUTHORIZED, UNAUTHORIZED);
       }
-
-      this.logger.log(`${MESSAGE.AUTH}...`);
 
       const { password, ...rest } = user!;
 

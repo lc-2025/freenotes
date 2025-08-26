@@ -1,8 +1,7 @@
 import { UUID } from 'mongodb';
 
 interface IUser {
-  acceptance: boolean;
-
+  acceptance: string;
   email: string;
   name: string;
   noteIds?: Array<UUID>;

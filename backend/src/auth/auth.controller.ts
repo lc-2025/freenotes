@@ -7,33 +7,24 @@ import {
   Get,
   Request,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiFoundResponse,
   ApiInternalServerErrorResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import AuthService from './auth.service';
 import LocalAuthGuard from 'src/guards/local-auth.guard';
-import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 import SignInDto from './sign-in.dto';
-import { User } from 'src/users/schemas/user.schema';
-import {
-  CONTROLLER,
-  ERROR,
-  MESSAGE,
-  ROUTE,
-  SCHEMA,
-} from 'src/utilities/constants';
 import { TJWT } from './types/auth.type';
 import CreateUserDto from 'src/users/create-user.dto';
+import Public from 'src/decorators/public.decorator';
+import { CONTROLLER, ERROR, ROUTE } from 'src/utilities/constants';
 
 const { AUTH } = CONTROLLER;
 const { AUTHENTICATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
-const { AUTHENTICATED, FOUND } = MESSAGE;
-const { LOGIN_LOCAL, LOGIN_JWT, LOGOUT, REGISTER, SIGNIN } = ROUTE.AUTH;
-const { USER } = SCHEMA;
+const { LOGIN, LOGOUT, REGISTER, SIGNIN } = ROUTE.AUTH;
 
 /**
  * @description Authentication controller
@@ -62,40 +53,21 @@ class AuthController {
   /**
    * @description Authentication login endpoint
    * @author Luca Cattide
-   * @date 19/08/2025
-   * @param {*} request
-   * @returns {*}  {User}
-   * @memberof AuthController
-   */
-  @UseGuards(JwtAuthGuard)
-  @Get(LOGIN_JWT)
-  @ApiBadRequestResponse({ description: BAD_REQUEST })
-  @ApiInternalServerErrorResponse({ description: `${AUTHENTICATE} the user` })
-  login(@Request() request): User {
-    return request.user;
-  }
-
-  /**
-   * @description Authentication login endpoint
-   * Used by Local strategy only
-   * @author Luca Cattide
-   * @date 20/08/2025
-   * @param {*} request
+   * @date 26/08/2025
+   * @param {SignInDto} signInDto
    * @returns {*}  {Promise<TJWT | undefined>}
    * @memberof AuthController
    */
   @UseGuards(LocalAuthGuard)
-  @Post(LOGIN_LOCAL)
+  @Get(LOGIN)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiInternalServerErrorResponse({ description: `${AUTHENTICATE} the user` })
-  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
-  async loginLocal(@Request() request): Promise<TJWT | undefined> {
+  async login(@Req() request): Promise<TJWT | undefined> {
     return await this.authService.login(request.user);
   }
 
   /**
    * @description Authentication logout endpoint
-   * Used by Local strategy only
    * @author Luca Cattide
    * @date 25/08/2025
    * @param {*} request
@@ -115,13 +87,17 @@ class AuthController {
    * @author Luca Cattide
    * @date 25/08/2025
    * @param {CreateUserDto} createUserDto
+   * @returns {*}  {Promise<TJWT | undefined>}
    * @memberof AuthController
    */
+  @Public()
   @Post(REGISTER)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiInternalServerErrorResponse({ description: `${ERROR.REGISTER} the user` })
-  async register(@Body() createUserDto: CreateUserDto) {
-    await this.authService.register(createUserDto);
+  async register(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<TJWT | undefined> {
+    return await this.authService.register(createUserDto);
   }
 
   /**

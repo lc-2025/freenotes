@@ -27,14 +27,20 @@ const CONNECTION = {
 };
 
 const CONTROLLER = {
-  AUTH: 'auth',
+  AUTH: 'authentication',
   NOTES: 'notes',
   TAGS: 'tags',
   USERS: 'users',
 };
+
+const DECORATOR = {
+  PUBLIC: 'isPublic',
+};
+
 const ENVIRONMENTS = ['development', 'production'];
 
 const ERROR = {
+  ALREADY_EXIST: 'already exist',
   AUTHENTICATE: 'Cannot authenticate',
   BAD_REQUEST: 'Missing input',
   CREATE: 'Cannot create',
@@ -82,11 +88,10 @@ const ROOT = 'OK';
 
 const ROUTE = {
   AUTH: {
-    LOGIN_LOCAL: 'login/local',
-    LOGIN_JWT: 'login',
+    LOGIN: 'login',
     LOGOUT: 'logout',
     REGISTER: 'register',
-    SIGNIN: 'signin'
+    SIGNIN: 'signin',
   },
   NOTES: {
     GET: '/:id',
@@ -126,6 +131,7 @@ export {
   CONNECTION,
   CONFIGURATION_NAME,
   CONTROLLER,
+  DECORATOR,
   ENVIRONMENTS,
   ERROR,
   HEADER,

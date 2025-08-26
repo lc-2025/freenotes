@@ -21,8 +21,9 @@ class User implements IUser {
   _id: Types.ObjectId;
 
   @ApiProperty()
-  @Prop(SCHEMA_OPTIONS)
-  acceptance: boolean;
+  @Prop({ ...SCHEMA_OPTIONS, enum: ['true', 'false'] })
+  // Declared as string since boolean casting is bugged
+  acceptance: string;
 
   @ApiProperty()
   @Prop(SCHEMA_OPTIONS)

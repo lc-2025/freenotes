@@ -1,8 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import AuthService from './auth.service';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { TAuthentication, TAuthenticationToken } from './types/auth.type';
+import { APP } from 'src/utilities/constants';
 
 /**
  * @description Authentication JWT strategy class
@@ -17,14 +18,13 @@ class JwtStrategy extends PassportStrategy(Strategy) {
    * Creates an instance of JwtStrategy.
    * @author Luca Cattide
    * @date 25/08/2025
-   * @param {AuthService} authService
    * @memberof JwtStrategy
    */
-  constructor(private authService: AuthService) {
+  constructor(private readonly configService: ConfigService) {
     super({
-      ignoreExpiration: false,
+      ignoreExpiration: true,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.SECRET!,
+      secretOrKey: configService.get(APP.CONFIGURATION).secret,
     });
   }
 
@@ -37,12 +37,7 @@ class JwtStrategy extends PassportStrategy(Strategy) {
    * @memberof JwtStrategy
    */
   async validate(payload: TAuthenticationToken): Promise<TAuthentication> {
-    const { email, password, sub } = payload;
-    const user = await this.authService.validateUser(email, password);
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+    const { email, sub } = payload;
 
     return { email, userId: sub };
   }

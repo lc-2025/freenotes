@@ -1,4 +1,4 @@
-import { /* APP_GUARD, */ APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
@@ -19,16 +19,17 @@ import NotesModule from './notes/notes.module';
 import UsersModule from './users/users.module';
 import TagsModule from './tags/tags.module';
 import SslMiddleware from './middlewares/ssl.middleware';
-//import AuthGuard from './guards/auth.guard';
 import LoggingInterceptor from './interceptors/logging.interceptor';
 import TimeoutInterceptor from './interceptors/timeout.interceptor';
+import throttleConfig from './config/throttle.config';
+//import AuthGuard from './guards/auth.guard';
+import JwtAuthGuard from './guards/jwt-auth.guard';
 import {
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
   ENVIRONMENTS,
 } from './utilities/constants';
-import throttleConfig from './config/throttle.config';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -96,6 +97,10 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
   providers: [
     AppService,
     // Global Guards injected as dependencies
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     // Vanilla authentication
     /* {
       provide: APP_GUARD,

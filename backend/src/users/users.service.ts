@@ -65,7 +65,7 @@ class UsersService {
         ...createUserDto,
         password: passwordEncrypted,
       }).save();
-    } catch (error) {
+    } catch (error) { console.log(error)
       const message = `${ERROR.CREATE} ${messageSuffix}`;
 
       this.logger.error(message);

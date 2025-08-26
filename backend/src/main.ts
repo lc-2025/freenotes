@@ -41,6 +41,8 @@ async function bootstrap() {
     new ValidationPipe({
       // Security
       disableErrorMessages: isProduction,
+      // Convert JSONs into DTOs
+      transform: true,
       // Validate expected data only
       whitelist: true,
     }),

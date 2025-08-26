@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsString } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { IUser } from './types/users.type';
 
 /**
@@ -13,12 +12,12 @@ import { IUser } from './types/users.type';
  */
 class CreateUserDto implements IUser {
   @ApiProperty()
-  @Exclude()
-  @IsBoolean()
-  acceptance: boolean;
+  // @IsBoolean casting/transformation is bugged
+  @IsString()
+  acceptance: string;
 
   @ApiProperty()
-  @IsString()
+  @IsEmail()
   email: string;
 
   @ApiProperty()
@@ -26,7 +25,7 @@ class CreateUserDto implements IUser {
   name: string;
 
   @ApiProperty()
-  @IsString()
+  @IsStrongPassword()
   password: string;
 }
 
