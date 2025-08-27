@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { UUID } from 'mongodb';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { IsOptional } from 'class-validator';
+import { User } from 'src/users/schemas/user.schema';
 import { Tag } from '../../tags/schemas/tag.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { INote } from '../types/note.types';
-import {IsOptional} from 'class-validator';
 
 type NoteDocument = HydratedDocument<Note>;
 
@@ -44,7 +44,7 @@ class Note implements INote {
     ref: SCHEMA.USER,
     type: mongoose.Schema.Types.ObjectId,
   })
-  userId: UUID;
+  user: User;
 }
 
 const NoteSchema = SchemaFactory.createForClass(Note);

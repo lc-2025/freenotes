@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
-import { UUID } from 'mongodb';
+import { IsOptional } from 'class-validator';
+import { Note } from 'src/notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { IUser } from '../types/users.type';
-import { IsOptional } from 'class-validator';
 
 type UserDocument = HydratedDocument<User>;
 
@@ -40,7 +40,7 @@ class User implements IUser {
     ref: SCHEMA.NOTE,
     type: [{ type: mongoose.Schema.Types.ObjectId }],
   })
-  noteIds?: Array<UUID>;
+  notes?: Array<Note>;
 
   @ApiProperty()
   @Prop(SCHEMA_OPTIONS)

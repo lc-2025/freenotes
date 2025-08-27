@@ -84,7 +84,7 @@ class UsersController {
   @ApiInternalServerErrorResponse({ description: `${USER} ${ERROR.FIND}` })
   @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async find(@Query(PARAM) email: string): Promise<User | null | undefined> {
-    return await this.usersService.find(email);
+    return await this.usersService.find('email', email);
   }
 }
 

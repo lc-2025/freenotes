@@ -1,9 +1,14 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TAuthentication, TAuthenticationToken } from './types/auth.type';
-import { APP } from 'src/utilities/constants';
+import UsersService from 'src/users/users.service';
+import { APP, JWT, STRATEGY } from 'src/utilities/constants';
+import {
+  TAuthentication,
+  TAuthenticationToken,
+  TAuthenticationTokenRefresh,
+} from './types/auth.type';
 
 /**
  * @description Authentication JWT strategy class
@@ -20,7 +25,10 @@ class JwtStrategy extends PassportStrategy(Strategy) {
    * @date 25/08/2025
    * @memberof JwtStrategy
    */
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly userService: UsersService,
+  ) {
     super({
       ignoreExpiration: false,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -37,10 +45,75 @@ class JwtStrategy extends PassportStrategy(Strategy) {
    * @memberof JwtStrategy
    */
   async validate(payload: TAuthenticationToken): Promise<TAuthentication> {
+    const user = await this.userService.find('id', payload.sub);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
     const { email, sub } = payload;
 
     return { email, userId: sub };
   }
 }
 
-export default JwtStrategy;
+/**
+ * @description Authentication JWT refresh strategy class
+ * @author Luca Cattide
+ * @date 27/08/2025
+ * @class JwtStrategyRefresh
+ * @extends {PassportStrategy(
+ *   Strategy,
+ *   STRATEGY.JWT_REFRESH,
+ * )}
+ */
+class JwtStrategyRefresh extends PassportStrategy(
+  Strategy,
+  STRATEGY.JWT_REFRESH,
+) {
+  /**
+   * Creates an instance of JwtStrategyRefresh.
+   * @author Luca Cattide
+   * @date 27/08/2025
+   * @param {ConfigService} configService
+   * @param {UsersService} userService
+   * @memberof JwtStrategyRefresh
+   */
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly userService: UsersService,
+  ) {
+    super({
+      ignoreExpiration: false,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: configService.get(APP.CONFIGURATION).secretRefresh,
+    });
+  }
+
+  /**
+   * @description Authentication validation method
+   * @author Luca Cattide
+   * @date 27/08/2025
+   * @param {TAuthenticationToken} payload
+   * @returns {*}  {Promise<TAuthenticationTokenRefresh>}
+   * @memberof JwtStrategyRefresh
+   */
+  async validate(
+    payload: TAuthenticationToken,
+  ): Promise<TAuthenticationTokenRefresh> {
+    const user = await this.userService.find('id', payload.sub);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return {
+      attributes: user,
+      refreshTokenExpiration: new Date(
+        JWT.EXPIRATION_REFRESH_INVALIDATION * 1000,
+      ),
+    };
+  }
+}
+
+export { JwtStrategy, JwtStrategyRefresh };

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { UUID } from 'mongodb';
+import { Note } from 'src/notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { ITag } from '../types/tag.types';
 
@@ -27,7 +27,7 @@ class Tag implements ITag {
     ref: SCHEMA.NOTE,
     type: [{ type: mongoose.Schema.Types.ObjectId }],
   })
-  noteIds: Array<UUID>;
+  notes: Array<Note>;
 }
 
 const TagSchema = SchemaFactory.createForClass(Tag);

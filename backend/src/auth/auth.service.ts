@@ -4,14 +4,23 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import bcrypt from 'bcrypt';
 import UsersService from '../users/users.service';
-import { User } from 'src/users/schemas/user.schema';
-import { setError } from 'src/utilities/utils';
-import { ERROR, JWT, MESSAGE } from 'src/utilities/constants';
-import { TJWT } from './types/auth.type';
 import CreateUserDto from 'src/users/create-user.dto';
 import SignInDto from './sign-in.dto';
+import { ConfigService } from '@nestjs/config';
+import { User } from 'src/users/schemas/user.schema';
+import { setError } from 'src/utilities/utils';
+import {
+  APP,
+  ERROR,
+  JWT,
+  MESSAGE,
+  ROUTE,
+  TOKEN,
+} from 'src/utilities/constants';
+import { TJWT } from './types/auth.type';
 
-const { ALREADY_EXIST, BAD_REQUEST, UNAUTHORIZED } = ERROR;
+const { ALREADY_EXIST, BAD_REQUEST, CREATE, UNAUTHORIZED } = ERROR;
+const { AUTHENTICATE, VERIFY } = MESSAGE;
 
 /**
  * @description Authentication service
@@ -34,24 +43,18 @@ class AuthService {
    * @author Luca Cattide
    * @date 19/08/2025
    * @param {Connection} connection
+   * @param {ConfigService} configService
    * @param {UsersService} usersService
    * @param {JwtService} jwtService
    * @memberof AuthService
    */
   constructor(
     @InjectConnection() private readonly connection: Connection,
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  /**
-   * @description Authentication login method
-   * @author Luca Cattide
-   * @date 26/08/2025
-   * @param {SignInDto} signInDto
-   * @returns {*}  {(Promise<Omit<User, 'password'> | null | undefined>)}
-   * @memberof AuthService
-   */
   async login(signInDto: SignInDto): Promise<TJWT | undefined> {
     if (!signInDto) {
       this.logger.error(BAD_REQUEST);
@@ -70,17 +73,7 @@ class AuthService {
         setError(HttpStatus.FOUND, message);
       }
 
-      const { _id } = user!;
-
-      this.logger.log(`${MESSAGE.AUTH}...`);
-
-      return {
-        access_token: await this.jwtService.signAsync({
-          email: user!.email,
-          sub: _id,
-        }),
-        refresh_token: await this.setRefreshToken(user!),
-      };
+      return await this.setToken(user!);
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -96,23 +89,18 @@ class AuthService {
     }
 
     try {
-      // TODO: Const
-      this.logger.log('Verifying refresh token...');
+      this.logger.log(`${VERIFY} ${ROUTE.AUTH.REFRESH_TOKEN} token...`);
 
       const decoded = this.jwtService.verify(refreshToken);
-      console.log(decoded); // TODO: ?
-      const user = await this.usersService.find(refreshToken);
+      console.log(decoded);
+      const user = await this.usersService.find(TOKEN.REFRESH, refreshToken);
 
       if (!user) {
         this.logger.error(message);
         setError(HttpStatus.FOUND, message);
       }
 
-      const { _id, email } = user!;
-
-      return {
-        access_token: await this.jwtService.signAsync({ email, sub: _id }),
-      };
+      return await this.setToken(user!);
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -147,11 +135,41 @@ class AuthService {
         setError(HttpStatus.BAD_REQUEST, message);
       }
 
-      // TODO: Const
-      this.logger.log('Authenticating the user...');
+      this.logger.log(`${AUTHENTICATE} the user...`);
 
       return this.login({ email: user!.email, password });
     } catch (error) {
+      this.logger.error(message);
+      setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    }
+  }
+
+  /**
+   * @description Authentication tokens generation method
+   * TODO: May be improved by keeping track of token blacklists
+   * See: https://dev.to/zenstok/how-to-implement-refresh-tokens-with-token-rotation-in-nestjs-1deg
+   * @author Luca Cattide
+   * @date 27/08/2025
+   * @param {User} user
+   * @returns {*}  {Promise<TJWT | undefined>}
+   * @memberof AuthService
+   */
+  async setToken(user: User): Promise<TJWT | undefined> {
+    try {
+      const { _id } = user;
+
+      this.logger.log(`${MESSAGE.AUTH}...`);
+
+      return {
+        access_token: await this.jwtService.signAsync({
+          email: user.email,
+          sub: _id,
+        }),
+        refresh_token: await this.setTokenRefresh(user),
+      };
+    } catch (error) {
+      const message = `${CREATE} the token`;
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     }
@@ -165,7 +183,7 @@ class AuthService {
    * @returns {*}  {(Promise<string | undefined>)}
    * @memberof AuthService
    */
-  async setRefreshToken(user: User): Promise<string | undefined> {
+  async setTokenRefresh(user: User): Promise<string | undefined> {
     if (!user) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
@@ -174,9 +192,13 @@ class AuthService {
     try {
       this.logger.log(`${MESSAGE.AUTH_REFRESH}...`);
 
+      const { _id } = user;
       const refreshToken = await this.jwtService.signAsync(
-        {},
-        { expiresIn: JWT.EXPIRATION_REFRESH },
+        { sub: _id },
+        {
+          secret: this.configService.get(APP.CONFIGURATION).secretRefresh,
+          expiresIn: JWT.EXPIRATION_REFRESH,
+        },
       );
 
       user.refreshToken = refreshToken;
@@ -185,8 +207,7 @@ class AuthService {
 
       return refreshToken;
     } catch (error) {
-      // TODO: Const
-      const message = 'Cannot generate the token';
+      const message = `${CREATE} the token`;
 
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);

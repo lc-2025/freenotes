@@ -1,3 +1,5 @@
+import { User } from 'src/users/schemas/user.schema';
+
 interface ISignIn {
   email: string;
   password: string;
@@ -13,9 +15,20 @@ type TAuthenticationToken = TAuthenticationData & {
   sub: string;
 };
 
+type TAuthenticationTokenRefresh = {
+  attributes: User;
+  refreshTokenExpiration: Date;
+};
+
 type TJWT = {
   access_token: string;
   refresh_token?: string;
 };
 
-export type { ISignIn, TAuthentication, TAuthenticationToken, TJWT };
+export type {
+  ISignIn,
+  TAuthentication,
+  TAuthenticationToken,
+  TAuthenticationTokenRefresh,
+  TJWT,
+};

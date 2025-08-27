@@ -1,7 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OmitType } from '@nestjs/mapped-types';
-import { IsString, IsBoolean, IsUUID, IsArray, IsOptional, ArrayContains } from 'class-validator';
-import { UUID } from 'mongodb';
+import { Types } from 'mongoose';
+import { IsString, IsBoolean, IsArray } from 'class-validator';
+import { User } from 'src/users/schemas/user.schema';
+import { Tag } from 'src/tags/schemas/tag.schema';
 import { INote } from './types/note.types';
 
 /**
@@ -23,15 +25,14 @@ class CreateNoteDto implements INote {
 
   @ApiPropertyOptional()
   @IsArray()
-  tagIds?: Array<UUID>;
+  tags?: Array<Tag>;
 
   @ApiProperty()
   @IsString()
   title: string;
 
   @ApiProperty()
-  @IsUUID()
-  userId: UUID;
+  user: User;
 }
 
 /**
@@ -41,8 +42,8 @@ class CreateNoteDto implements INote {
  * @class UpdateNoteDto
  * @extends {OmitType(CreateNoteDto, ['user'])}
  */
-class UpdateNoteDto extends OmitType(CreateNoteDto, ['userId']) {
-  id: UUID;
+class UpdateNoteDto extends OmitType(CreateNoteDto, ['user']) {
+  id: Types.ObjectId;
 }
 
 export { UpdateNoteDto };

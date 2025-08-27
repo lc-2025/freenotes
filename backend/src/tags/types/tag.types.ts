@@ -1,8 +1,8 @@
-import { UUID } from 'mongodb';
+import { Note } from 'src/notes/schemas/note.schema';
 
 interface ITag {
   label: string;
-  noteIds: Array<UUID>;
+  notes: Array<Note>;
 }
 
 export type { ITag };

@@ -60,11 +60,13 @@ const HEADER = {
 const JWT = {
   EXPIRATION: '60s',
   EXPIRATION_REFRESH: '7d',
+  EXPIRATION_REFRESH_INVALIDATION: 7,
 };
 
 const MESSAGE = {
   AUTH: 'Generating user access token',
   AUTH_REFRESH: 'Generating user refresh token',
+  AUTHENTICATE: 'Authenticating',
   AUTHENTICATED: 'successfully authenticated',
   BASE_URL: 'http://localhost',
   CREATE: 'Creating',
@@ -76,6 +78,7 @@ const MESSAGE = {
   START: 'Server started and listening in',
   UPDATE: 'Updating',
   UPDATED: 'successfully updated',
+  VERIFY: 'Verifying',
 };
 
 const PROTOCOL = {
@@ -83,8 +86,10 @@ const PROTOCOL = {
 };
 
 const RATE_LIMIT = {
-  MAX_REQUESTS: 100,
-  WINDOW: 15 * 60 * 1000,
+  MAX_REQUESTS_LONG: 100,
+  MAX_REQUESTS_SHORT: 2,
+  WINDOW_LONG: 60 * 1000,
+  WINDOW_SHORT: 1 * 1000,
 };
 
 const ROOT = 'OK';
@@ -126,9 +131,13 @@ const SCHEMA_OPTIONS = {
 const STRATEGY = {
   LOCAL: 'local',
   JWT: 'jwt',
+  JWT_REFRESH: 'jwt-refresh',
 };
 
-const TOKEN = 'Bearer';
+const TOKEN = {
+  BEARER: 'Bearer',
+  REFRESH: 'refreshToken',
+};
 
 export {
   APP,

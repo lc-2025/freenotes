@@ -80,6 +80,7 @@ class UsersService {
    * password exposure
    * @author Luca Cattide
    * @date 17/08/2025
+   * @param {string} type
    * @param {string} element
    * @returns {*}  {Promise<User | null | undefined>}
    * @memberof UsersService
@@ -89,21 +90,22 @@ class UsersService {
 
     return rest;
   })
-  async find(element: string): Promise<User | null | undefined> {
-    if (!element) {
+  async find(type: string, element: string): Promise<User | null | undefined> {
+    if (!type || !element) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
     try {
       const property = {
+        id: { _id: element },
         email: { email: element },
         refreshToken: { refreshToken: element },
       };
 
       this.logger.log(`${MESSAGE.READ} the user...`);
 
-      return await this.userModel.findOne(property[element]).exec();
+      return await this.userModel.findOne(property[type]).exec();
     } catch (error) {
       const message = `User ${FIND}`;
 
@@ -130,7 +132,7 @@ class UsersService {
 
     try {
       // Return the full User (including password)
-      return await this.find(email);
+      return await this.find('email', email);
     } catch (error) {
       const message = `User ${email} ${FIND}`;
 
