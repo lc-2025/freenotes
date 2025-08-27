@@ -66,7 +66,6 @@ class UsersService {
         password: passwordEncrypted,
       }).save();
     } catch (error) {
-      console.log(error);
       const message = `${ERROR.CREATE} ${messageSuffix}`;
 
       this.logger.error(message);
