@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ROOT } from './utilities/constants';
+import Public from './decorators/public.decorator';
 
 /**
  * @description Root controller
@@ -32,6 +33,7 @@ export class AppController {
    * @returns {*}  {string}
    * @memberof AppController
    */
+  @Public()
   @Get()
   @ApiOkResponse({ description: ROOT })
   getRoot(): string {
