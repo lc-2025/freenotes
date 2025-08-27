@@ -25,7 +25,7 @@ const SECTION = {
 
 const SETTING = {
   LABEL: {
-    NOTIFICATIONS: 'Notifications',
+    AUTO_SAVE: 'Autosave',
   },
 };
 
