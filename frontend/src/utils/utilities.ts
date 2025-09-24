@@ -1,6 +1,23 @@
-import { THEME } from './constants';
+import { ActionDispatch } from 'react';
+import { ERROR, THEME } from './constants';
+import { TStateAuthentication, TStateAction } from '@/types/state/State';
 
 const { LIGHT, DARK } = THEME;
+
+/**
+ * @description Context helper
+ * Checks if the context is properly defined
+ * @author Luca Cattide
+ * @param {(TStateAuthentication | ActionDispatch<[action: TStateAction]>)} context
+ * @param {*} TStateAction
+ */
+const checkContext = (
+  context: TStateAuthentication | ActionDispatch<[action: TStateAction]> | null,
+): void => {
+  if (context === null) {
+    throw new Error(ERROR.CONTEXT);
+  }
+};
 
 /**
  * @description Theme checker
@@ -23,4 +40,4 @@ const isThemeDark = (theme: string): string => (theme === DARK ? LIGHT : DARK);
 const setInitial = (text: string): string =>
   `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-export { isThemeDark, setInitial };
+export { checkContext, isThemeDark, setInitial };

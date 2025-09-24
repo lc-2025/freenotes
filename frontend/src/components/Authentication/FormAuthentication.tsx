@@ -1,15 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
+import apiClient from '@/apiClient';
 import FormAuthenticationField from './FormAuthenticationField';
 import CustomButton from '../Layout/CustomButton';
+import { ArrowPathIcon } from '@heroicons/react/24/solid';
+import useStorage from '@/hooks/Storage';
 import { setInitial } from '@/utils/utilities';
-import { FORM, STATE } from '@/utils/constants';
+import { FORM, ROUTE, STATE } from '@/utils/constants';
 import {
-  TAutchenticationFields,
-  TAutchenticationFieldType,
-} from '@/types/Authentication';
+  TAuthenticationFields,
+  TAuthenticationFieldType,
+} from '@/types/components/Authentication';
 
 /**
  * @description Authentication form component
@@ -18,15 +22,21 @@ import {
  * @returns {*}  {React.ReactNode}
  */
 const FormAuthentication = (): React.ReactNode => {
-  const { SIGNUP, LOGIN } = FORM.TYPE;
+  const { LOGIN, SIGNUP } = FORM.TYPE;
   const { LOADING, SUBMIT } = FORM.MESSAGE;
+  const { API, NOTES } = ROUTE;
+  const { REGISTER } = API;
+  const router = useRouter();
   const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
-  const methods = useForm<TAutchenticationFields>();
+  const [message, setMessage] = useState<string>('');
+  const { setStorage } = useStorage();
+  const methods = useForm<TAuthenticationFields>();
   const { formState, handleSubmit, reset } = methods;
   let formType = setInitial(type);
 
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
+      setMessage('');
       reset();
     }
   }, [formState, reset]);
@@ -76,9 +86,52 @@ const FormAuthentication = (): React.ReactNode => {
    * @author Luca Cattide
    * @date 15/08/2025
    */
-  const onSubmit: SubmitHandler<TAutchenticationFields> = (): void => {
-    // TODO:
-    console.log('ok');
+  const onSubmit: SubmitHandler<TAuthenticationFields> = async (
+    values,
+  ): Promise<void> => {
+    setMessage(LOADING);
+
+    return await new Promise(async (resolve, reject) => {
+      let payload = null;
+
+      if (type === SIGNUP) {
+        const { acceptance, email, name, password } = values;
+
+        payload = {
+          acceptance: acceptance ? 'true' : 'false',
+          email,
+          name,
+          password,
+        };
+      } else {
+        const { email, password } = values;
+
+        payload = {
+          email,
+          password,
+        };
+      }
+
+      const { data, error } = await apiClient(
+        type === SIGNUP ? REGISTER : ROUTE.API.LOGIN,
+        payload!,
+        // TODO:
+        type === LOGIN ? { access_token: '', refresh_token: '' } : undefined,
+      );
+
+      if (error) {
+        setMessage(error.message);
+        reject();
+      }
+
+      if (data) {
+        Object.entries(data).forEach(([key, value]) => {
+          setStorage(key, value);
+        });
+        router.push(NOTES.PATH);
+        resolve();
+      }
+    });
   };
 
   return (
@@ -94,7 +147,7 @@ const FormAuthentication = (): React.ReactNode => {
           {Object.values(checkVersion(FORM.FIELD)).map(({ id, ...rest }, i) => (
             <FormAuthenticationField
               formType={type}
-              id={id as TAutchenticationFieldType}
+              id={id as TAuthenticationFieldType}
               key={crypto.randomUUID() + i}
               {...rest}
             />
@@ -114,12 +167,17 @@ const FormAuthentication = (): React.ReactNode => {
           color="bg-gray-100 dark:bg-gray-700"
           type="button"
         /> */}
-        {formState.isSubmitted && (
+        {(formState.isSubmitting || formState.isSubmitted || message) && (
           <p
             aria-live="polite"
-            className={`form__message text-light-text dark:text-dark-text basis-full text-center text-base`}
+            className={`form__message text-light-text dark:text-dark-text' flex justify-center ${message && 'text-red-600 dark:text-red-500'} basis-full text-base`}
           >
-            {SUBMIT}
+            {formState.isSubmitted ? SUBMIT : message ? message : ''}
+            {formState.isSubmitting && message && (
+              <span className="message__icon text-primary ml-4 size-6 animate-spin select-none">
+                <ArrowPathIcon />
+              </span>
+            )}
           </p>
         )}
         <p className="form__variant mt-4 text-center select-none">

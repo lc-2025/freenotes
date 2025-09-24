@@ -3,15 +3,15 @@
 import { FieldValues, RegisterOptions, useFormContext } from 'react-hook-form';
 import { FORM } from '@/utils/constants';
 import {
-  TAutchenticationField,
-  TAutchenticationFieldType,
-} from '@/types/Authentication';
+  TAuthenticationField,
+  TAuthenticationFieldType,
+} from '@/types/components/Authentication';
 
 /**
  * @description Authentication form field component
  * @author Luca Cattide
  * @date 15/08/2025
- * @param {TAutchenticationField} {
+ * @param {TAuthenticationField} {
  *   formType,
  *   id,
  *   label,
@@ -26,7 +26,7 @@ const FormAuthenticationField = ({
   label,
   required,
   type,
-}: TAutchenticationField): React.ReactNode => {
+}: TAuthenticationField): React.ReactNode => {
   const { NAME, EMAIL, PASSWORD, PASSWORD_CONFIRM } = FORM.FIELD;
   const { CHECKBOX } = FORM.FIELD_TYPE;
   const {
@@ -43,7 +43,6 @@ const FormAuthenticationField = ({
    */
   const handleAutocomplete = (field: string): string => {
     const { PASSWORD_NEW } = FORM.AUTOCOMPLETE;
-
     const attribute = {
       [NAME.id]: NAME.id,
       [EMAIL.id]: EMAIL.id,
@@ -62,11 +61,11 @@ const FormAuthenticationField = ({
    * @author Luca Cattide
    * @date 15/08/2025
    * @param {string} field
-   * @returns {*}  {(RegisterOptions<FieldValues, TAutchenticationFieldType> | undefined)}
+   * @returns {*}  {(RegisterOptions<FieldValues, TAuthenticationFieldType> | undefined)}
    */
   const handleValidation = (
     field: string,
-  ): RegisterOptions<FieldValues, TAutchenticationFieldType> | undefined => {
+  ): RegisterOptions<FieldValues, TAuthenticationFieldType> | undefined => {
     const fieldValidation = {
       [NAME.id]: NAME.validation,
       [EMAIL.id]: EMAIL.validation,

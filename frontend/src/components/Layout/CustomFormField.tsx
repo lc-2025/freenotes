@@ -1,4 +1,4 @@
-import { TCustomFormField } from '@/types/CustomFormField';
+import { TCustomFormField } from '@/types/components/CustomFormField';
 
 const CustomFormField = ({
   id,

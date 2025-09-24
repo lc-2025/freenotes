@@ -1,4 +1,4 @@
-import { TCustomButton } from '@/types/CustomButton';
+import { TCustomButton } from '@/types/components/CustomButton';
 
 /**
  * @description Custom button component

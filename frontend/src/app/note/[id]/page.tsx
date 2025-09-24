@@ -1,6 +1,6 @@
 import CustomButton from '@/components/Layout/CustomButton';
 import { ACTION, ARIA } from '@/utils/constants';
-import { TPageParams } from '@/types/Page';
+import { TPageParams } from '@/types/components/Page';
 
 /**
  * @description Note details page

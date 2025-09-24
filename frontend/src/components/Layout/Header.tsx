@@ -11,8 +11,9 @@ import {
   Cog6ToothIcon,
 } from '@heroicons/react/16/solid';
 import { isThemeDark } from '@/utils/utilities';
-import { THeader } from '@/types/Header';
+import { THeader } from '@/types/components/Header';
 import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
+import { useAuthenticationContext } from '@/hooks/State';
 
 /**
  * @description Header component
@@ -24,12 +25,17 @@ const Header = (): React.ReactNode => {
   const { BACK, PIN } = ARIA;
   const { AUTHENTICATION, NOTES, NOTE, NEW, SETTINGS } = ROUTE;
   const pathname = usePathname();
+  const { authenticated } = useAuthenticationContext();
   const params = useParams();
   const router = useRouter();
   const [header, setHeader] = useState<THeader>(STATE.DEFAULT.HEADER);
   const { title, showBack, showPin, showToggle, showSettings } = header;
 
   useEffect(() => {
+    if (!authenticated) {
+      router.push(AUTHENTICATION.PATH);
+    }
+
     initHeader();
   }, [pathname]);
 
@@ -47,8 +53,14 @@ const Header = (): React.ReactNode => {
         false,
         false,
       ),
-      [NOTES.PATH]: populateHeader(NOTES.NAME, false, false, true, true),
-      [`${NOTE.PATH}/${params.id}`]: populateHeader(NOTE.NAME, true, true, false, true),
+      [NOTES.PATH]: populateHeader(NOTES.NAME, false, false, false, true),
+      [`${NOTE.PATH}/${params.id}`]: populateHeader(
+        NOTE.NAME,
+        true,
+        true,
+        false,
+        true,
+      ),
       [NEW.PATH]: populateHeader(NEW.NAME, true, false, false, true),
       [SETTINGS.PATH]: populateHeader(SETTINGS.NAME, true, false, false, false),
     };
@@ -141,7 +153,7 @@ const Header = (): React.ReactNode => {
         {showSettings && (
           <button
             aria-label={ARIA.SETTINGS}
-            className="header__settings cursor-pointer pt-8 pb-8 pl-4 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600"
+            className={`header__settings cursor-pointer pt-8 pb-8 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 ${(showPin || showToggle) && 'pl-4'}`}
             onClick={() => handleNavigation(SETTINGS.PATH)}
             type="button"
           >

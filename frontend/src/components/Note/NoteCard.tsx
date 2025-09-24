@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { ROUTE } from '@/utils/constants';
-import { TNote } from '@/types/Note';
+import { TNote } from '@/types/components/Note';
 
 /**
  * @description Note card component

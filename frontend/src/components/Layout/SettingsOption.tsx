@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Switch } from '@headlessui/react';
-import { TSettingsOption } from '@/types/SettingsOption';
+import { TSettingsOption } from '@/types/components/SettingsOption';
 import { SECTION, STATE } from '@/utils/constants';
 
 /**

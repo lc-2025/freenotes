@@ -135,6 +135,10 @@ const FORM = {
 };
 
 const ROUTE = {
+  API: {
+    LOGIN: 'authentication/login',
+    REGISTER: 'authentication/register',
+  },
   AUTHENTICATION: {
     NAME: 'Notes',
     PATH: '/',
@@ -157,6 +161,19 @@ const ROUTE = {
   },
 };
 
+const METHOD = {
+  DELETE: 'DELETE',
+  GET: 'GET',
+  PATCH: 'PATCH',
+  POST: 'POST',
+};
+
+const HEADER = {
+  CONTENT: {
+    'Content-Type': 'application/json',
+  },
+};
+
 const STATE = {
   DEFAULT: {
     HEADER: {
@@ -169,11 +186,31 @@ const STATE = {
     SEARCH: false,
     FORM: FORM.TYPE.SIGNUP,
     SETTINGS_OPTION: false,
+    AUTHENTICATION: {
+      authenticated: false,
+    },
   },
 };
 
+const STATE_ACTION = {
+  AUTHENTICATION: 'authentication',
+  RESET: 'reset',
+};
+
 const ERROR = {
+  CONTEXT: 'Context must be used within a `Provider`',
   NOSCRIPT: 'You need to enable JavaScript to run this website.',
+};
+
+const CACHE = 60 * 1000;
+
+const TIMEOUT = 60 * 1000;
+
+const STORAGE = {
+  TOKEN: {
+    ACCESS: 'access_token',
+    REFRESH: 'refresh_token',
+  },
 };
 
 export {
@@ -185,6 +222,12 @@ export {
   FORM,
   ACTION,
   ROUTE,
+  METHOD,
+  HEADER,
   STATE,
+  STATE_ACTION,
   ERROR,
+  CACHE,
+  TIMEOUT,
+  STORAGE,
 };
