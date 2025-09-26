@@ -36,6 +36,7 @@ const ARIA = {
   EDIT: `${ACTION.EDIT} note`,
   DELETE: `${ACTION.DELETE} note`,
   SETTINGS: 'Open settings',
+  ACCOUNT: 'Account',
 };
 
 const REGEX = {
@@ -137,10 +138,12 @@ const FORM = {
 const ROUTE = {
   API: {
     LOGIN: 'authentication/login',
+    NOTES: 'notes',
     REGISTER: 'authentication/register',
+    USER: 'user',
   },
   AUTHENTICATION: {
-    NAME: 'Notes',
+    NAME: 'FreeNotes',
     PATH: '/',
   },
   NOTES: {
@@ -189,15 +192,26 @@ const STATE = {
     AUTHENTICATION: {
       authenticated: false,
     },
+    USER: {
+      email: '',
+      name: '',
+      notes: [],
+    },
+    ERROR: {
+      title: '',
+      message: '',
+    },
   },
 };
 
 const STATE_ACTION = {
   AUTHENTICATION: 'authentication',
+  USER: 'user',
   RESET: 'reset',
 };
 
 const ERROR = {
+  AUTHENTICATION: 'Authentication error',
   CONTEXT: 'Context must be used within a `Provider`',
   NOSCRIPT: 'You need to enable JavaScript to run this website.',
 };
@@ -211,6 +225,7 @@ const STORAGE = {
     ACCESS: 'access_token',
     REFRESH: 'refresh_token',
   },
+  EMAIL: 'email',
 };
 
 export {

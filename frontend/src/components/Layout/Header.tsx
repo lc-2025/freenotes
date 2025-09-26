@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
+import {
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+  CloseButton,
+} from '@headlessui/react';
 import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/24/outline';
 import {
   ArrowLeftIcon,
@@ -9,11 +15,29 @@ import {
   SunIcon,
   MoonIcon,
   Cog6ToothIcon,
+  UserIcon,
 } from '@heroicons/react/16/solid';
 import { isThemeDark } from '@/utils/utilities';
 import { THeader } from '@/types/components/Header';
-import { ARIA, ROUTE, STATE, THEME } from '@/utils/constants';
-import { useAuthenticationContext } from '@/hooks/State';
+import {
+  ARIA,
+  ROUTE,
+  STATE,
+  STATE_ACTION,
+  STORAGE,
+  THEME,
+} from '@/utils/constants';
+import {
+  useAuthenticationContext,
+  useDispatchContext,
+  useUserContext,
+} from '@/hooks/State';
+import useStorage from '@/hooks/Storage';
+import useApi from '@/hooks/Api';
+import handleState from '@/state/actions';
+import apiClient from '@/apiClient';
+import { TStateUser } from '@/types/state/State';
+import { TError } from '@/types/Error';
 
 /**
  * @description Header component
@@ -22,22 +46,69 @@ import { useAuthenticationContext } from '@/hooks/State';
  * @returns {*}  {React.ReactNode}
  */
 const Header = (): React.ReactNode => {
-  const { BACK, PIN } = ARIA;
+  const { BACK, PIN, ACCOUNT } = ARIA;
   const { AUTHENTICATION, NOTES, NOTE, NEW, SETTINGS } = ROUTE;
+  const { TOKEN, EMAIL } = STORAGE;
+  const { HEADER, ERROR } = STATE.DEFAULT;
   const pathname = usePathname();
-  const { authenticated } = useAuthenticationContext();
   const params = useParams();
   const router = useRouter();
-  const [header, setHeader] = useState<THeader>(STATE.DEFAULT.HEADER);
+  const { getStorage, deleteStorages } = useStorage();
+  const [header, setHeader] = useState<THeader>(HEADER);
+  const [error, setError] = useState<TError>(ERROR);
   const { title, showBack, showPin, showToggle, showSettings } = header;
+  const { authenticated } = useAuthenticationContext();
+  const { email, name } = useUserContext();
+  const dispatch = useDispatchContext();
 
   useEffect(() => {
-    if (!authenticated) {
+    // Route guard
+    // TODO: Manage refresh
+    /* if (!authenticated) {
       router.push(AUTHENTICATION.PATH);
-    }
+    } */
 
+    initUser();
     initHeader();
   }, [pathname]);
+
+  /**
+   * @description User initialization;
+   * @author Luca Cattide
+   * @date 26/09/2025
+   * @returns {*}  {Promise<void>}
+   */
+  const initUser = async (): Promise<void> => {
+    if (pathname !== AUTHENTICATION.PATH && (!email || !name)) {
+      const { data, error } = await apiClient(`${ROUTE.API.USER}`, {
+        email: getStorage(STORAGE.EMAIL) ?? '',
+      });
+
+      if (error) {
+        setError({
+          title: '',
+          message: '',
+        });
+        // TODO: Visualize somehow
+      }
+
+      if (data) {
+        const user = data as TStateUser;
+
+        handleState(
+          {
+            type: STATE_ACTION.USER,
+            element: {
+              email: user.email,
+              name: user.name,
+              notes: user.notes,
+            },
+          },
+          dispatch,
+        );
+      }
+    }
+  };
 
   /**
    * @description Header content initialization handler
@@ -103,6 +174,20 @@ const Header = (): React.ReactNode => {
   };
 
   /**
+   * @description Logout handler
+   * @author Luca Cattide
+   * @date 26/09/2025
+   */
+  const handleLogout = (): void => {
+    deleteStorages([...Object.values(TOKEN), EMAIL]);
+    handleState(
+      { type: STATE_ACTION.AUTHENTICATION, element: { authenticated: false } },
+      dispatch,
+    );
+    router.push(AUTHENTICATION.PATH);
+  };
+
+  /**
    * @description Navigation handler
    * @author Luca Cattide
    * @date 14/08/2025
@@ -143,12 +228,35 @@ const Header = (): React.ReactNode => {
         {showToggle && (
           <button
             aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}
-            className="header__theme cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
+            className="header__account cursor-pointer pt-8 pr-4 pb-8 pl-4 text-2xl text-blue-600 select-none hover:opacity-75 focus-visible:outline focus-visible:outline-blue-600 md:text-3xl dark:text-blue-400"
             onClick={toggleTheme}
             type="button"
           >
             {/* TODO: {theme === THEME.DARK ? <SunIcon /> : <MoonIcon />} */}
           </button>
+        )}
+        {authenticated && (
+          <Popover className="header__account relative">
+            <PopoverButton
+              aria-label={ACCOUNT}
+              className="account__button cursor-pointer pt-8 pr-4 pb-8 select-none hover:opacity-75"
+            >
+              <UserIcon className="button__icon size-8 text-2xl text-blue-600 md:text-3xl dark:text-blue-400" />
+            </PopoverButton>
+            <PopoverPanel
+              anchor="bottom"
+              className="account__panel flex flex-col items-end bg-white shadow-sm"
+            >
+              <span className="panel__name px-4 pt-4">{name}</span>
+              <span className="panel__email px-4">({email})</span>
+              <CloseButton
+                className="panel__label cursor-pointer px-4 py-4 font-bold hover:text-blue-600 hover:opacity-75"
+                onClick={handleLogout}
+              >
+                Logout
+              </CloseButton>
+            </PopoverPanel>
+          </Popover>
         )}
         {showSettings && (
           <button

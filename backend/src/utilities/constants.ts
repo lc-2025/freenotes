@@ -113,7 +113,6 @@ const ROUTE = {
     PARAM: 'ids',
   },
   USERS: {
-    GET: '/:email',
     PARAM: 'email',
   },
 };

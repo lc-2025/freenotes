@@ -1,6 +1,10 @@
 import { ActionDispatch } from 'react';
 import { ERROR, THEME } from './constants';
-import { TStateAuthentication, TStateAction } from '@/types/state/State';
+import {
+  TStateAuthentication,
+  TStateAction,
+  TStateUser
+} from '@/types/state/State';
 
 const { LIGHT, DARK } = THEME;
 
@@ -8,11 +12,15 @@ const { LIGHT, DARK } = THEME;
  * @description Context helper
  * Checks if the context is properly defined
  * @author Luca Cattide
- * @param {(TStateAuthentication | ActionDispatch<[action: TStateAction]>)} context
+ * @param {(TStateAuthentication | TStateUser | ActionDispatch<[action: TStateAction]>)} context
  * @param {*} TStateAction
  */
 const checkContext = (
-  context: TStateAuthentication | ActionDispatch<[action: TStateAction]> | null,
+  context:
+    | TStateAuthentication
+    | TStateUser
+    | ActionDispatch<[action: TStateAction]>
+    | null,
 ): void => {
   if (context === null) {
     throw new Error(ERROR.CONTEXT);

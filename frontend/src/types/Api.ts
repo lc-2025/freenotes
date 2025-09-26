@@ -1,5 +1,8 @@
+import { TAuthenticationToken } from './components/Authentication';
+import { TStateUser } from './state/State';
+
 type TApiResponseData = {
-  data?: Record<string, string>;
+  data?: TAuthenticationToken | TStateUser;
 };
 
 type TApiResponseError = {

@@ -3,7 +3,10 @@ import Header from '@/components/Layout/Header';
 import { ERROR } from '@/utils/constants';
 import type { Metadata, Viewport } from 'next';
 import '../css/globals.css';
-import { AuthenticationProvider } from '@/components/StateProvider';
+import {
+  AuthenticationProvider,
+  UserProvider,
+} from '@/components/StateProvider';
 
 const inter = Inter({
   display: 'swap',
@@ -51,7 +54,9 @@ export default function RootLayout({
       >
         <div className="main-container flex max-h-dvh min-h-dvh flex-col">
           <AuthenticationProvider>
-            <Header />
+            <UserProvider>
+              <Header />
+            </UserProvider>
             <main className="main-container__wrapper bg-light-bg dark:bg-dark-bg flex w-full max-w-full flex-1 flex-col items-center overflow-x-hidden overflow-y-auto">
               {children}
             </main>

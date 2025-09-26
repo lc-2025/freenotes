@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { User } from './schemas/user.schema';
 import CreateUserDto from './create-user.dto';
 import { setError } from 'src/utilities/utils';
-import { ERROR, MESSAGE } from 'src/utilities/constants';
+import { ERROR, MESSAGE, ROUTE } from 'src/utilities/constants';
 import { Transform } from 'class-transformer';
 
 const { BAD_REQUEST, FIND } = ERROR;
@@ -90,6 +90,8 @@ class UsersService {
     return rest;
   })
   async find(type: string, element: string): Promise<User | null | undefined> {
+    console.log(111, type, element);
+
     if (!type || !element) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
@@ -131,7 +133,7 @@ class UsersService {
 
     try {
       // Return the full User (including password)
-      return await this.find('email', email);
+      return await this.find(ROUTE.USERS.PARAM, email);
     } catch (error) {
       const message = `User ${email} ${FIND}`;
 

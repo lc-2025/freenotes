@@ -1,8 +1,12 @@
 'use client';
 
 import { useCallback, useMemo, useReducer } from 'react';
-import { AuthenticationContext, DispatchContext } from '@/state/contexts';
-import { reducerAuthentication } from '@/state/reducers';
+import {
+  AuthenticationContext,
+  UserContext,
+  DispatchContext,
+} from '@/state/contexts';
+import { reducerAuthentication, reducerUser } from '@/state/reducers';
 import { STATE } from '@/utils/constants';
 
 /**
@@ -35,4 +39,31 @@ const AuthenticationProvider = ({
   );
 };
 
-export { AuthenticationProvider };
+/**
+ * @description User context provider component
+ * @author Luca Cattide
+ * @date 26/09/2025
+ * @param {{
+ *   children: React.ReactNode;
+ * }} {
+ *   children,
+ * }
+ * @returns {*}  {React.ReactNode}
+ */
+const UserProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactNode => {
+  const [state, dispatch] = useReducer(reducerUser, STATE.DEFAULT.USER);
+  const setUser = useCallback(dispatch, []);
+  const user = useMemo(() => state, [state]);
+
+  return (
+    <UserContext value={user}>
+      <DispatchContext value={setUser}>{children}</DispatchContext>
+    </UserContext>
+  );
+};
+
+export { AuthenticationProvider, UserProvider };

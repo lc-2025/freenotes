@@ -8,6 +8,5 @@ import FormAuthentication from '@/components/Authentication/FormAuthentication';
  * @returns {*}  {React.ReactNode}
  */
 export default function Authentication(): React.ReactNode {
-  // TODO: Redirects here if not logged in (routes protection)
   return <FormAuthentication />;
 }

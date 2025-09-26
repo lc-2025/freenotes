@@ -9,11 +9,13 @@ import CustomButton from '../Layout/CustomButton';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import useStorage from '@/hooks/Storage';
 import { setInitial } from '@/utils/utilities';
-import { FORM, ROUTE, STATE } from '@/utils/constants';
+import { FORM, ROUTE, STATE, STATE_ACTION, STORAGE } from '@/utils/constants';
 import {
   TAuthenticationFields,
   TAuthenticationFieldType,
 } from '@/types/components/Authentication';
+import { useAuthenticationContext, useDispatchContext } from '@/hooks/State';
+import handleState from '@/state/actions';
 
 /**
  * @description Authentication form component
@@ -26,15 +28,24 @@ const FormAuthentication = (): React.ReactNode => {
   const { LOADING, SUBMIT } = FORM.MESSAGE;
   const { API, NOTES } = ROUTE;
   const { REGISTER } = API;
+  const { AUTHENTICATION, USER } = STATE_ACTION;
+  const { ACCESS, REFRESH } = STORAGE.TOKEN;
   const router = useRouter();
   const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
   const [message, setMessage] = useState<string>('');
-  const { setStorage } = useStorage();
+  const { getStorage, setStorage } = useStorage();
+  const { authenticated } = useAuthenticationContext();
+  const dispatch = useDispatchContext();
   const methods = useForm<TAuthenticationFields>();
   const { formState, handleSubmit, reset } = methods;
   let formType = setInitial(type);
 
   useEffect(() => {
+    // TODO: Manage refresh
+    /* if (authenticated) {
+      router.push(NOTES.PATH);
+    } */
+
     if (formState.isSubmitSuccessful) {
       setMessage('');
       reset();
@@ -93,6 +104,10 @@ const FormAuthentication = (): React.ReactNode => {
 
     return await new Promise(async (resolve, reject) => {
       let payload = null;
+      let action = {
+        type: AUTHENTICATION,
+        element: { authenticated: false },
+      };
 
       if (type === SIGNUP) {
         const { acceptance, email, name, password } = values;
@@ -115,19 +130,44 @@ const FormAuthentication = (): React.ReactNode => {
       const { data, error } = await apiClient(
         type === SIGNUP ? REGISTER : ROUTE.API.LOGIN,
         payload!,
-        // TODO:
-        type === LOGIN ? { access_token: '', refresh_token: '' } : undefined,
+        type === LOGIN
+          ? {
+              access_token: getStorage(ACCESS) ?? '',
+              refresh_token: getStorage(REFRESH) ?? '',
+            }
+          : undefined,
       );
 
       if (error) {
         setMessage(error.message);
+        handleState(action, dispatch);
         reject();
       }
 
       if (data) {
+        const { email } = payload;
+
         Object.entries(data).forEach(([key, value]) => {
-          setStorage(key, value);
+          setStorage(key, value as string);
         });
+
+        setStorage(STORAGE.EMAIL, email);
+        handleState(
+          {
+            ...action,
+            element: { authenticated: true },
+          },
+          dispatch,
+        );
+        handleState(
+          {
+            type: USER,
+            element: {
+              email: email,
+            },
+          },
+          dispatch,
+        );
         router.push(NOTES.PATH);
         resolve();
       }

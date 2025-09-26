@@ -22,7 +22,7 @@ import JwtAuthGuard from 'src/guards/jwt-auth.guard';
 const { USERS } = CONTROLLER;
 const { CREATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
 const { CREATED, FOUND } = MESSAGE;
-const { GET, PARAM } = ROUTE.USERS;
+const { PARAM } = ROUTE.USERS;
 const { USER } = SCHEMA;
 
 /**
@@ -78,13 +78,13 @@ class UsersController {
    * @memberof UsersController
    */
   @UseGuards(JwtAuthGuard)
-  @Get(GET)
+  @Get()
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiFoundResponse({ description: `${USER} ${FOUND}` })
   @ApiInternalServerErrorResponse({ description: `${USER} ${ERROR.FIND}` })
   @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async find(@Query(PARAM) email: string): Promise<User | null | undefined> {
-    return await this.usersService.find('email', email);
+    return await this.usersService.find(PARAM, email);
   }
 }
 

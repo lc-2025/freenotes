@@ -7,4 +7,10 @@ type TStateAuthentication = {
   authenticated: boolean;
 };
 
-export type { TStateAction, TStateAuthentication };
+type TStateUser = {
+  email: string;
+  name: string;
+  notes: Array<string>;
+};
+
+export type { TStateAction, TStateAuthentication, TStateUser };
