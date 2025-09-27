@@ -141,6 +141,7 @@ const ROUTE = {
     NOTES: 'notes',
     REGISTER: 'authentication/register',
     USER: 'user',
+    REFRESH: 'refresh',
   },
   AUTHENTICATION: {
     NAME: 'FreeNotes',

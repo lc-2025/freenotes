@@ -12,17 +12,15 @@ import { TApiResponse } from './types/Api';
  * @param {string} endpoint
  * @param {(Record<string, string | boolean> | TAuthenticationUser)} [body]
  * @param {TAuthenticationToken} [authentication]
- * @param {boolean} [refresh]
  * @returns {*}  {Promise<TApiResponse>}
  */
 const apiClient = async (
   endpoint: string,
   body?: Record<string, string | boolean> | TAuthenticationUser,
   authentication?: TAuthenticationToken,
-  refresh?: boolean,
 ): Promise<TApiResponse> => {
   const { DELETE, GET, PATCH, POST } = METHOD;
-  const { LOGIN, NOTES, REGISTER, USER } = ROUTE.API;
+  const { LOGIN, NOTES, REGISTER, USER, REFRESH } = ROUTE.API;
   const { AUTHENTICATION } = ERROR;
   const route = {
     [LOGIN]: {
@@ -38,6 +36,9 @@ const apiClient = async (
     [USER]: {
       method: GET,
     },
+    [REFRESH]: {
+      method: POST,
+    },
   };
   const params =
     route[endpoint].method === GET && body
@@ -46,7 +47,7 @@ const apiClient = async (
   const headers = authentication
     ? {
         ...HEADER.CONTENT,
-        Authorization: `Bearer ${refresh ? authentication.refresh_token : authentication.access_token}`,
+        Authorization: `Bearer ${authentication.access_token}`,
       }
     : HEADER.CONTENT;
 
@@ -57,16 +58,36 @@ const apiClient = async (
   }
 
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASEURL}/${endpoint}${params}`,
-      {
-        ...route[endpoint],
-        headers,
-        next: {
-          revalidate: CACHE,
-        },
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASEURL}`;
+    const url = `${baseUrl}/${endpoint}${params}`;
+    let payload = {
+      ...route[endpoint],
+      headers,
+      next: {
+        revalidate: CACHE,
       },
-    );
+    };
+    let response = await fetch(url, payload);
+
+    // JWT rotation
+    if (response.status === 401) {
+      response = await fetch(`${baseUrl}/${REFRESH}`, {
+        ...payload,
+        ...route[REFRESH],
+        headers: {
+          ...payload.headers,
+          Authorization: `Bearer ${authentication?.refresh_token}`
+        },
+        body: JSON.stringify({
+          refreshToken: authentication?.refresh_token,
+        }),
+      });
+
+      if (response.ok) {
+        // Data fetching retry
+        response = await fetch(url, payload);
+      }
+    }
 
     return !response.ok
       ? {
