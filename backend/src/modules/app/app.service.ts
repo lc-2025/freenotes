@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ROOT } from './utilities/constants';
+import { ROOT } from '../../utilities/constants';
 
 /**
  * @description Root service

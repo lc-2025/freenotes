@@ -2,13 +2,15 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import UsersService from 'src/users/users.service';
+import { Request } from 'express';
+import UsersService from 'src/modules/users/users.service';
 import { APP, JWT, STRATEGY } from 'src/utilities/constants';
 import {
   TAuthentication,
   TAuthenticationToken,
   TAuthenticationTokenRefresh,
 } from './types/auth.type';
+import { extractCookieToken } from 'src/utilities/utils';
 
 /**
  * @description Authentication JWT strategy class
@@ -85,7 +87,10 @@ class JwtStrategyRefresh extends PassportStrategy(
   ) {
     super({
       ignoreExpiration: false,
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // Extract token from cookie instead of request header to improve security
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => extractCookieToken(request),
+      ]),
       secretOrKey: configService.get(APP.CONFIGURATION).secretRefresh,
     });
   }
@@ -110,7 +115,7 @@ class JwtStrategyRefresh extends PassportStrategy(
     return {
       attributes: user,
       refreshTokenExpiration: new Date(
-        JWT.EXPIRATION_REFRESH_INVALIDATION * 1000,
+        JWT.EXPIRATION_REFRESH_INVALIDATION,
       ),
     };
   }

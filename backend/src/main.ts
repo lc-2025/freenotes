@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import { AppModule } from './modules/app/app.module';
 import { APP, ENVIRONMENTS, MESSAGE } from './utilities/constants';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 
@@ -48,7 +48,10 @@ async function bootstrap() {
     }),
   );
   // CORS
-  app.enableCors();
+  app.enableCors({
+    credentials: isProduction,
+    origin: isProduction,
+  });
 
   // OpenAPI
   const swagger = new DocumentBuilder()

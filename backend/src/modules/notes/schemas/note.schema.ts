@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { IsOptional } from 'class-validator';
-import { User } from 'src/users/schemas/user.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
 import { Tag } from '../../tags/schemas/tag.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { INote } from '../types/note.types';

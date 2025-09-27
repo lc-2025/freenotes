@@ -14,6 +14,7 @@ const APP = {
 const CONFIGURATION_NAME = {
   APP: 'app',
   CACHE: 'cache',
+  COOKIE: 'cookie',
   DATABASE: 'database',
   THROTTLE: 'throttle',
 };
@@ -58,9 +59,10 @@ const HEADER = {
 };
 
 const JWT = {
-  EXPIRATION: '60s',
-  EXPIRATION_REFRESH: '7d',
-  EXPIRATION_REFRESH_INVALIDATION: 7,
+  // Short expiration times protect against XSS attacks
+  EXPIRATION: '5m',
+  EXPIRATION_REFRESH: '15m',
+  EXPIRATION_REFRESH_INVALIDATION: 15 * 60 * 1000,
 };
 
 const MESSAGE = {

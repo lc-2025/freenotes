@@ -1,4 +1,4 @@
-import { Note } from 'src/notes/schemas/note.schema';
+import { Note } from 'src/modules/notes/schemas/note.schema';
 
 interface IUser {
   acceptance: string;

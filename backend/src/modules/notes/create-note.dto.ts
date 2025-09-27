@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OmitType } from '@nestjs/mapped-types';
 import { Types } from 'mongoose';
 import { IsString, IsBoolean, IsArray } from 'class-validator';
-import { User } from 'src/users/schemas/user.schema';
-import { Tag } from 'src/tags/schemas/tag.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
+import { Tag } from 'src/modules/tags/schemas/tag.schema';
 import { INote } from './types/note.types';
 
 /**

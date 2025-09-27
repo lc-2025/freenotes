@@ -11,25 +11,26 @@ import ExpressMongoSanitize from 'express-mongo-sanitize';
 import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import appConfig from './config/app.config';
-import cacheConfig from './config/cache.config';
-import databaseConfig from './config/database.config';
-import AuthModule from './auth/auth.module';
-import NotesModule from './notes/notes.module';
-import UsersModule from './users/users.module';
-import TagsModule from './tags/tags.module';
-import SslMiddleware from './middlewares/ssl.middleware';
-import LoggingInterceptor from './interceptors/logging.interceptor';
-import TimeoutInterceptor from './interceptors/timeout.interceptor';
-import throttleConfig from './config/throttle.config';
+import appConfig from '../../config/app.config';
+import cacheConfig from '../../config/cache.config';
+import cookieConfig from '../../config/cookie.config';
+import databaseConfig from '../../config/database.config';
+import AuthModule from '../auth/auth.module';
+import NotesModule from '../notes/notes.module';
+import UsersModule from '../users/users.module';
+import TagsModule from '../tags/tags.module';
+import SslMiddleware from '../../middlewares/ssl.middleware';
+import LoggingInterceptor from '../../interceptors/logging.interceptor';
+import TimeoutInterceptor from '../../interceptors/timeout.interceptor';
+import throttleConfig from '../../config/throttle.config';
 //import AuthGuard from './guards/auth.guard';
-import JwtAuthGuard from './guards/jwt-auth.guard';
+import JwtAuthGuard from '../../guards/jwt-auth.guard';
 import {
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
   ENVIRONMENTS,
-} from './utilities/constants';
+} from '../../utilities/constants';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -58,7 +59,13 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
         configService.get(CONFIGURATION_NAME.CACHE),
     }),
     ConfigModule.forRoot({
-      load: [appConfig, cacheConfig, databaseConfig, throttleConfig],
+      load: [
+        appConfig,
+        cacheConfig,
+        cookieConfig,
+        databaseConfig,
+        throttleConfig,
+      ],
     }),
     DevtoolsModule.register({
       http: process.env.NODE_ENV === ENVIRONMENTS[0],

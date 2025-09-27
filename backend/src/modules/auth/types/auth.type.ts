@@ -1,4 +1,4 @@
-import { User } from 'src/users/schemas/user.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
 
 interface ISignIn {
   email: string;

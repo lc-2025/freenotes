@@ -6,7 +6,7 @@ const { PORT, SECRET, SECRET_REFRESH } = process.env;
 const APP_PORT = PORT ?? 4000;
 
 export default registerAs(CONFIGURATION_NAME.APP, () => ({
-  cache: true,
+  cache: process.env.NODE_ENV === ENVIRONMENTS[1],
   port: APP_PORT,
   secret: SECRET,
   secretRefresh: SECRET_REFRESH,

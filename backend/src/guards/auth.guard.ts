@@ -49,7 +49,7 @@ class AuthGuard implements CanActivate {
       request[SCHEMA.USER.toLowerCase()] = await this.jwtService.verifyAsync(
         token,
         {
-          secret: process.env.SECRET,
+          secret: process.env.SECRET || process.env.SECRET_REFRESH,
         },
       );
     } catch {

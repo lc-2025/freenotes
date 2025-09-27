@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
-import { ROOT } from './utilities/constants';
-import Public from './decorators/public.decorator';
+import { ROOT } from '../../utilities/constants';
+import Public from '../../decorators/public.decorator';
 
 /**
  * @description Root controller

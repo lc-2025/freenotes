@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
-import { Note } from 'src/notes/schemas/note.schema';
+import { Note } from 'src/modules/notes/schemas/note.schema';
 import { ITag } from './types/tag.types';
 
 /**

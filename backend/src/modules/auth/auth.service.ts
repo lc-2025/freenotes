@@ -4,13 +4,14 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import bcrypt from 'bcrypt';
 import UsersService from '../users/users.service';
-import CreateUserDto from 'src/users/create-user.dto';
+import CreateUserDto from 'src/modules/users/create-user.dto';
 import SignInDto from './sign-in.dto';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/users/schemas/user.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
 import { setError } from 'src/utilities/utils';
 import {
   APP,
+  CONFIGURATION_NAME,
   ERROR,
   JWT,
   MESSAGE,
@@ -18,7 +19,10 @@ import {
   TOKEN,
 } from 'src/utilities/constants';
 import { TJWT } from './types/auth.type';
+import { Response } from 'express';
 
+const { CONFIGURATION } = APP;
+const { COOKIE } = CONFIGURATION_NAME;
 const { ALREADY_EXIST, BAD_REQUEST, CREATE, UNAUTHORIZED } = ERROR;
 const { AUTHENTICATE, VERIFY } = MESSAGE;
 
@@ -56,6 +60,23 @@ class AuthService {
   ) {}
 
   /**
+   * @description Configuration getter
+   * @author Luca Cattide
+   * @date 27/09/2025
+   * @param {string} name
+   * @returns {*}
+   * @memberof AuthService
+   */
+  getConfiguration(name: string) {
+    const configuration = {
+      [CONFIGURATION]: this.configService.get(name).secretRefresh,
+      [COOKIE]: this.configService.get(name).refreshToken,
+    };
+
+    return configuration[name];
+  }
+
+  /**
    * @description Authentication login method
    * @author Luca Cattide
    * @date 27/09/2025
@@ -89,6 +110,17 @@ class AuthService {
   }
 
   /**
+   * @description Authentication logout method
+   * @author Luca Cattide
+   * @date 27/09/2025
+   * @param {Response} response
+   * @memberof AuthService
+   */
+  logout(response: Response): void {
+    response.clearCookie(this.getConfiguration(COOKIE).name);
+  }
+
+  /**
    * @description Authentication token refresh method
    * @author Luca Cattide
    * @date 27/09/2025
@@ -96,7 +128,7 @@ class AuthService {
    * @returns {*}
    * @memberof AuthService
    */
-  async refreshAccessToken(refreshToken: string) {
+  async refreshAccessToken(refreshToken: string, response: Response) {
     const message = `${ERROR.FIND} the user`;
 
     if (!refreshToken) {
@@ -107,7 +139,11 @@ class AuthService {
     try {
       this.logger.log(`${VERIFY} ${ROUTE.AUTH.REFRESH_TOKEN} token...`);
 
-      const decoded = this.jwtService.verify(refreshToken);
+      const decoded = this.jwtService.verify(refreshToken, {
+        algorithms: ['HS256', 'RS256'],
+        audience: this.getConfiguration(CONFIGURATION).name,
+        issuer: MESSAGE.BASE_URL,
+      });
 
       if (!decoded) {
         this.logger.error(message);
@@ -121,7 +157,21 @@ class AuthService {
         setError(HttpStatus.FOUND, message);
       }
 
-      return await this.setToken(user!);
+      const token = await this.setToken(user!);
+      const cookieConfiguration = this.getConfiguration(COOKIE);
+
+      /**
+       * Leaving apart refresh tokens from access ones inside cookies
+       * improves security vs XSS attacks
+       */
+      response.cookie(
+        cookieConfiguration.name,
+        // Storing only the refresh one to secure vs CSFR attacks
+        token?.refresh_token,
+        cookieConfiguration.options,
+      );
+
+      return token;
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -182,10 +232,16 @@ class AuthService {
       this.logger.log(`${MESSAGE.AUTH}...`);
 
       return {
-        access_token: await this.jwtService.signAsync({
-          email: user.email,
-          sub: _id,
-        }),
+        access_token: await this.jwtService.signAsync(
+          {
+            email: user.email,
+            sub: _id,
+          },
+          {
+            secret: this.getConfiguration(CONFIGURATION).secret,
+            expiresIn: JWT.EXPIRATION,
+          },
+        ),
         refresh_token: await this.setTokenRefresh(user),
       };
     } catch (error) {
@@ -217,14 +273,12 @@ class AuthService {
       const refreshToken = await this.jwtService.signAsync(
         { sub: _id },
         {
-          secret: this.configService.get(APP.CONFIGURATION).secretRefresh,
+          secret: this.getConfiguration(CONFIGURATION).secretRefresh,
           expiresIn: JWT.EXPIRATION_REFRESH,
         },
       );
 
-      user.refreshToken = refreshToken;
-
-      this.usersService.update(user._id, refreshToken);
+      this.usersService.update(_id, refreshToken);
 
       return refreshToken;
     } catch (error) {

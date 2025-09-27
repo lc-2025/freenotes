@@ -1,6 +1,32 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import mongoose from 'mongoose';
+import { Request } from 'express';
 import TQueryFilter from 'src/types/query.type';
+import { TOKEN } from './constants';
+
+/**
+ * @description Cookie JWT token extraction helper
+ * @author Luca Cattide
+ * @date 27/09/2025
+ * @param {Request} request
+ * @returns {*}  {(string | null)}
+ */
+const extractCookieToken = (request: Request): string | null => {
+  const cookies = request.headers.cookie?.split('; ');
+  let token: string | null = null;
+
+  if (cookies && cookies.length) {
+    const refreshTokenCookie = cookies.find((cookie) =>
+      cookie.startsWith(`${TOKEN.REFRESH}=`),
+    );
+
+    if (refreshTokenCookie) {
+      token = refreshTokenCookie.split('=')[1];
+    }
+  }
+
+  return token;
+};
 
 /**
  * @description Route exception error setter
@@ -43,4 +69,4 @@ const setFilter = (ids: Array<string>): TQueryFilter => ({
  */
 const setList = (ids: Array<string>): string => ids.join(', ');
 
-export { setFilter, setError, setList };
+export { extractCookieToken, setError, setFilter, setList };

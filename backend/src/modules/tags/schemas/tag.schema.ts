@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Note } from 'src/notes/schemas/note.schema';
+import { Note } from 'src/modules/notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { ITag } from '../types/tag.types';
 

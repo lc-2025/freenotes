@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { Tag } from 'src/tags/schemas/tag.schema';
-import { User } from 'src/users/schemas/user.schema';
+import { Tag } from 'src/modules/tags/schemas/tag.schema';
+import { User } from 'src/modules/users/schemas/user.schema';
 import { UpdateNoteDto } from '../create-note.dto';
 
 interface INote {

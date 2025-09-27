@@ -8,6 +8,7 @@ import {
   Request,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -18,7 +19,7 @@ import AuthService from './auth.service';
 import LocalAuthGuard from 'src/guards/local-auth.guard';
 import SignInDto from './sign-in.dto';
 import { TJWT } from './types/auth.type';
-import CreateUserDto from 'src/users/create-user.dto';
+import CreateUserDto from 'src/modules/users/create-user.dto';
 import Public from 'src/decorators/public.decorator';
 import { CONTROLLER, ERROR, ROUTE } from 'src/utilities/constants';
 import JwtAuthGuard from 'src/guards/jwt-auth.guard';
@@ -79,7 +80,9 @@ class AuthController {
   @Post(LOGOUT)
   @ApiInternalServerErrorResponse({ description: `${AUTHENTICATE} the user` })
   @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
-  async logout(@Request() request) {
+  logout(@Req() request, @Res() response) {
+    this.authService.logout(response);
+
     return request.logout();
   }
 
@@ -95,8 +98,11 @@ class AuthController {
   @Post(REFRESH_TOKEN)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiInternalServerErrorResponse({ description: `${TOKEN} the token` })
-  async refreshToken(@Req() request): Promise<TJWT | undefined> {
-    return await this.authService.refreshAccessToken(request.refreshToken);
+  async refreshToken(
+    @Req() request,
+    @Res({ passthrough: true }) response,
+  ): Promise<TJWT | undefined> {
+    return await this.authService.refreshAccessToken(request.refreshToken, response);
   }
 
   /**
