@@ -55,6 +55,14 @@ class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  /**
+   * @description Authentication login method
+   * @author Luca Cattide
+   * @date 27/09/2025
+   * @param {SignInDto} signInDto
+   * @returns {*}  {(Promise<TJWT | undefined>)}
+   * @memberof AuthService
+   */
   async login(signInDto: SignInDto): Promise<TJWT | undefined> {
     if (!signInDto) {
       this.logger.error(BAD_REQUEST);
@@ -80,6 +88,14 @@ class AuthService {
     }
   }
 
+  /**
+   * @description Authentication token refresh method
+   * @author Luca Cattide
+   * @date 27/09/2025
+   * @param {string} refreshToken
+   * @returns {*}
+   * @memberof AuthService
+   */
   async refreshAccessToken(refreshToken: string) {
     const message = `${ERROR.FIND} the user`;
 
@@ -92,7 +108,12 @@ class AuthService {
       this.logger.log(`${VERIFY} ${ROUTE.AUTH.REFRESH_TOKEN} token...`);
 
       const decoded = this.jwtService.verify(refreshToken);
-      console.log(decoded);
+
+      if (!decoded) {
+        this.logger.error(message);
+        setError(HttpStatus.FORBIDDEN, UNAUTHORIZED);
+      }
+
       const user = await this.usersService.find(TOKEN.REFRESH, refreshToken);
 
       if (!user) {
