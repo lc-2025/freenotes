@@ -9,6 +9,8 @@ type TApiResponseError = {
   error?: Error;
 };
 
+type TApiRequest = 'include';
+
 type TApiResponse = TApiResponseData & TApiResponseError;
 
-export type { TApiResponse };
+export type { TApiRequest, TApiResponse };

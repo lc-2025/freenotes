@@ -13,8 +13,9 @@ import { FORM, ROUTE, STATE, STATE_ACTION, STORAGE } from '@/utils/constants';
 import {
   TAuthenticationFields,
   TAuthenticationFieldType,
+  TAuthenticationToken,
 } from '@/types/components/Authentication';
-import { useAuthenticationContext, useDispatchContext } from '@/hooks/State';
+import { useDispatchContext } from '@/hooks/State';
 import handleState from '@/state/actions';
 
 /**
@@ -34,18 +35,12 @@ const FormAuthentication = (): React.ReactNode => {
   const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
   const [message, setMessage] = useState<string>('');
   const { getStorage, setStorage } = useStorage();
-  const { authenticated } = useAuthenticationContext();
   const dispatch = useDispatchContext();
   const methods = useForm<TAuthenticationFields>();
   const { formState, handleSubmit, reset } = methods;
   let formType = setInitial(type);
 
   useEffect(() => {
-    // TODO: Manage refresh
-    /* if (authenticated) {
-      router.push(NOTES.PATH);
-    } */
-
     if (formState.isSubmitSuccessful) {
       setMessage('');
       reset();
@@ -142,16 +137,12 @@ const FormAuthentication = (): React.ReactNode => {
         setMessage(error.message);
         handleState(action, dispatch);
         reject();
-      }
-
-      if (data) {
+      } else if (data) {
         const { email } = payload;
 
-        Object.entries(data).forEach(([key, value]) => {
-          setStorage(key, value as string);
-        });
-
-        setStorage(STORAGE.EMAIL, email);
+        // Storing access token only to improve security vs CSRF attacks
+        // TODO: Store on Redis
+        setStorage(ACCESS, (data as TAuthenticationToken).access_token);
         handleState(
           {
             ...action,

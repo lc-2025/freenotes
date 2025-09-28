@@ -1,9 +1,16 @@
-import { ROUTE, METHOD, HEADER, CACHE, ERROR } from './utils/constants';
+import {
+  ROUTE,
+  METHOD,
+  HEADER,
+  CACHE,
+  ERROR,
+  REQUEST,
+} from './utils/constants';
 import {
   TAuthenticationToken,
   TAuthenticationUser,
 } from './types/components/Authentication';
-import { TApiResponse } from './types/Api';
+import { TApiRequest, TApiResponse } from './types/Api';
 
 /**
  * @description API client
@@ -22,23 +29,23 @@ const apiClient = async (
   const { DELETE, GET, PATCH, POST } = METHOD;
   const { LOGIN, NOTES, REGISTER, USER, REFRESH } = ROUTE.API;
   const { AUTHENTICATION } = ERROR;
+  const defaultOptions = {
+    get: {
+      method: GET,
+    },
+    post: {
+      method: POST,
+    },
+  };
   const route = {
-    [LOGIN]: {
-      method: GET,
-    },
-    [NOTES]: {
-      method: GET,
-    },
+    [LOGIN]: defaultOptions.get,
+    [NOTES]: defaultOptions.get,
     [REGISTER]: {
+      ...defaultOptions.post,
       body: body ? JSON.stringify(body) : undefined,
-      method: POST,
     },
-    [USER]: {
-      method: GET,
-    },
-    [REFRESH]: {
-      method: POST,
-    },
+    [USER]: defaultOptions.get,
+    [REFRESH]: defaultOptions.post,
   };
   const params =
     route[endpoint].method === GET && body
@@ -62,12 +69,14 @@ const apiClient = async (
     const url = `${baseUrl}/${endpoint}${params}`;
     let payload = {
       ...route[endpoint],
+      credentials: REQUEST.CREDENTIALS as TApiRequest,
       headers,
       next: {
         revalidate: CACHE,
       },
     };
-    let response = await fetch(url, payload);
+    const defaultResponse = await fetch(url, payload);
+    let response = defaultResponse;
 
     // JWT rotation
     if (response.status === 401) {
@@ -76,16 +85,12 @@ const apiClient = async (
         ...route[REFRESH],
         headers: {
           ...payload.headers,
-          Authorization: `Bearer ${authentication?.refresh_token}`
         },
-        body: JSON.stringify({
-          refreshToken: authentication?.refresh_token,
-        }),
       });
 
       if (response.ok) {
         // Data fetching retry
-        response = await fetch(url, payload);
+        response = defaultResponse;
       }
     }
 

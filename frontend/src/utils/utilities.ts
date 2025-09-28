@@ -1,9 +1,10 @@
 import { ActionDispatch } from 'react';
+import cookie from 'cookie';
 import { ERROR, THEME } from './constants';
 import {
   TStateAuthentication,
   TStateAction,
-  TStateUser
+  TStateUser,
 } from '@/types/state/State';
 
 const { LIGHT, DARK } = THEME;
@@ -38,6 +39,23 @@ const checkContext = (
 const isThemeDark = (theme: string): string => (theme === DARK ? LIGHT : DARK);
 
 /**
+ * @description Cookie parser
+ * @author Luca Cattide
+ * @date 28/09/2025
+ * @param {(string | undefined)} cookieHeader
+ * @returns {*}  {(string | null)}
+ */
+const parseCookie = (cookieHeader: string | null): string | null => {
+  let cookies = null;
+
+  if (cookieHeader) {
+    cookies = cookie.parse(cookieHeader);
+  }
+
+  return cookies ? cookies.authToken! : cookies;
+};
+
+/**
  * @description Text case handler
  * Capitalizes a word initial
  * @author Luca Cattide
@@ -48,4 +66,4 @@ const isThemeDark = (theme: string): string => (theme === DARK ? LIGHT : DARK);
 const setInitial = (text: string): string =>
   `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-export { checkContext, isThemeDark, setInitial };
+export { checkContext, isThemeDark, parseCookie, setInitial };

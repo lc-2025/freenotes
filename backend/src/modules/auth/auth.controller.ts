@@ -55,17 +55,21 @@ class AuthController {
   /**
    * @description Authentication login endpoint
    * @author Luca Cattide
-   * @date 26/08/2025
-   * @param {SignInDto} signInDto
-   * @returns {*}  {Promise<TJWT | undefined>}
+   * @date 28/09/2025
+   * @param {*} request
+   * @param {*} response
+   * @returns {*}  {(Promise<TJWT | undefined>)}
    * @memberof AuthController
    */
   @UseGuards(LocalAuthGuard)
   @Get(LOGIN)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiInternalServerErrorResponse({ description: `${AUTHENTICATE} the user` })
-  async login(@Req() request): Promise<TJWT | undefined> {
-    return await this.authService.login(request.user);
+  async login(
+    @Req() request,
+    @Res({ passthrough: true }) response,
+  ): Promise<TJWT | undefined> {
+    return await this.authService.login(request.user, response);
   }
 
   /**
@@ -73,6 +77,7 @@ class AuthController {
    * @author Luca Cattide
    * @date 25/08/2025
    * @param {*} request
+   * @param {*} response
    * @returns {*}
    * @memberof AuthController
    */
@@ -91,6 +96,7 @@ class AuthController {
    * @author Luca Cattide
    * @date 26/08/2025
    * @param {*} request
+   * @param {*} response
    * @returns {*}  {(Promise<TJWT | undefined>)}
    * @memberof AuthController
    */
@@ -102,7 +108,10 @@ class AuthController {
     @Req() request,
     @Res({ passthrough: true }) response,
   ): Promise<TJWT | undefined> {
-    return await this.authService.refreshAccessToken(request.refreshToken, response);
+    return await this.authService.refreshAccessToken(
+      request.refreshToken,
+      response,
+    );
   }
 
   /**
@@ -110,6 +119,7 @@ class AuthController {
    * @author Luca Cattide
    * @date 25/08/2025
    * @param {CreateUserDto} createUserDto
+   * @param {*} response
    * @returns {*}  {Promise<TJWT | undefined>}
    * @memberof AuthController
    */
@@ -119,8 +129,9 @@ class AuthController {
   @ApiInternalServerErrorResponse({ description: `${ERROR.REGISTER} the user` })
   async register(
     @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) response,
   ): Promise<TJWT | undefined> {
-    return await this.authService.register(createUserDto);
+    return await this.authService.register(createUserDto, response);
   }
 
   /**

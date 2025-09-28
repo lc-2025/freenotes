@@ -62,12 +62,6 @@ const Header = (): React.ReactNode => {
   const dispatch = useDispatchContext();
 
   useEffect(() => {
-    // Route guard
-    // TODO: Manage refresh
-    /* if (!authenticated) {
-      router.push(AUTHENTICATION.PATH);
-    } */
-
     initUser();
     initHeader();
   }, [pathname]);
@@ -81,18 +75,17 @@ const Header = (): React.ReactNode => {
   const initUser = async (): Promise<void> => {
     if (pathname !== AUTHENTICATION.PATH && (!email || !name)) {
       const { data, error } = await apiClient(`${ROUTE.API.USER}`, {
-        email: getStorage(STORAGE.EMAIL) ?? '',
+        email,
       });
 
       if (error) {
+        // TODO: Raise on context
         setError({
-          title: '',
-          message: '',
+          title: 'Error',
+          message: error.message,
         });
         // TODO: Visualize somehow
-      }
-
-      if (data) {
+      } else if (data) {
         const user = data as TStateUser;
 
         handleState(
@@ -179,11 +172,7 @@ const Header = (): React.ReactNode => {
    * @date 26/09/2025
    */
   const handleLogout = (): void => {
-    deleteStorages([...Object.values(TOKEN), EMAIL]);
-    handleState(
-      { type: STATE_ACTION.AUTHENTICATION, element: { authenticated: false } },
-      dispatch,
-    );
+    handleState({ type: STATE_ACTION.RESET, element: null }, dispatch);
     router.push(AUTHENTICATION.PATH);
   };
 

@@ -11,6 +11,7 @@ export default registerAs(CONFIGURATION_NAME.COOKIE, () => ({
   refreshToken: {
     name: TOKEN.REFRESH,
     options: {
+      domain: process.env.DOMAIN,
       httpOnly: true,
       maxAge: JWT.EXPIRATION_REFRESH_INVALIDATION,
       path:

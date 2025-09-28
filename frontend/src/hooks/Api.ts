@@ -5,6 +5,7 @@ import { TApiResponse } from '@/types/Api';
 import { TUseApi } from '@/types/hooks/Api';
 
 /**
+ * TODO: Decide to keep or not
  * @description API hook
  * @author Luca Cattide
  * @date 26/09/2025
@@ -29,7 +30,6 @@ const useApi = async ({
       access_token: getStorage(ACCESS) ?? '',
       refresh_token: getStorage(REFRESH) ?? '',
     },
-    refresh,
   );
 
   return { data, error };

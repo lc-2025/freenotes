@@ -9,6 +9,10 @@ const ACTION = {
   DELETE: 'Delete',
 };
 
+const COOKIE = {
+  REFRESH: 'refreshToken',
+};
+
 const NOTE = {
   LABEL: {
     TITLE: 'Note Title',
@@ -135,6 +139,10 @@ const FORM = {
   },
 };
 
+const REQUEST = {
+  CREDENTIALS: 'include',
+};
+
 const ROUTE = {
   API: {
     LOGIN: 'authentication/login',
@@ -246,4 +254,6 @@ export {
   CACHE,
   TIMEOUT,
   STORAGE,
+  COOKIE,
+  REQUEST,
 };

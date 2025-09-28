@@ -18,13 +18,13 @@ import {
   ROUTE,
   TOKEN,
 } from 'src/utilities/constants';
-import { TJWT } from './types/auth.type';
+import { TJWT, TToken } from './types/auth.type';
 import { Response } from 'express';
 
 const { CONFIGURATION } = APP;
 const { COOKIE } = CONFIGURATION_NAME;
 const { ALREADY_EXIST, BAD_REQUEST, CREATE, UNAUTHORIZED } = ERROR;
-const { AUTHENTICATE, VERIFY } = MESSAGE;
+const { AUTHENTICATE, LOGOUT, VERIFY } = MESSAGE;
 
 /**
  * @description Authentication service
@@ -73,6 +73,8 @@ class AuthService {
       [COOKIE]: this.configService.get(name).refreshToken,
     };
 
+    this.logger.log(`${MESSAGE.CONFIGURATION} ${name}...`)
+
     return configuration[name];
   }
 
@@ -81,10 +83,14 @@ class AuthService {
    * @author Luca Cattide
    * @date 27/09/2025
    * @param {SignInDto} signInDto
+   * @param {Response} response
    * @returns {*}  {(Promise<TJWT | undefined>)}
    * @memberof AuthService
    */
-  async login(signInDto: SignInDto): Promise<TJWT | undefined> {
+  async login(
+    signInDto: SignInDto,
+    response: Response,
+  ): Promise<TJWT | undefined> {
     if (!signInDto) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
@@ -102,7 +108,11 @@ class AuthService {
         setError(HttpStatus.FOUND, message);
       }
 
-      return await this.setToken(user!);
+      const result = await this.setTokenCookie(user!, response);
+
+      response = result.response;
+
+      return result.token;
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -117,6 +127,7 @@ class AuthService {
    * @memberof AuthService
    */
   logout(response: Response): void {
+    this.logger.log(LOGOUT);
     response.clearCookie(this.getConfiguration(COOKIE).name);
   }
 
@@ -157,21 +168,11 @@ class AuthService {
         setError(HttpStatus.FOUND, message);
       }
 
-      const token = await this.setToken(user!);
-      const cookieConfiguration = this.getConfiguration(COOKIE);
+      const result = await this.setTokenCookie(user!, response);
 
-      /**
-       * Leaving apart refresh tokens from access ones inside cookies
-       * improves security vs XSS attacks
-       */
-      response.cookie(
-        cookieConfiguration.name,
-        // Storing only the refresh one to secure vs CSFR attacks
-        token?.refresh_token,
-        cookieConfiguration.options,
-      );
+      response = result.response;
 
-      return token;
+      return result.token;
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -183,10 +184,14 @@ class AuthService {
    * @author Luca Cattide
    * @date 26/08/2025
    * @param {CreateUserDto} createUserDto
+   * @param {Response} response
    * @returns {*}  {(Promise<TJWT | undefined>)}
    * @memberof AuthService
    */
-  async register(createUserDto: CreateUserDto): Promise<TJWT | undefined> {
+  async register(
+    createUserDto: CreateUserDto,
+    response: Response,
+  ): Promise<TJWT | undefined> {
     const { password } = createUserDto;
     let message = `${ERROR.CREATE} the user`;
     let user = await this.usersService.search(createUserDto.email);
@@ -208,7 +213,7 @@ class AuthService {
 
       this.logger.log(`${AUTHENTICATE} the user...`);
 
-      return this.login({ email: user!.email, password });
+      return this.login({ email: user!.email, password }, response);
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -250,6 +255,46 @@ class AuthService {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     }
+  }
+
+  /**
+   * @description Cookie token setter method
+   * @author Luca Cattide
+   * @date 28/09/2025
+   * @param {User} user
+   * @param {Response} response
+   * @returns {*}  {(Promise<TToken>)}
+   * @memberof AuthService
+   */
+  async setTokenCookie(user: User, response: Response): Promise<TToken> {
+    const token = await this.setToken(user!);
+    const cookieConfiguration = this.getConfiguration(COOKIE);
+    let result: TJWT | undefined;
+
+    if (token) {
+      const { access_token, refresh_token } = token;
+
+      result = {
+        access_token,
+      };
+
+      /**
+       * Leaving apart refresh tokens from access ones inside cookies
+       * improves security vs XSS attacks
+       */
+      this.logger.log(MESSAGE.COOKIE);
+      response.cookie(
+        cookieConfiguration.name,
+        // Storing only the refresh one to secure vs CSFR attacks
+        refresh_token,
+        cookieConfiguration.options,
+      );
+    }
+
+    return {
+      response,
+      token: result ?? undefined,
+    };
   }
 
   /**
