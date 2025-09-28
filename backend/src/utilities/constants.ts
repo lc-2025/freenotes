@@ -34,6 +34,10 @@ const CONTROLLER = {
   USERS: 'users',
 };
 
+const COOKIE = {
+  STRICT: 'strict',
+};
+
 const DECORATOR = {
   PUBLIC: 'isPublic',
 };
@@ -148,6 +152,7 @@ export {
   CONNECTION,
   CONFIGURATION_NAME,
   CONTROLLER,
+  COOKIE,
   DECORATOR,
   ENVIRONMENTS,
   ERROR,
