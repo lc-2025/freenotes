@@ -49,8 +49,8 @@ async function bootstrap() {
   );
   // CORS
   app.enableCors({
-    credentials: isProduction,
-    origin: isProduction ? process.env.FRONTEND_URL : false,
+    credentials: true,
+    origin: process.env.FRONTEND_URL,
   });
 
   // OpenAPI
