@@ -51,6 +51,7 @@ class User implements IUser {
   refreshToken?: string;
 }
 
+// TODO: Indexing
 const UserSchema = SchemaFactory.createForClass(User);
 
 export { User, UserSchema };

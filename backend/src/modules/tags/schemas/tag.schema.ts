@@ -30,6 +30,7 @@ class Tag implements ITag {
   notes: Array<Note>;
 }
 
+// TODO: Indexing
 const TagSchema = SchemaFactory.createForClass(Tag);
 
 export { Tag, TagSchema };

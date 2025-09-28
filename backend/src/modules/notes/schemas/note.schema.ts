@@ -47,6 +47,7 @@ class Note implements INote {
   user: User;
 }
 
+// TODO: Indexing
 const NoteSchema = SchemaFactory.createForClass(Note);
 
 export { Note, NoteSchema };
