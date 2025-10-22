@@ -123,20 +123,22 @@ class NotesService {
    * @description Notes retrieve method
    * @author Luca Cattide
    * @date 17/08/2025
-   * @param {Array<string>} ids
+   * @param {string} ids
    * @returns {*}  {Promise<Note[] | undefined>}
    * @memberof NotesService
    */
-  async findAll(ids: Array<string>): Promise<Note[] | undefined> {
+  async findAll(ids: string): Promise<Note[] | undefined> {
     if (!ids) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
     try {
-      this.logger.log(`${MESSAGE.READ} notes: ${setList(ids)}...`);
+      const noteIds = ids.split(',');
 
-      return await this.noteModel.find(setFilter(ids)).exec();
+      this.logger.log(`${MESSAGE.READ} notes: ${setList(noteIds)}...`);
+
+      return await this.noteModel.find(setFilter(noteIds)).exec();
     } catch (error) {
       const message = `Notes ${FIND}`;
 

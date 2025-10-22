@@ -45,4 +45,14 @@ class JwtAuthGuard extends AuthGuard(STRATEGY.JWT) {
   }
 }
 
-export default JwtAuthGuard;
+/**
+ * @description Authentication JWT refresh guard
+ * @author Luca Cattide
+ * @date 21/10/2025
+ * @class JwtRefreshAuthGuard
+ * @extends {AuthGuard(STRATEGY.JWT_REFRESH)}
+ */
+@Injectable()
+class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {}
+
+export { JwtAuthGuard, JwtRefreshAuthGuard };

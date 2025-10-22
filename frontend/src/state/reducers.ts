@@ -1,5 +1,10 @@
 import { STATE, STATE_ACTION } from '@/utils/constants';
-import { TStateAction, TStateAuthentication, TStateUser } from '@/types/state/State';
+import {
+  TStateAction,
+  TStateAuthentication,
+  TStateError,
+  TStateUser,
+} from '@/types/state/State';
 
 /**
  * Reducers seems a bit redundant in their logic
@@ -24,7 +29,7 @@ const reducerAuthentication = (
 
   switch (type) {
     case AUTHENTICATION:
-      reducerAuthentication = element;
+      reducerAuthentication = { ...element };
       break;
 
     case RESET:
@@ -36,6 +41,41 @@ const reducerAuthentication = (
   }
 
   return reducerAuthentication;
+};
+
+/**
+ * @description Error state reducer
+ * @author Luca Cattide
+ * @date 21/10/2025
+ * @param {TStateError} state
+ * @param {TStateAction} action
+ * @returns {*}  {TStateError}
+ */
+const reducerError = (
+  state: TStateError,
+  action: TStateAction,
+): TStateError => {
+  const { ERROR, RESET } = STATE_ACTION;
+  const { type, element } = action;
+  let reducerError = null;
+
+  switch (type) {
+    case ERROR:
+      reducerError = {
+        ...state,
+        ...element,
+      };
+      break;
+
+    case RESET:
+      reducerError = STATE.DEFAULT.ERROR;
+      break;
+
+    default:
+      reducerError = STATE.DEFAULT.ERROR;
+  }
+
+  return reducerError;
 };
 
 /**
@@ -55,7 +95,7 @@ const reducerUser = (state: TStateUser, action: TStateAction): TStateUser => {
     case USER:
       reducerUser = {
         ...state,
-        ...element
+        ...element,
       };
       break;
 
@@ -70,4 +110,4 @@ const reducerUser = (state: TStateUser, action: TStateAction): TStateUser => {
   return reducerUser;
 };
 
-export { reducerAuthentication, reducerUser };
+export { reducerAuthentication, reducerError, reducerUser };

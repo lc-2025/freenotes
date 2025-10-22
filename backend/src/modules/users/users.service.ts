@@ -85,13 +85,12 @@ class UsersService {
    * @memberof UsersService
    */
   @Transform(({ value }) => {
+    // FIXME: Not working
     const { password, ...rest } = value;
 
     return rest;
   })
   async find(type: string, element: string): Promise<User | null | undefined> {
-    console.log(111, type, element);
-
     if (!type || !element) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);

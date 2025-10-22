@@ -1,7 +1,7 @@
 import { useContext, ActionDispatch } from 'react';
-import { AuthenticationContext, DispatchContext, UserContext } from '@/state/contexts';
+import { AuthenticationContext, DispatchContext, ErrorContext, UserContext } from '@/state/contexts';
 import { checkContext } from '@/utils/utilities';
-import { TStateAuthentication, TStateAction, TStateUser } from '@/types/state/State';
+import { TStateAuthentication, TStateAction, TStateUser, TStateError } from '@/types/state/State';
 
 /**
  * @description Authentication context hook
@@ -16,6 +16,20 @@ const useAuthenticationContext = (): TStateAuthentication => {
 
   return context;
 };
+
+/**
+ * @description Error context hook
+ * @author Luca Cattide
+ * @date 21/10/2025
+ * @returns {*}  {TStateError}
+ */
+const useErrorContext = (): TStateError => {
+  const context = useContext(ErrorContext);
+
+  checkContext(context);
+
+  return context;
+}
 
 /**
  * @description User context hook
@@ -45,4 +59,4 @@ const useDispatchContext = (): ActionDispatch<[action: TStateAction]> => {
   return context as ActionDispatch<[action: TStateAction]>;
 };
 
-export { useAuthenticationContext, useUserContext, useDispatchContext };
+export { useAuthenticationContext, useErrorContext, useUserContext, useDispatchContext };

@@ -17,7 +17,7 @@ import {
   ROUTE,
   SCHEMA,
 } from 'src/utilities/constants';
-import JwtAuthGuard from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 const { USERS } = CONTROLLER;
 const { CREATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;

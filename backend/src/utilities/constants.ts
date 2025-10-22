@@ -35,6 +35,7 @@ const CONTROLLER = {
 };
 
 const COOKIE = {
+  NONE: 'none',
   STRICT: 'strict',
 };
 
@@ -113,7 +114,6 @@ const ROUTE = {
   },
   NOTES: {
     GET: '/:id',
-    GET_ALL: '/:ids',
     PARAM: 'id',
     PARAM_ALL: 'ids',
   },

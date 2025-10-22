@@ -24,7 +24,7 @@ import LoggingInterceptor from '../../interceptors/logging.interceptor';
 import TimeoutInterceptor from '../../interceptors/timeout.interceptor';
 import throttleConfig from '../../config/throttle.config';
 //import AuthGuard from './guards/auth.guard';
-import JwtAuthGuard from '../../guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import {
   CONFIGURATION_NAME,
   CONNECTION,
@@ -103,11 +103,6 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
   // Related providers registration
   providers: [
     AppService,
-    // Global Guards injected as dependencies
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
     // Vanilla authentication
     /* {
       provide: APP_GUARD,
@@ -143,7 +138,8 @@ export class AppModule implements NestModule {
    */
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(compression(), ExpressMongoSanitize(), helmet(), SslMiddleware)
+      // FIXME: Sanitization plugin bug
+      .apply(compression(), helmet(), /*ExpressMongoSanitize(),*/ SslMiddleware)
       .forRoutes(NOTES, TAGS, USERS);
   }
 

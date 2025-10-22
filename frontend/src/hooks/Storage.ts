@@ -2,6 +2,7 @@ import { TUseStorage } from '@/types/hooks/Storage';
 
 /**
  * @description Storage Hook
+ * TODO: Switch with storage-manager
  * @author Luca Cattide
  * @returns {*}  {TUseStorage}
  */

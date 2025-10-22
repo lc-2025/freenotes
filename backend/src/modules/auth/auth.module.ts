@@ -6,7 +6,7 @@ import AuthService from './auth.service';
 import AuthController from './auth.controller';
 import UsersModule from '../users/users.module';
 import LocalStrategy from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy, JwtStrategyRefresh } from './jwt.strategy';
 import { APP, JWT } from 'src/utilities/constants';
 
 /**
@@ -36,7 +36,7 @@ import { APP, JWT } from 'src/utilities/constants';
     PassportModule,
     UsersModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtStrategyRefresh],
 })
 class AuthModule {}
 

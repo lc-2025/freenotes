@@ -4,7 +4,6 @@ import {
   Post,
   Param,
   Body,
-  ParseArrayPipe,
   ParseUUIDPipe,
   Patch,
   ValidationPipe,
@@ -31,12 +30,12 @@ import {
   ROUTE,
   SCHEMA,
 } from 'src/utilities/constants';
-import JwtAuthGuard from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 const { NOTES } = CONTROLLER;
 const { CREATE, BAD_REQUEST, DELETE, UNAUTHORIZED, UPDATE } = ERROR;
 const { CREATED, DELETED, FOUND, UPDATED } = MESSAGE;
-const { GET, GET_ALL, PARAM, PARAM_ALL } = ROUTE.NOTES;
+const { GET, PARAM, PARAM_ALL } = ROUTE.NOTES;
 const { NOTE } = SCHEMA;
 
 /**
@@ -130,14 +129,12 @@ class NotesController {
    * @memberof NotesController
    */
   @UseGuards(JwtAuthGuard)
-  @Get(GET_ALL)
+  @Get()
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiFoundResponse({ description: `${NOTE}s ${FOUND}` })
   @ApiInternalServerErrorResponse({ description: `${NOTE}s ${ERROR.FIND}` })
   @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
-  async findAll(
-    @Query(PARAM_ALL, ParseArrayPipe) ids: Array<string>,
-  ): Promise<Note[] | undefined> {
+  async findAll(@Query(PARAM_ALL) ids: string): Promise<Note[] | undefined> {
     return await this.notesService.findAll(ids);
   }
 

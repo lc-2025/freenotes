@@ -12,19 +12,20 @@ import type { NextRequest } from 'next/server';
  * @returns {*}
  */
 export function middleware(request: NextRequest) {
-  const { AUTHENTICATION } = ROUTE;
+  const { AUTHENTICATION, NEW, NOTES, NOTE, SETTINGS } = ROUTE;
   const token =
     request.cookies.get(COOKIE.REFRESH) ??
     parseCookie(request.headers.get(COOKIE.REFRESH));
+  const protectedRoutes = [NEW.PATH, NOTES.PATH, NOTE.PATH, SETTINGS.PATH];
   // All pages except the authentication one
-  const isProtectedRoute = !request.nextUrl.pathname.startsWith(
-    AUTHENTICATION.PATH,
+  const isProtectedRoute = protectedRoutes.some((protectedRoute) =>
+    request.nextUrl.pathname.startsWith(protectedRoute),
   );
   let response = NextResponse.next();
 
   if (isProtectedRoute && !token) {
     response = NextResponse.redirect(
-      new URL(ROUTE.AUTHENTICATION.PATH, request.nextUrl),
+      new URL(AUTHENTICATION.PATH, request.nextUrl),
     );
   } else if (token) {
     response = NextResponse.redirect(

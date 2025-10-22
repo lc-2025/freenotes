@@ -22,7 +22,7 @@ import { TJWT } from './types/auth.type';
 import CreateUserDto from 'src/modules/users/create-user.dto';
 import Public from 'src/decorators/public.decorator';
 import { CONTROLLER, ERROR, ROUTE } from 'src/utilities/constants';
-import JwtAuthGuard from 'src/guards/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from 'src/guards/jwt-auth.guard';
 
 const { AUTH } = CONTROLLER;
 const { AUTHENTICATE, BAD_REQUEST, TOKEN, UNAUTHORIZED } = ERROR;
@@ -100,7 +100,7 @@ class AuthController {
    * @returns {*}  {(Promise<TJWT | undefined>)}
    * @memberof AuthController
    */
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtRefreshAuthGuard)
   @Post(REFRESH_TOKEN)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiInternalServerErrorResponse({ description: `${TOKEN} the token` })

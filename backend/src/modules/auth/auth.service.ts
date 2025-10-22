@@ -285,7 +285,7 @@ class AuthService {
       this.logger.log(MESSAGE.COOKIE);
       response.cookie(
         cookieConfiguration.name,
-        // Storing only the refresh one to secure vs CSFR attacks
+        // Storing only the refresh one to secure vs CSRF attacks
         refresh_token,
         cookieConfiguration.options,
       );

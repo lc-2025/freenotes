@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import apiClient from '@/apiClient';
 import NoteCard from '@/components/Note/NoteCard';
+import useAuthentication from '@/hooks/Authentication';
 import { useUserContext } from '@/hooks/State';
-import { ROUTE } from '@/utils/constants';
+import { ERROR, ROUTE } from '@/utils/constants';
 import { TNotes } from '@/types/components/Note';
 
 /**
@@ -16,9 +17,11 @@ import { TNotes } from '@/types/components/Note';
 const Notebook = (): React.ReactNode => {
   const user = useUserContext();
   const [notes, setNotes] = useState<TNotes>([]);
+  const { redirectLogin } = useAuthentication();
 
   useEffect(() => {
-    initNotes();
+    // FIXME:
+    //initNotes();
   }, []);
 
   /**
@@ -33,12 +36,17 @@ const Notebook = (): React.ReactNode => {
     });
 
     if (error) {
-      // TODO:
+      if (error.name === ERROR.AUTHENTICATION) {
+        redirectLogin(error);
+      } else {
+        // TODO: Show error
+      }
     } else if (data) {
       setNotes(data as any);
     }
   };
 
+  // TODO: Empty state
   return (
     <div className="home__container mx-4 mt-4 grid grid-cols-1 gap-4 md:mx-12 md:mt-4 md:grid-cols-3">
       {notes.length > 0 &&

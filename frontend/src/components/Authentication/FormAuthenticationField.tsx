@@ -106,6 +106,7 @@ const FormAuthenticationField = ({
           ...handleValidation(type),
           required: `${label} is required`,
         })}
+        // TODO: Add show/hide password
         type={type}
       />
       {type === CHECKBOX && (

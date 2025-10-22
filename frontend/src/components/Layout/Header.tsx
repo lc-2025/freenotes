@@ -21,6 +21,7 @@ import { isThemeDark } from '@/utils/utilities';
 import { THeader } from '@/types/components/Header';
 import {
   ARIA,
+  ERROR,
   ROUTE,
   STATE,
   STATE_ACTION,
@@ -30,6 +31,7 @@ import {
 import {
   useAuthenticationContext,
   useDispatchContext,
+  useErrorContext,
   useUserContext,
 } from '@/hooks/State';
 import useStorage from '@/hooks/Storage';
@@ -38,6 +40,7 @@ import handleState from '@/state/actions';
 import apiClient from '@/apiClient';
 import { TStateUser } from '@/types/state/State';
 import { TError } from '@/types/Error';
+import useAuthentication from '@/hooks/Authentication';
 
 /**
  * @description Header component
@@ -48,18 +51,19 @@ import { TError } from '@/types/Error';
 const Header = (): React.ReactNode => {
   const { BACK, PIN, ACCOUNT } = ARIA;
   const { AUTHENTICATION, NOTES, NOTE, NEW, SETTINGS } = ROUTE;
-  const { TOKEN, EMAIL } = STORAGE;
-  const { HEADER, ERROR } = STATE.DEFAULT;
+  const { HEADER } = STATE.DEFAULT;
+  const { ACCESS } = STORAGE.TOKEN;
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
-  const { getStorage, deleteStorages } = useStorage();
+  const { getStorage } = useStorage();
   const [header, setHeader] = useState<THeader>(HEADER);
-  const [error, setError] = useState<TError>(ERROR);
   const { title, showBack, showPin, showToggle, showSettings } = header;
   const { authenticated } = useAuthenticationContext();
+  const error = useErrorContext();
   const { email, name } = useUserContext();
   const dispatch = useDispatchContext();
+  const { redirectLogin } = useAuthentication();
 
   useEffect(() => {
     initUser();
@@ -73,20 +77,27 @@ const Header = (): React.ReactNode => {
    * @returns {*}  {Promise<void>}
    */
   const initUser = async (): Promise<void> => {
-    if (pathname !== AUTHENTICATION.PATH && (!email || !name)) {
-      const { data, error } = await apiClient(`${ROUTE.API.USER}`, {
-        email,
-      });
+    if (pathname !== AUTHENTICATION.PATH && !name) {
+      const { data, error } = await apiClient(
+        `${ROUTE.API.USER}`,
+        {
+          // TODO: Get `email` from storage or redis if missing in state
+          email,
+        },
+        {
+          access_token: getStorage(ACCESS) ?? '',
+        },
+      );
 
       if (error) {
-        // TODO: Raise on context
-        setError({
-          title: 'Error',
-          message: error.message,
-        });
-        // TODO: Visualize somehow
+        if (error.name === ERROR.AUTHENTICATION) {
+          //redirectLogin(error);
+        } else {
+          // TODO: Show error
+        }
       } else if (data) {
         const user = data as TStateUser;
+        const { notes } = user;
 
         handleState(
           {
@@ -94,7 +105,7 @@ const Header = (): React.ReactNode => {
             element: {
               email: user.email,
               name: user.name,
-              notes: user.notes,
+              notes,
             },
           },
           dispatch,
@@ -214,6 +225,7 @@ const Header = (): React.ReactNode => {
             <BookmarkIconOutline className="pin__icon size-8 text-2xl text-blue-600 md:text-3xl dark:text-blue-400" />
           </button>
         )}
+        {/* TODO: Switch with theme-switcher */}
         {showToggle && (
           <button
             aria-label={`Switch to ${/* TODO: isThemeDark(theme!) */ 'foo'} mode`}

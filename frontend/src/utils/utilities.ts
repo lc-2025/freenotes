@@ -5,6 +5,7 @@ import {
   TStateAuthentication,
   TStateAction,
   TStateUser,
+  TStateError,
 } from '@/types/state/State';
 
 const { LIGHT, DARK } = THEME;
@@ -19,6 +20,7 @@ const { LIGHT, DARK } = THEME;
 const checkContext = (
   context:
     | TStateAuthentication
+    | TStateError
     | TStateUser
     | ActionDispatch<[action: TStateAction]>
     | null,

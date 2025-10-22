@@ -25,7 +25,7 @@ import {
   ROUTE,
   SCHEMA,
 } from 'src/utilities/constants';
-import JwtAuthGuard from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 const { TAGS } = CONTROLLER;
 const { CREATE, BAD_REQUEST, UNAUTHORIZED } = ERROR;
@@ -88,9 +88,9 @@ class TagsController {
   @UseGuards(JwtAuthGuard)
   @Get(GET)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
-    @ApiFoundResponse({ description: `${TAG} ${FOUND}` })
-    @ApiInternalServerErrorResponse({ description: `${TAG} ${ERROR.FIND}` })
-    @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
+  @ApiFoundResponse({ description: `${TAG} ${FOUND}` })
+  @ApiInternalServerErrorResponse({ description: `${TAG} ${ERROR.FIND}` })
+  @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   async find(
     @Query(PARAM, ParseArrayPipe) ids: Array<string>,
   ): Promise<Tag[] | undefined> {

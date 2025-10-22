@@ -15,7 +15,7 @@ import {
   TAuthenticationFieldType,
   TAuthenticationToken,
 } from '@/types/components/Authentication';
-import { useDispatchContext } from '@/hooks/State';
+import { useAuthenticationContext, useDispatchContext } from '@/hooks/State';
 import handleState from '@/state/actions';
 
 /**
@@ -30,21 +30,19 @@ const FormAuthentication = (): React.ReactNode => {
   const { API, NOTES } = ROUTE;
   const { REGISTER } = API;
   const { AUTHENTICATION, USER } = STATE_ACTION;
-  const { ACCESS, REFRESH } = STORAGE.TOKEN;
+  const { ACCESS } = STORAGE.TOKEN;
   const router = useRouter();
+  const { getStorage, setStorage } = useStorage();
   const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
   const [message, setMessage] = useState<string>('');
-  const { getStorage, setStorage } = useStorage();
   const dispatch = useDispatchContext();
   const methods = useForm<TAuthenticationFields>();
   const { formState, handleSubmit, reset } = methods;
   let formType = setInitial(type);
 
   useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      setMessage('');
-      reset();
-    }
+    initType();
+    handleSubmitCallback();
   }, [formState, reset]);
 
   /**
@@ -65,6 +63,28 @@ const FormAuthentication = (): React.ReactNode => {
     }
 
     return field;
+  };
+
+  /**
+   * @description Form submission callback handler
+   * @author Luca Cattide
+   * @date 22/10/2025
+   */
+  const handleSubmitCallback = (): void => {
+    if (formState.isSubmitSuccessful) {
+      setMessage('');
+      reset();
+      router.push(NOTES.PATH);
+    }
+  };
+
+  /**
+   * @description Form initialization helper
+   * @author Luca Cattide
+   * @date 21/10/2025
+   */
+  const initType = (): void => {
+    setType(getStorage(ACCESS) ? FORM.TYPE.LOGIN : STATE.DEFAULT.FORM);
   };
 
   /**
@@ -104,6 +124,12 @@ const FormAuthentication = (): React.ReactNode => {
         element: { authenticated: false },
       };
 
+      const emitError = (error: Error): void => {
+        setMessage(error.message);
+        handleState(action, dispatch);
+        reject();
+      };
+
       if (type === SIGNUP) {
         const { acceptance, email, name, password } = values;
 
@@ -122,45 +148,45 @@ const FormAuthentication = (): React.ReactNode => {
         };
       }
 
-      const { data, error } = await apiClient(
-        type === SIGNUP ? REGISTER : ROUTE.API.LOGIN,
-        payload!,
-        type === LOGIN
-          ? {
-              access_token: getStorage(ACCESS) ?? '',
-              refresh_token: getStorage(REFRESH) ?? '',
-            }
-          : undefined,
-      );
-
-      if (error) {
-        setMessage(error.message);
-        handleState(action, dispatch);
-        reject();
-      } else if (data) {
-        const { email } = payload;
-
-        // Storing access token only to improve security vs CSRF attacks
-        // TODO: Store on Redis
-        setStorage(ACCESS, (data as TAuthenticationToken).access_token);
-        handleState(
-          {
-            ...action,
-            element: { authenticated: true },
-          },
-          dispatch,
+      try {
+        const { data, error } = await apiClient(
+          type === SIGNUP ? REGISTER : ROUTE.API.LOGIN,
+          payload!,
+          type === LOGIN
+            ? {
+                access_token: getStorage(ACCESS) ?? '',
+              }
+            : undefined,
         );
-        handleState(
-          {
-            type: USER,
-            element: {
-              email: email,
+
+        if (error) {
+          emitError(error);
+        } else if (data) {
+          const { email } = payload;
+
+          // Storing access token only to improve security vs CSRF attacks
+          // TODO: Store on Redis
+          setStorage(ACCESS, (data as TAuthenticationToken).access_token);
+          handleState(
+            {
+              ...action,
+              element: { authenticated: true },
             },
-          },
-          dispatch,
-        );
-        router.push(NOTES.PATH);
-        resolve();
+            dispatch,
+          );
+          handleState(
+            {
+              type: USER,
+              element: {
+                email,
+              },
+            },
+            dispatch,
+          );
+          resolve();
+        }
+      } catch (error) {
+        emitError(error as Error);
       }
     });
   };

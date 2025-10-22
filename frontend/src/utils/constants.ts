@@ -2,37 +2,31 @@ const THEME = {
   LIGHT: 'light',
   DARK: 'dark',
 };
-
 const ACTION = {
   NEW: 'New',
   EDIT: 'Edit',
   DELETE: 'Delete',
 };
-
 const COOKIE = {
   REFRESH: 'refreshToken',
 };
-
 const NOTE = {
   LABEL: {
     TITLE: 'Note Title',
     CONTENT: 'Note Content',
   },
 };
-
 const SECTION = {
   SEARCH: 'Search',
   NEW: ACTION.NEW,
   DETAILS: 'Note',
   SETTINGS: 'Settings',
 };
-
 const SETTING = {
   LABEL: {
     AUTO_SAVE: 'Autosave',
   },
 };
-
 const ARIA = {
   BACK: 'Go back',
   PIN: 'Pin note',
@@ -42,13 +36,11 @@ const ARIA = {
   SETTINGS: 'Open settings',
   ACCOUNT: 'Account',
 };
-
 const REGEX = {
   NAME: /^[a-zA-Z]+$/i,
   EMAIL: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
   PASSWORD: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm,
 };
-
 const FORM = {
   AUTOCOMPLETE: {
     PASSWORD: 'current-password',
@@ -138,18 +130,19 @@ const FORM = {
     SUBMIT: 'Authentication succeeded',
   },
 };
-
 const REQUEST = {
   CREDENTIALS: 'include',
 };
-
+const ROUTE_PREFIX = {
+  AUTHENTICATION: 'authentication',
+};
 const ROUTE = {
   API: {
-    LOGIN: 'authentication/login',
+    LOGIN: `${ROUTE_PREFIX.AUTHENTICATION}/login`,
     NOTES: 'notes',
-    REGISTER: 'authentication/register',
-    USER: 'user',
-    REFRESH: 'refresh',
+    REGISTER: `${ROUTE_PREFIX.AUTHENTICATION}/register`,
+    USER: 'users',
+    REFRESH: `${ROUTE_PREFIX.AUTHENTICATION}/refresh`,
   },
   AUTHENTICATION: {
     NAME: 'FreeNotes',
@@ -172,20 +165,17 @@ const ROUTE = {
     PATH: '/settings',
   },
 };
-
 const METHOD = {
   DELETE: 'DELETE',
   GET: 'GET',
   PATCH: 'PATCH',
   POST: 'POST',
 };
-
 const HEADER = {
   CONTENT: {
     'Content-Type': 'application/json',
   },
 };
-
 const STATE = {
   DEFAULT: {
     HEADER: {
@@ -207,28 +197,24 @@ const STATE = {
       notes: [],
     },
     ERROR: {
-      title: '',
       message: '',
+      title: '',
     },
   },
 };
-
 const STATE_ACTION = {
   AUTHENTICATION: 'authentication',
+  ERROR: 'error',
   USER: 'user',
   RESET: 'reset',
 };
-
 const ERROR = {
   AUTHENTICATION: 'Authentication error',
   CONTEXT: 'Context must be used within a `Provider`',
   NOSCRIPT: 'You need to enable JavaScript to run this website.',
 };
-
 const CACHE = 60 * 1000;
-
 const TIMEOUT = 60 * 1000;
-
 const STORAGE = {
   TOKEN: {
     ACCESS: 'access_token',

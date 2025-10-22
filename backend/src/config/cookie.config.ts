@@ -21,7 +21,7 @@ export default registerAs(CONFIGURATION_NAME.COOKIE, () => ({
       httpOnly: true,
       maxAge: JWT.EXPIRATION_REFRESH_INVALIDATION,
       path: isDevelopment ? '/' : ROUTE.AUTH.REFRESH_TOKEN,
-      sameSite: COOKIE.STRICT as TCookieStrict,
+      sameSite: isDevelopment ? COOKIE.NONE : (COOKIE.STRICT as TCookieStrict),
       secure: isProduction,
     },
   },

@@ -49,7 +49,7 @@ const apiClient = async (
   };
   const params =
     route[endpoint].method === GET && body
-      ? `?${new URLSearchParams(body as Record<string, string>)}`
+      ? `?${new URLSearchParams(body as Record<string, string>).toString()}`
       : '';
   const headers = authentication
     ? {
@@ -75,8 +75,8 @@ const apiClient = async (
         revalidate: CACHE,
       },
     };
-    const defaultResponse = await fetch(url, payload);
-    let response = defaultResponse;
+    let response = await fetch(url, payload);
+    let expired = false;
 
     // JWT rotation
     if (response.status === 401) {
@@ -88,17 +88,19 @@ const apiClient = async (
         },
       });
 
-      if (response.ok) {
+      if (!response.ok) {
+        expired = true;
+      } else {
         // Data fetching retry
-        response = defaultResponse;
+        response = await fetch(url, payload);
       }
     }
 
     return !response.ok
       ? {
           error: {
-            name: 'Error',
-            message: response.statusText,
+            message: expired ? '' : response.statusText,
+            name: expired ? ERROR.AUTHENTICATION : 'Error',
           },
         }
       : {

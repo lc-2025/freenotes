@@ -69,6 +69,7 @@ class JwtStrategy extends PassportStrategy(Strategy) {
  *   STRATEGY.JWT_REFRESH,
  * )}
  */
+@Injectable()
 class JwtStrategyRefresh extends PassportStrategy(
   Strategy,
   STRATEGY.JWT_REFRESH,
@@ -114,9 +115,7 @@ class JwtStrategyRefresh extends PassportStrategy(
 
     return {
       attributes: user,
-      refreshTokenExpiration: new Date(
-        JWT.EXPIRATION_REFRESH_INVALIDATION,
-      ),
+      refreshTokenExpiration: new Date(JWT.EXPIRATION_REFRESH_INVALIDATION),
     };
   }
 }

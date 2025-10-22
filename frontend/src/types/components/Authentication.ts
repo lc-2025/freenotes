@@ -1,9 +1,9 @@
 type TAuthenticationFields = {
-  name: string;
+  acceptance: string;
   email: string;
+  name: string;
   password: string;
   passwordConfirm: string;
-  acceptance: string;
 };
 
 type TAuthenticationField = {
@@ -15,27 +15,27 @@ type TAuthenticationField = {
 };
 
 type TAuthenticationFieldType =
-  | 'name'
+  | 'acceptance'
   | 'email'
+  | 'name'
   | 'password'
-  | 'passwordConfirm'
-  | 'acceptance';
+  | 'passwordConfirm';
 
 type TAuthenticationToken = {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string;
 };
 
 type TAuthenticationUser = {
   acceptance: string;
-  name: string;
   email: string;
+  name: string;
   password: string;
 };
 
 export type {
-  TAuthenticationFields,
   TAuthenticationField,
+  TAuthenticationFields,
   TAuthenticationFieldType,
   TAuthenticationToken,
   TAuthenticationUser,
