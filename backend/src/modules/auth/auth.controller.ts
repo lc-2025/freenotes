@@ -69,7 +69,7 @@ class AuthController {
     @Req() request,
     @Res({ passthrough: true }) response,
   ): Promise<TJWT | undefined> {
-    return await this.authService.login(request.user, response);
+    return await this.authService.login(request.user._doc, response);
   }
 
   /**
