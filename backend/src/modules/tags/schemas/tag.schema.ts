@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Note } from 'src/modules/notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { ITag } from '../types/tag.types';
+import {IsArray, IsString} from 'class-validator';
 
 type TagDocument = HydratedDocument<Tag>;
 
@@ -18,10 +19,16 @@ type TagDocument = HydratedDocument<Tag>;
 @Schema()
 class Tag implements ITag {
   @ApiProperty()
+  @Prop({ ...SCHEMA_OPTIONS, unique: true, index: true })
+  id: Types.ObjectId;
+
+  @ApiProperty()
+  @IsString()
   @Prop({ ...SCHEMA_OPTIONS, unique: true })
   label: string;
 
   @ApiProperty()
+  @IsArray()
   @Prop({
     default: [],
     ref: SCHEMA.NOTE,
@@ -30,7 +37,6 @@ class Tag implements ITag {
   notes: Array<Note>;
 }
 
-// TODO: Indexing
 const TagSchema = SchemaFactory.createForClass(Tag);
 
 export { Tag, TagSchema };

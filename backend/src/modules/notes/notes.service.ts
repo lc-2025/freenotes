@@ -1,4 +1,4 @@
-import { Model, Connection } from 'mongoose';
+import mongoose, { Model, Connection } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Note } from './schemas/note.schema';
@@ -56,7 +56,10 @@ class NotesService {
     try {
       this.logger.log(`${MESSAGE.CREATE} ${messageSuffix}...`);
 
-      return await new this.noteModel(createNoteDto).save();
+      return await new this.noteModel({
+        ...createNoteDto,
+        id: new mongoose.Types.ObjectId(),
+      }).save();
     } catch (error) {
       const message = `${CREATE} ${messageSuffix}`;
 

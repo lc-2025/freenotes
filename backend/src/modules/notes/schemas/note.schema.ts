@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { IsOptional } from 'class-validator';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 import { User } from 'src/modules/users/schemas/user.schema';
 import { Tag } from '../../tags/schemas/tag.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
@@ -19,10 +19,16 @@ type NoteDocument = HydratedDocument<Note>;
 @Schema({ timestamps: true })
 class Note implements INote {
   @ApiProperty()
+  @Prop({ ...SCHEMA_OPTIONS, unique: true, index: true })
+  id: Types.ObjectId;
+
+  @ApiProperty()
+  @IsString()
   @Prop(SCHEMA_OPTIONS)
   body: string;
 
   @ApiProperty()
+  @IsBoolean()
   @Prop({
     default: false,
   })
@@ -30,10 +36,12 @@ class Note implements INote {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsArray()
   @Prop({ default: [], ref: 'Tag', type: mongoose.Schema.Types.ObjectId })
   tags?: Array<Tag>;
 
   @ApiProperty()
+  @IsString()
   @Prop({ ...SCHEMA_OPTIONS, unique: true })
   title: string;
 
@@ -47,7 +55,6 @@ class Note implements INote {
   user: User;
 }
 
-// TODO: Indexing
 const NoteSchema = SchemaFactory.createForClass(Note);
 
 export { Note, NoteSchema };

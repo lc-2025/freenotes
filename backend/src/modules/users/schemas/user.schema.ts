@@ -1,7 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
-import { IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 import { Note } from 'src/modules/notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { IUser } from '../types/users.type';
@@ -21,15 +26,22 @@ class User implements IUser {
   _id: Types.ObjectId;
 
   @ApiProperty()
+  @Prop({ ...SCHEMA_OPTIONS, unique: true, index: true })
+  id: Types.ObjectId;
+
+  @ApiProperty()
+  @IsString()
   @Prop({ ...SCHEMA_OPTIONS, enum: ['true', 'false'] })
   // Declared as string since boolean casting is bugged
   acceptance: string;
 
   @ApiProperty()
+  @IsEmail()
   @Prop(SCHEMA_OPTIONS)
   email: string;
 
   @ApiProperty()
+  @IsString()
   @Prop(SCHEMA_OPTIONS)
   name: string;
 
@@ -43,15 +55,16 @@ class User implements IUser {
   notes?: Array<Note>;
 
   @ApiProperty()
+  @IsStrongPassword()
   @Prop(SCHEMA_OPTIONS)
   password: string;
 
   @ApiProperty()
+  @IsString()
   @IsOptional()
   refreshToken?: string;
 }
 
-// TODO: Indexing
 const UserSchema = SchemaFactory.createForClass(User);
 
 export { User, UserSchema };

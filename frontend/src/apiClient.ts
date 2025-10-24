@@ -39,7 +39,12 @@ const apiClient = async (
   };
   const route = {
     [LOGIN]: defaultOptions.get,
-    [NOTES]: body ? defaultOptions.post : defaultOptions.get,
+    [NOTES]: body
+      ? {
+          ...defaultOptions.post,
+          body: JSON.stringify(body),
+        }
+      : defaultOptions.get,
     [REGISTER]: {
       ...defaultOptions.post,
       body: body ? JSON.stringify(body) : undefined,

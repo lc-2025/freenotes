@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OmitType } from '@nestjs/mapped-types';
 import { Types } from 'mongoose';
-import { IsString, IsBoolean, IsArray } from 'class-validator';
+import { IsString, IsBoolean, IsArray, IsOptional } from 'class-validator';
 import { User } from 'src/modules/users/schemas/user.schema';
 import { Tag } from 'src/modules/tags/schemas/tag.schema';
 import { INote } from './types/note.types';
@@ -25,6 +25,7 @@ class CreateNoteDto implements INote {
 
   @ApiPropertyOptional()
   @IsArray()
+  @IsOptional()
   tags?: Array<Tag>;
 
   @ApiProperty()

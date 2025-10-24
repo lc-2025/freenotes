@@ -1,4 +1,4 @@
-import { Model, Connection, Types } from 'mongoose';
+import mongoose, { Model, Connection, Types } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
@@ -63,6 +63,7 @@ class UsersService {
 
       return await new this.userModel({
         ...createUserDto,
+        id: new mongoose.Types.ObjectId(),
         password: passwordEncrypted,
       }).save();
     } catch (error) {
