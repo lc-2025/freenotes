@@ -23,7 +23,7 @@ import { TApiRequest, TApiResponse } from './types/Api';
  */
 const apiClient = async (
   endpoint: string,
-  body?: Record<string, string | boolean> | TAuthenticationUser,
+  body?: Record<string, string | boolean | object> | TAuthenticationUser,
   authentication?: TAuthenticationToken,
 ): Promise<TApiResponse> => {
   const { DELETE, GET, PATCH, POST } = METHOD;
@@ -39,7 +39,7 @@ const apiClient = async (
   };
   const route = {
     [LOGIN]: defaultOptions.get,
-    [NOTES]: defaultOptions.get,
+    [NOTES]: body ? defaultOptions.post : defaultOptions.get,
     [REGISTER]: {
       ...defaultOptions.post,
       body: body ? JSON.stringify(body) : undefined,

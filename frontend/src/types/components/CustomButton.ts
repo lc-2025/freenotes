@@ -1,5 +1,6 @@
 type TCustomButton = {
   ariaLabel: string;
+  callback?: () => Promise<void>;
   color: string;
   disabled?: boolean;
   text: string;

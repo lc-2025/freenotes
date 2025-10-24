@@ -15,7 +15,7 @@ import {
   TAuthenticationFieldType,
   TAuthenticationToken,
 } from '@/types/components/Authentication';
-import { useAuthenticationContext, useDispatchContext } from '@/hooks/State';
+import { useDispatchContext } from '@/hooks/State';
 import handleState from '@/state/actions';
 
 /**

@@ -1,4 +1,4 @@
-type TNote = { title: string };
+type TNote = { content?: string; title: string };
 
 type TNotes = Array<TNote>;
 

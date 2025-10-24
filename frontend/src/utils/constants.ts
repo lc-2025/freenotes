@@ -130,6 +130,12 @@ const FORM = {
     SUBMIT: 'Authentication succeeded',
   },
 };
+const NEW = {
+  FIELD: {
+    CONTENT: 'content',
+    TITLE: 'title',
+  },
+};
 const REQUEST = {
   CREDENTIALS: 'include',
 };
@@ -196,6 +202,10 @@ const STATE = {
       name: '',
       notes: [],
     },
+    NOTE: {
+      content: '',
+      title: '',
+    },
     ERROR: {
       message: '',
       title: '',
@@ -242,4 +252,5 @@ export {
   STORAGE,
   COOKIE,
   REQUEST,
+  NEW,
 };
