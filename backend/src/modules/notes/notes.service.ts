@@ -45,7 +45,7 @@ class NotesService {
    * @returns {*}  {Promise<Note | undefined>}
    * @memberof NotesService
    */
-  async create(createNoteDto: CreateNoteDto): Promise<Note | undefined> { console.log(createNoteDto)
+  async create(createNoteDto: CreateNoteDto): Promise<Note | undefined> {
     if (!createNoteDto) {
       this.logger.error(BAD_REQUEST);
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
