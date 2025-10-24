@@ -4,7 +4,7 @@ import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Note } from 'src/modules/notes/schemas/note.schema';
 import { SCHEMA, SCHEMA_OPTIONS } from 'src/utilities/constants';
 import { ITag } from '../types/tag.types';
-import {IsArray, IsString} from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 type TagDocument = HydratedDocument<Tag>;
 
@@ -16,7 +16,7 @@ type TagDocument = HydratedDocument<Tag>;
  * @implements {ITag}
  */
 @ApiSchema()
-@Schema()
+@Schema({ autoIndex: false })
 class Tag implements ITag {
   @ApiProperty()
   @Prop({ ...SCHEMA_OPTIONS, unique: true, index: true })
@@ -30,7 +30,6 @@ class Tag implements ITag {
   @ApiProperty()
   @IsArray()
   @Prop({
-    default: [],
     ref: SCHEMA.NOTE,
     type: [{ type: mongoose.Schema.Types.ObjectId }],
   })

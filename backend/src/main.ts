@@ -44,7 +44,7 @@ async function bootstrap() {
       // Convert JSONs into DTOs
       transform: true,
       // Validate expected data only
-      whitelist: true,
+      whitelist: false,
     }),
   );
   // CORS

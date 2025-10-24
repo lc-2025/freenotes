@@ -21,10 +21,8 @@ type UserDocument = HydratedDocument<User>;
  * @implements {IUser}
  */
 @ApiSchema()
-@Schema()
+@Schema({ autoIndex: false })
 class User implements IUser {
-  _id: Types.ObjectId;
-
   @ApiProperty()
   @Prop({ ...SCHEMA_OPTIONS, unique: true, index: true })
   id: Types.ObjectId;
@@ -48,7 +46,6 @@ class User implements IUser {
   @ApiPropertyOptional()
   @IsOptional()
   @Prop({
-    default: [],
     ref: SCHEMA.NOTE,
     type: [{ type: mongoose.Schema.Types.ObjectId }],
   })

@@ -232,7 +232,7 @@ class AuthService {
    */
   async setToken(user: User): Promise<TJWT | undefined> {
     try {
-      const { _id } = user;
+      const { id } = user;
 
       this.logger.log(`${MESSAGE.AUTH}...`);
 
@@ -240,7 +240,7 @@ class AuthService {
         access_token: await this.jwtService.signAsync(
           {
             email: user.email,
-            sub: _id,
+            sub: id,
           },
           {
             secret: this.getConfiguration(CONFIGURATION).secret,
@@ -314,16 +314,16 @@ class AuthService {
     try {
       this.logger.log(`${MESSAGE.AUTH_REFRESH}...`);
 
-      const { _id } = user;
+      const { id } = user;
       const refreshToken = await this.jwtService.signAsync(
-        { sub: _id },
+        { sub: id },
         {
           secret: this.getConfiguration(CONFIGURATION).secretRefresh,
           expiresIn: JWT.EXPIRATION_REFRESH,
         },
       );
 
-      this.usersService.update(_id, refreshToken);
+      this.usersService.update(id, refreshToken);
 
       return refreshToken;
     } catch (error) {
@@ -347,14 +347,14 @@ class AuthService {
   async signIn(email: string, password: string): Promise<TJWT | undefined> {
     try {
       const user = await this.validateUser(email, password);
-      const { _id } = user!;
+      const { id } = user!;
 
       this.logger.log(`${MESSAGE.AUTH}...`);
 
       return {
         access_token: await this.jwtService.signAsync({
           email: user!.email,
-          sub: _id,
+          sub: id,
         }),
       };
     } catch (error) {

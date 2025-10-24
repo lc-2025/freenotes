@@ -9,6 +9,8 @@ import { INote } from '../types/note.types';
 
 type NoteDocument = HydratedDocument<Note>;
 
+const { TAG, USER } = SCHEMA;
+
 /**
  * @description Note schema
  * @author Luca Cattide
@@ -37,7 +39,7 @@ class Note implements INote {
   @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
-  @Prop({ default: [], ref: 'Tag', type: mongoose.Schema.Types.ObjectId })
+  @Prop({ ref: TAG, type: mongoose.Schema.Types.ObjectId })
   tags?: Array<Tag>;
 
   @ApiProperty()
@@ -48,8 +50,7 @@ class Note implements INote {
   @ApiProperty()
   @Prop({
     ...SCHEMA_OPTIONS,
-    default: [],
-    ref: SCHEMA.USER,
+    ref: USER,
     type: mongoose.Schema.Types.ObjectId,
   })
   user: User;

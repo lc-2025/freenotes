@@ -10,7 +10,6 @@ const APP = {
   VERSION: version,
   PORT: 'port',
 };
-
 const CONFIGURATION_NAME = {
   APP: 'app',
   CACHE: 'cache',
@@ -18,7 +17,6 @@ const CONFIGURATION_NAME = {
   DATABASE: 'database',
   THROTTLE: 'throttle',
 };
-
 const CONNECTION = {
   CONNECTED: 'DB connected',
   DISCONNECTED: 'DB connection disconnected',
@@ -26,25 +24,20 @@ const CONNECTION = {
   OPEN: 'DB connection open',
   RECONNECTED: 'DB reconnected',
 };
-
 const CONTROLLER = {
   AUTH: 'authentication',
   NOTES: 'notes',
   TAGS: 'tags',
   USERS: 'users',
 };
-
 const COOKIE = {
   NONE: 'none',
   STRICT: 'strict',
 };
-
 const DECORATOR = {
   PUBLIC: 'isPublic',
 };
-
 const ENVIRONMENTS = ['development', 'production'];
-
 const ERROR = {
   ALREADY_EXIST: 'already exist',
   AUTHENTICATE: 'Cannot authenticate',
@@ -58,18 +51,15 @@ const ERROR = {
   UPDATE: 'Cannot update',
   VALIDATION: 'Validation failed',
 };
-
 const HEADER = {
   XFP: 'x-forwarded-proto',
 };
-
 const JWT = {
   // Short expiration times protect against XSS attacks
   EXPIRATION: '5m',
   EXPIRATION_REFRESH: '15m',
   EXPIRATION_REFRESH_INVALIDATION: 15 * 60 * 1000,
 };
-
 const MESSAGE = {
   AUTH: 'Generating user access token',
   AUTH_REFRESH: 'Generating user refresh token',
@@ -90,20 +80,16 @@ const MESSAGE = {
   UPDATED: 'successfully updated',
   VERIFY: 'Verifying',
 };
-
 const PROTOCOL = {
   HTTPS: 'https',
 };
-
 const RATE_LIMIT = {
   MAX_REQUESTS_LONG: 100,
   MAX_REQUESTS_SHORT: 2,
   WINDOW_LONG: 60 * 1000,
   WINDOW_SHORT: 1 * 1000,
 };
-
 const ROOT = 'OK';
-
 const ROUTE = {
   AUTH: {
     LOGIN: 'login',
@@ -125,23 +111,19 @@ const ROUTE = {
     PARAM: 'email',
   },
 };
-
 const SCHEMA = {
   NOTE: 'Note',
   TAG: 'Tag',
   USER: 'User',
 };
-
 const SCHEMA_OPTIONS = {
   required: true,
 };
-
 const STRATEGY = {
   LOCAL: 'local',
   JWT: 'jwt',
   JWT_REFRESH: 'jwt-refresh',
 };
-
 const TOKEN = {
   BEARER: 'Bearer',
   REFRESH: 'refreshToken',

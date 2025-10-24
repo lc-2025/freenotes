@@ -55,7 +55,7 @@ const setError = (status: HttpStatus, message: string, error?: any): void => {
  * @returns {*}  {TQueryFilter}
  */
 const setFilter = (ids: Array<string>): TQueryFilter => ({
-  _id: {
+  id: {
     $in: `${ids.map((id: string) => new mongoose.Types.ObjectId(id))}`,
   },
 });

@@ -8,6 +8,7 @@ import { useUserContext } from '@/hooks/State';
 import { NOTE, ROUTE, SECTION, STATE, STORAGE } from '@/utils/constants';
 import { TNote } from '@/types/components/Note';
 import useStorage from '@/hooks/Storage';
+import { useRouter } from 'next/navigation';
 
 /**
  * @description New note component
@@ -18,6 +19,7 @@ import useStorage from '@/hooks/Storage';
 const NoteNew = (): React.ReactNode => {
   const { TITLE, CONTENT } = NOTE.LABEL;
   const { NEW } = SECTION;
+  const router = useRouter();
   const [note, setNote] = useState<TNote>(STATE.DEFAULT.NOTE);
   const { email } = useUserContext();
   const { getStorage } = useStorage();
@@ -68,7 +70,7 @@ const NoteNew = (): React.ReactNode => {
         body: content!,
         pinned: false,
         title,
-        user: { email },
+        user: { email: 'asd@asd.com' },
       },
       {
         access_token: getStorage(STORAGE.TOKEN.ACCESS) ?? '',
@@ -79,8 +81,7 @@ const NoteNew = (): React.ReactNode => {
       console.error(error);
       // TODO: Show error
     } else if (data) {
-      console.log(data);
-      // TODO: Redirect to home
+      router.push(ROUTE.NOTES.PATH);
     }
   };
 

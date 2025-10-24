@@ -5,6 +5,7 @@ import { Note } from './schemas/note.schema';
 import CreateNoteDto, { UpdateNoteDto } from './create-note.dto';
 import { setFilter, setError, setList } from 'src/utilities/utils';
 import { ERROR, MESSAGE } from 'src/utilities/constants';
+import UsersService from '../users/users.service';
 
 const { BAD_REQUEST, CREATE, DELETE, FIND, UPDATE } = ERROR;
 
@@ -35,6 +36,7 @@ class NotesService {
   constructor(
     @InjectConnection() private readonly connection: Connection,
     @InjectModel(Note.name) private noteModel: Model<Note>,
+    private readonly usersService: UsersService,
   ) {}
 
   /**
@@ -56,9 +58,12 @@ class NotesService {
     try {
       this.logger.log(`${MESSAGE.CREATE} ${messageSuffix}...`);
 
+      const user = await this.usersService.search(createNoteDto.user.email);
+
       return await new this.noteModel({
         ...createNoteDto,
         id: new mongoose.Types.ObjectId(),
+        user: user?.id,
       }).save();
     } catch (error) {
       const message = `${CREATE} ${messageSuffix}`;

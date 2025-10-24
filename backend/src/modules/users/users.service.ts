@@ -2,11 +2,11 @@ import mongoose, { Model, Connection, Types } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
+import { Transform } from 'class-transformer';
 import { User } from './schemas/user.schema';
 import CreateUserDto from './create-user.dto';
 import { setError } from 'src/utilities/utils';
-import { ERROR, MESSAGE, ROUTE } from 'src/utilities/constants';
-import { Transform } from 'class-transformer';
+import { CONTROLLER, ERROR, MESSAGE, ROUTE } from 'src/utilities/constants';
 
 const { BAD_REQUEST, FIND } = ERROR;
 
@@ -99,14 +99,17 @@ class UsersService {
 
     try {
       const property = {
-        id: { _id: element },
+        id: { id: element },
         email: { email: element },
         refreshToken: { refreshToken: element },
       };
 
       this.logger.log(`${MESSAGE.READ} the user...`);
 
-      return await this.userModel.findOne(property[type]).exec();
+      return await this.userModel
+        .findOne(property[type])
+        .populate(CONTROLLER.NOTES)
+        .exec();
     } catch (error) {
       const message = `User ${FIND}`;
 
@@ -160,12 +163,9 @@ class UsersService {
    */
   async update(id: Types.ObjectId, refreshToken: string): Promise<void> {
     try {
-      // TODO: Const
       this.logger.log('Updating the user...');
 
-      await this.userModel
-        .findOneAndUpdate({ _id: id }, { refreshToken })
-        .exec();
+      await this.userModel.findOneAndUpdate({ id }, { refreshToken }).exec();
     } catch (error) {
       const message = `User ${FIND}`;
 

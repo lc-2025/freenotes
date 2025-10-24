@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Note, NoteSchema } from './schemas/note.schema';
 import NotesService from './notes.service';
 import NotesController from './notes.controller';
+import UsersModule from '../users/users.module';
 
 /**
  * @description Notes feature module
@@ -23,6 +24,7 @@ import NotesController from './notes.controller';
         schema: NoteSchema,
       },
     ]),
+    UsersModule,
   ],
   providers: [NotesService],
 })
