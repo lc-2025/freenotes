@@ -38,7 +38,10 @@ const apiClient = async (
     },
   };
   const route = {
-    [LOGIN]: defaultOptions.get,
+    [LOGIN]: {
+      ...defaultOptions.post,
+      body: JSON.stringify(body),
+    },
     [NOTES]: body
       ? {
           ...defaultOptions.post,
@@ -85,6 +88,7 @@ const apiClient = async (
 
     // JWT rotation
     if (response.status === 401) {
+      console.log(111, payload);
       response = await fetch(`${baseUrl}/${REFRESH}`, {
         ...payload,
         ...route[REFRESH],

@@ -4,6 +4,7 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import bcrypt from 'bcrypt';
 import UsersService from '../users/users.service';
+import RedisService from '../redis/redis.service';
 import CreateUserDto from 'src/modules/users/create-user.dto';
 import SignInDto from './sign-in.dto';
 import { ConfigService } from '@nestjs/config';
@@ -50,6 +51,7 @@ class AuthService {
    * @param {ConfigService} configService
    * @param {UsersService} usersService
    * @param {JwtService} jwtService
+   * @param {RedisService} redisService
    * @memberof AuthService
    */
   constructor(
@@ -57,6 +59,7 @@ class AuthService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly redisService: RedisService,
   ) {}
 
   /**
@@ -73,7 +76,7 @@ class AuthService {
       [COOKIE]: this.configService.get(name).refreshToken,
     };
 
-    this.logger.log(`${MESSAGE.CONFIGURATION} ${name}...`)
+    this.logger.log(`${MESSAGE.CONFIGURATION} ${name}...`);
 
     return configuration[name];
   }
@@ -139,7 +142,11 @@ class AuthService {
    * @returns {*}
    * @memberof AuthService
    */
-  async refreshAccessToken(refreshToken: string, response: Response) {
+  async refreshAccessToken(
+    user: User,
+    refreshToken: string,
+    response: Response,
+  ) {
     const message = `${ERROR.FIND} the user`;
 
     if (!refreshToken) {
@@ -161,18 +168,20 @@ class AuthService {
         setError(HttpStatus.FORBIDDEN, UNAUTHORIZED);
       }
 
-      const user = await this.usersService.find(TOKEN.REFRESH, refreshToken);
+      await this.redisService.deleteRefreshToken(refreshToken);
 
-      if (!user) {
-        this.logger.error(message);
-        setError(HttpStatus.FOUND, message);
-      }
+      const result = await this.setTokenCookie(user, response);
+      const { token } = result;
 
-      const result = await this.setTokenCookie(user!, response);
+      await this.redisService.setRefreshToken(
+        JWT.EXPIRATION_REFRESH_INVALIDATION,
+        token?.refresh_token!,
+        user.id.toString(),
+      );
 
       response = result.response;
 
-      return result.token;
+      return token;
     } catch (error) {
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
@@ -323,7 +332,11 @@ class AuthService {
         },
       );
 
-      this.usersService.update(id, refreshToken);
+      this.redisService.setRefreshToken(
+        JWT.EXPIRATION_REFRESH_INVALIDATION,
+        refreshToken,
+        id.toString(),
+      );
 
       return refreshToken;
     } catch (error) {

@@ -6,7 +6,6 @@ interface IUser {
   name: string;
   notes?: Array<Note>;
   password: string;
-  refreshToken?: string;
 }
 
 export type { IUser };

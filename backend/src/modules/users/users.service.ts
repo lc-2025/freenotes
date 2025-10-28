@@ -111,7 +111,6 @@ class UsersService {
       const property = {
         id: { id: element },
         email: { email: element },
-        refreshToken: { refreshToken: element },
       };
 
       this.logger.log(`${MESSAGE.READ} the user...`);
@@ -177,38 +176,6 @@ class UsersService {
     session.startTransaction();
 
     return session;
-  }
-
-  /**
-   * @description User update method
-   * @author Luca Cattide
-   * @date 26/08/2025
-   * @param {Types.ObjectId} id
-   * @param {string} refreshToken
-   * @returns {*}  {Promise<void>}
-   * @memberof UsersService
-   */
-  async update(id: Types.ObjectId, refreshToken: string): Promise<void> {
-    const session = await this.startTransaction();
-
-    try {
-      this.logger.log('Updating the user...');
-
-      await this.userModel
-        .findOneAndUpdate({ id }, { refreshToken })
-        .session(session)
-        .exec();
-      await session.commitTransaction();
-    } catch (error) {
-      const message = `User ${FIND}`;
-
-      await session.abortTransaction();
-
-      this.logger.error(message);
-      setError(HttpStatus.FOUND, message, error);
-    } finally {
-      session.endSession();
-    }
   }
 }
 

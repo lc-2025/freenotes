@@ -17,8 +17,8 @@ type TAuthenticationToken = TAuthenticationData & {
 };
 
 type TAuthenticationTokenRefresh = {
-  attributes: User;
-  refreshTokenExpiration: Date;
+  user: User;
+  refreshToken: string;
 };
 
 type TJWT = {

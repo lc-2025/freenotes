@@ -15,6 +15,7 @@ const CONFIGURATION_NAME = {
   CACHE: 'cache',
   COOKIE: 'cookie',
   DATABASE: 'database',
+  REDIS: 'redis',
   THROTTLE: 'throttle',
 };
 const CONNECTION = {
@@ -75,6 +76,8 @@ const MESSAGE = {
   FOUND: 'successfully found',
   LOGOUT: 'Logging out user...',
   READ: 'Searching',
+  REFRESH: 'Saving refresh token...',
+  REFRESH_SAVED: 'Refresh token successfully saved',
   START: 'Server started and listening in',
   UPDATE: 'Updating',
   UPDATED: 'successfully updated',
@@ -88,6 +91,14 @@ const RATE_LIMIT = {
   MAX_REQUESTS_SHORT: 2,
   WINDOW_LONG: 60 * 1000,
   WINDOW_SHORT: 1 * 1000,
+};
+const REDIS = {
+  CLIENT: 'REDIS_CLIENT',
+  CONNECTION: {
+    CONNECTED: 'Redis connected',
+    ERROR: 'Redis error: ',
+  },
+  PREFIX: 'refresh:',
 };
 const ROOT = 'OK';
 const ROUTE = {
@@ -143,6 +154,7 @@ export {
   MESSAGE,
   PROTOCOL,
   RATE_LIMIT,
+  REDIS,
   ROOT,
   ROUTE,
   SCHEMA,

@@ -8,6 +8,7 @@ import UsersModule from '../users/users.module';
 import LocalStrategy from './local.strategy';
 import { JwtStrategy, JwtStrategyRefresh } from './jwt.strategy';
 import { APP, JWT } from 'src/utilities/constants';
+import RedisModule from '../redis/redis.module';
 
 /**
  * @description Authentication feature module
@@ -34,6 +35,7 @@ import { APP, JWT } from 'src/utilities/constants';
       }),
     }),
     PassportModule,
+    RedisModule,
     UsersModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtStrategyRefresh],

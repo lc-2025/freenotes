@@ -7,7 +7,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import compression from 'compression';
 import helmet from 'helmet';
-import ExpressMongoSanitize from 'express-mongo-sanitize';
+// FIXME: import ExpressMongoSanitize from 'express-mongo-sanitize';
 import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,6 +17,7 @@ import cookieConfig from '../../config/cookie.config';
 import databaseConfig from '../../config/database.config';
 import AuthModule from '../auth/auth.module';
 import NotesModule from '../notes/notes.module';
+import RedisModule from '../redis/redis.module';
 import UsersModule from '../users/users.module';
 import TagsModule from '../tags/tags.module';
 import SslMiddleware from '../../middlewares/ssl.middleware';
@@ -24,13 +25,13 @@ import LoggingInterceptor from '../../interceptors/logging.interceptor';
 import TimeoutInterceptor from '../../interceptors/timeout.interceptor';
 import throttleConfig from '../../config/throttle.config';
 //import AuthGuard from './guards/auth.guard';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import {
   CONFIGURATION_NAME,
   CONNECTION,
   CONTROLLER,
   ENVIRONMENTS,
 } from '../../utilities/constants';
+import redisConfig from 'src/config/redis.config';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -64,6 +65,7 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
         cacheConfig,
         cookieConfig,
         databaseConfig,
+        redisConfig,
         throttleConfig,
       ],
     }),
@@ -87,6 +89,7 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
       }),
     }),
     NotesModule,
+    RedisModule,
     TagsModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],

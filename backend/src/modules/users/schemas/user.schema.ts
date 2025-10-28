@@ -55,11 +55,6 @@ class User implements IUser {
   @IsStrongPassword()
   @Prop(SCHEMA_OPTIONS)
   password: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  refreshToken?: string;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

@@ -4,13 +4,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import UsersService from 'src/modules/users/users.service';
-import { APP, JWT, STRATEGY } from 'src/utilities/constants';
+import { APP, STRATEGY } from 'src/utilities/constants';
 import {
   TAuthentication,
   TAuthenticationToken,
   TAuthenticationTokenRefresh,
 } from './types/auth.type';
 import { extractCookieToken } from 'src/utilities/utils';
+import RedisService from '../redis/redis.service';
 
 /**
  * @description Authentication JWT strategy class
@@ -79,19 +80,24 @@ class JwtStrategyRefresh extends PassportStrategy(
    * @author Luca Cattide
    * @date 27/08/2025
    * @param {ConfigService} configService
-   * @param {UsersService} userService
+   * @param {RedisService} redisService
+   * @param {UserService} userService
    * @memberof JwtStrategyRefresh
    */
   constructor(
     private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
     private readonly userService: UsersService,
   ) {
     super({
-      ignoreExpiration: false,
+      // Manual check
+      ignoreExpiration: true,
       // Extract token from cookie instead of request header to improve security
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => extractCookieToken(request),
       ]),
+      // Get the raw token
+      passReqToCallback: true,
       secretOrKey: configService.get(APP.CONFIGURATION).secretRefresh,
     });
   }
@@ -105,17 +111,30 @@ class JwtStrategyRefresh extends PassportStrategy(
    * @memberof JwtStrategyRefresh
    */
   async validate(
-    payload: TAuthenticationToken,
+    payload: any,
+    request: Request,
   ): Promise<TAuthenticationTokenRefresh> {
-    const user = await this.userService.find('id', payload.sub);
+    const token = extractCookieToken(request);
+
+    if (!token || payload.exp * 1000 < Date.now()) {
+      throw new UnauthorizedException();
+    }
+
+    const userId = await this.redisService.getUserId(token);
+
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userService.find('id', userId);
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
     return {
-      attributes: user,
-      refreshTokenExpiration: new Date(JWT.EXPIRATION_REFRESH_INVALIDATION),
+      user,
+      refreshToken: token,
     };
   }
 }

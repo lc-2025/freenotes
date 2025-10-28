@@ -4,8 +4,6 @@ import {
   Post,
   HttpCode,
   HttpStatus,
-  Get,
-  Request,
   UseGuards,
   Req,
   Res,
@@ -23,6 +21,7 @@ import CreateUserDto from 'src/modules/users/create-user.dto';
 import Public from 'src/decorators/public.decorator';
 import { CONTROLLER, ERROR, ROUTE } from 'src/utilities/constants';
 import { JwtRefreshAuthGuard } from 'src/guards/jwt-auth.guard';
+import { extractCookieToken } from 'src/utilities/utils';
 
 const { AUTH } = CONTROLLER;
 const { AUTHENTICATE, BAD_REQUEST, TOKEN, UNAUTHORIZED } = ERROR;
@@ -62,13 +61,14 @@ class AuthController {
    * @memberof AuthController
    */
   @UseGuards(LocalAuthGuard)
-  @Get(LOGIN)
+  @Post(LOGIN)
   @ApiBadRequestResponse({ description: BAD_REQUEST })
   @ApiInternalServerErrorResponse({ description: `${AUTHENTICATE} the user` })
   async login(
     @Req() request,
     @Res({ passthrough: true }) response,
   ): Promise<TJWT | undefined> {
+    console.log(request.user, response);
     return await this.authService.login(request.user._doc, response);
   }
 
@@ -108,8 +108,11 @@ class AuthController {
     @Req() request,
     @Res({ passthrough: true }) response,
   ): Promise<TJWT | undefined> {
+    const { user, refreshToken } = request;
+
     return await this.authService.refreshAccessToken(
-      request.refreshToken,
+      user,
+      refreshToken,
       response,
     );
   }
