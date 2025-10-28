@@ -366,13 +366,6 @@ class AuthService {
     }
   }
 
-  async startTransaction() {
-    const session = await this.connection.startSession();
-
-    session.startTransaction();
-    // TODO: Your transaction logic here
-  }
-
   /**
    * @description Authentication user validation method
    * @author Luca Cattide

@@ -1,4 +1,4 @@
-import mongoose, { Model, Connection } from 'mongoose';
+import mongoose, { Model, Connection, ClientSession } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Note } from './schemas/note.schema';
@@ -54,22 +54,29 @@ class NotesService {
     }
 
     const messageSuffix = `the new note ${createNoteDto.title}`;
+    const session = await this.startTransaction();
 
     try {
       this.logger.log(`${MESSAGE.CREATE} ${messageSuffix}...`);
 
       const user = await this.usersService.search(createNoteDto.user.email);
-
-      return await new this.noteModel({
+      const note = await new this.noteModel({
         ...createNoteDto,
         id: new mongoose.Types.ObjectId(),
         user: user?.id,
-      }).save();
+      }).save({ session });
+
+      await session.commitTransaction();
+
+      return note;
     } catch (error) {
       const message = `${CREATE} ${messageSuffix}`;
 
+      await session.abortTransaction();
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -88,16 +95,28 @@ class NotesService {
     }
 
     const messageSuffix = `the note ${id}`;
+    const session = await this.startTransaction();
 
     try {
       this.logger.log(`${MESSAGE.DELETE} ${messageSuffix}...`);
 
-      return await this.noteModel.findByIdAndDelete({ id }).exec();
+      const note = await this.noteModel
+        .findByIdAndDelete({ id })
+        .session(session)
+        .exec();
+
+      await session.commitTransaction();
+
+      return note;
     } catch (error) {
       const message = `${DELETE} ${messageSuffix}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -115,15 +134,25 @@ class NotesService {
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
+    const session = await this.startTransaction();
+
     try {
       this.logger.log(`${MESSAGE.READ} the note ${id}...`);
 
-      return await this.noteModel.findOne({ id }).exec();
+      const note = await this.noteModel.findOne({ id }).session(session).exec();
+
+      await session.commitTransaction();
+
+      return note;
     } catch (error) {
       const message = `Note ${id} ${FIND}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.FOUND, message, error);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -141,17 +170,30 @@ class NotesService {
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
+    const session = await this.startTransaction();
+
     try {
       const noteIds = ids.split(',');
 
       this.logger.log(`${MESSAGE.READ} notes: ${setList(noteIds)}...`);
 
-      return await this.noteModel.find(setFilter(noteIds)).exec();
+      const note = await this.noteModel
+        .find(setFilter(noteIds))
+        .session(session)
+        .exec();
+
+      await session.commitTransaction();
+
+      return note;
     } catch (error) {
       const message = `Notes ${FIND}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.FOUND, message);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -171,28 +213,46 @@ class NotesService {
 
     const { id, title } = updateNoteDto;
     const messageSuffix = `the note ${title}`;
+    const session = await this.startTransaction();
 
     try {
       this.logger.log(`${MESSAGE.UPDATE} ${messageSuffix}...`);
 
-      return await this.noteModel
+      const note = await this.noteModel
         .findOneAndUpdate({ id }, updateNoteDto, {
           new: true,
         })
+        .session(session)
         .exec();
+
+      await session.commitTransaction();
+
+      return note;
     } catch (error) {
       const message = `${UPDATE} ${messageSuffix}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    } finally {
+      session.endSession();
     }
   }
 
-  async startTransaction() {
+  /**
+   * @description Query transaction starting method
+   * @author Luca Cattide
+   * @date 28/10/2025
+   * @returns {*}  {Promise<ClientSession>}
+   * @memberof NotesService
+   */
+  async startTransaction(): Promise<ClientSession> {
     const session = await this.connection.startSession();
 
     session.startTransaction();
-    // TODO: Your transaction logic here
+
+    return session;
   }
 }
 

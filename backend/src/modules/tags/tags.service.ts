@@ -1,4 +1,4 @@
-import mongoose, { Model, Connection } from 'mongoose';
+import mongoose, { Model, Connection, ClientSession } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Tag } from './schemas/tag.schema';
@@ -53,19 +53,28 @@ class TagsService {
 
     const { label } = createTagDto;
     const messageSuffix = `the new tag ${label}`;
+    const session = await this.startTransaction();
 
     try {
       this.logger.log(`${MESSAGE.CREATE} ${messageSuffix}...`);
 
-      return await new this.tagModel({
+      const tag = await new this.tagModel({
         ...createTagDto,
         id: new mongoose.Types.ObjectId(),
-      }).save();
+      }).save({ session });
+
+      await session.commitTransaction();
+
+      return tag;
     } catch (error) {
       const message = `${ERROR.CREATE} ${messageSuffix}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -83,23 +92,44 @@ class TagsService {
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
+    const session = await this.startTransaction();
+
     try {
       this.logger.log(`${MESSAGE.READ} tags: ${setList(ids)}...`);
 
-      return await this.tagModel.find(setFilter(ids)).exec();
+      const tag = await this.tagModel
+        .find(setFilter(ids))
+        .session(session)
+        .exec();
+
+      await session.commitTransaction();
+
+      return tag;
     } catch (error) {
       const message = `Tags ${FIND}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.FOUND, message);
+    } finally {
+      session.endSession();
     }
   }
 
-  async startTransaction() {
+  /**
+   * @description Query transaction starting method
+   * @author Luca Cattide
+   * @date 28/10/2025
+   * @returns {*}  {Promise<ClientSession>}
+   * @memberof TagsService
+   */
+  async startTransaction(): Promise<ClientSession> {
     const session = await this.connection.startSession();
 
     session.startTransaction();
-    // TODO: Your transaction logic here
+
+    return session;
   }
 }
 

@@ -1,4 +1,4 @@
-import mongoose, { Model, Connection, Types } from 'mongoose';
+import mongoose, { Model, Connection, Types, ClientSession } from 'mongoose';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
@@ -55,22 +55,30 @@ class UsersService {
 
     const { name, password } = createUserDto;
     const messageSuffix = `the new user ${name}`;
+    const session = await this.startTransaction();
 
     try {
       this.logger.log(`${MESSAGE.CREATE} ${messageSuffix}...`);
 
       const passwordEncrypted = await bcrypt.hash(password, 10);
-
-      return await new this.userModel({
+      const user = await new this.userModel({
         ...createUserDto,
         id: new mongoose.Types.ObjectId(),
         password: passwordEncrypted,
-      }).save();
+      }).save({ session });
+
+      await session.commitTransaction();
+
+      return user;
     } catch (error) {
       const message = `${ERROR.CREATE} ${messageSuffix}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -97,6 +105,8 @@ class UsersService {
       setError(HttpStatus.BAD_REQUEST, BAD_REQUEST);
     }
 
+    const session = await this.startTransaction();
+
     try {
       const property = {
         id: { id: element },
@@ -106,15 +116,24 @@ class UsersService {
 
       this.logger.log(`${MESSAGE.READ} the user...`);
 
-      return await this.userModel
+      const user = await this.userModel
         .findOne(property[type])
         .populate(CONTROLLER.NOTES)
+        .session(session)
         .exec();
+
+      await session.commitTransaction();
+
+      return user;
     } catch (error) {
       const message = `User ${FIND}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.FOUND, message, error);
+    } finally {
+      session.endSession();
     }
   }
 
@@ -145,11 +164,19 @@ class UsersService {
     }
   }
 
-  async startTransaction() {
+  /**
+   * @description Query transaction starting method
+   * @author Luca Cattide
+   * @date 28/10/2025
+   * @returns {*}  {Promise<ClientSession>}
+   * @memberof UsersService
+   */
+  async startTransaction(): Promise<ClientSession> {
     const session = await this.connection.startSession();
 
     session.startTransaction();
-    // TODO: Your transaction logic here
+
+    return session;
   }
 
   /**
@@ -162,15 +189,25 @@ class UsersService {
    * @memberof UsersService
    */
   async update(id: Types.ObjectId, refreshToken: string): Promise<void> {
+    const session = await this.startTransaction();
+
     try {
       this.logger.log('Updating the user...');
 
-      await this.userModel.findOneAndUpdate({ id }, { refreshToken }).exec();
+      await this.userModel
+        .findOneAndUpdate({ id }, { refreshToken })
+        .session(session)
+        .exec();
+      await session.commitTransaction();
     } catch (error) {
       const message = `User ${FIND}`;
 
+      await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.FOUND, message, error);
+    } finally {
+      session.endSession();
     }
   }
 }
