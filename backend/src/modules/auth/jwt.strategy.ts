@@ -11,7 +11,7 @@ import {
   TAuthenticationTokenRefresh,
 } from './types/auth.type';
 import { extractCookieToken } from 'src/utilities/utils';
-import RedisService from '../redis/redis.service';
+import StoreService from '../store/store.service';
 
 /**
  * @description Authentication JWT strategy class
@@ -80,13 +80,13 @@ class JwtStrategyRefresh extends PassportStrategy(
    * @author Luca Cattide
    * @date 27/08/2025
    * @param {ConfigService} configService
-   * @param {RedisService} redisService
+   * @param {StoreService} redisService
    * @param {UserService} userService
    * @memberof JwtStrategyRefresh
    */
   constructor(
     private readonly configService: ConfigService,
-    private readonly redisService: RedisService,
+    private readonly redisService: StoreService,
     private readonly userService: UsersService,
   ) {
     super({

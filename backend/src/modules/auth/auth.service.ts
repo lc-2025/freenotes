@@ -4,7 +4,7 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import bcrypt from 'bcrypt';
 import UsersService from '../users/users.service';
-import RedisService from '../redis/redis.service';
+import StoreService from '../store/store.service';
 import CreateUserDto from 'src/modules/users/create-user.dto';
 import SignInDto from './sign-in.dto';
 import { ConfigService } from '@nestjs/config';
@@ -51,7 +51,7 @@ class AuthService {
    * @param {ConfigService} configService
    * @param {UsersService} usersService
    * @param {JwtService} jwtService
-   * @param {RedisService} redisService
+   * @param {StoreService} storeService
    * @memberof AuthService
    */
   constructor(
@@ -59,7 +59,7 @@ class AuthService {
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
+    private readonly storeService: StoreService,
   ) {}
 
   /**
@@ -168,12 +168,12 @@ class AuthService {
         setError(HttpStatus.FORBIDDEN, UNAUTHORIZED);
       }
 
-      await this.redisService.deleteRefreshToken(refreshToken);
+      await this.storeService.deleteRefreshToken(refreshToken);
 
       const result = await this.setTokenCookie(user, response);
       const { token } = result;
 
-      await this.redisService.setRefreshToken(
+      await this.storeService.setRefreshToken(
         JWT.EXPIRATION_REFRESH_INVALIDATION,
         token?.refresh_token!,
         user.id.toString(),
@@ -332,7 +332,7 @@ class AuthService {
         },
       );
 
-      this.redisService.setRefreshToken(
+      this.storeService.setRefreshToken(
         JWT.EXPIRATION_REFRESH_INVALIDATION,
         refreshToken,
         id.toString(),

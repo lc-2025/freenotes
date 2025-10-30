@@ -5,10 +5,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import AuthService from './auth.service';
 import AuthController from './auth.controller';
 import UsersModule from '../users/users.module';
+import StoreModule from '../store/store.module';
 import LocalStrategy from './local.strategy';
 import { JwtStrategy, JwtStrategyRefresh } from './jwt.strategy';
 import { APP, JWT } from 'src/utilities/constants';
-import RedisModule from '../redis/redis.module';
 
 /**
  * @description Authentication feature module
@@ -35,7 +35,7 @@ import RedisModule from '../redis/redis.module';
       }),
     }),
     PassportModule,
-    RedisModule,
+    StoreModule,
     UsersModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtStrategyRefresh],

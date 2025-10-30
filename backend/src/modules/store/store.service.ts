@@ -1,31 +1,31 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import Redis from 'ioredis';
-import { ERROR, MESSAGE, REDIS } from 'src/utilities/constants';
+import Store from 'ioredis';
+import { ERROR, MESSAGE, STORE } from 'src/utilities/constants';
 import { setError } from 'src/utilities/utils';
 
 const { CREATE, FIND } = ERROR;
 const { DELETE, DELETED, READ, REFRESH, REFRESH_SAVED } = MESSAGE;
-const { CLIENT, PREFIX } = REDIS;
+const { CLIENT, PREFIX } = STORE;
 
 /**
- * @description Redis service class
+ * @description Store service class
  * Manages the JWT refresh token storage
  * @author Luca Cattide
  * @date 28/10/2025
- * @class RedisService
+ * @class StoreService
  */
 @Injectable()
-class RedisService {
-  private readonly logger = new Logger(RedisService.name);
+class StoreService {
+  private readonly logger = new Logger(StoreService.name);
 
   /**
-   * Creates an instance of RedisService.
+   * Creates an instance of StoreService.
    * @author Luca Cattide
    * @date 28/10/2025
-   * @param {Redis} redis
-   * @memberof RedisService
+   * @param {Store} store
+   * @memberof StoreService
    */
-  constructor(@Inject(CLIENT) private readonly redis: Redis) {}
+  constructor(@Inject(CLIENT) private readonly store: Store) {}
 
   /**
    * @description User ID getter method
@@ -34,13 +34,13 @@ class RedisService {
    * @date 28/10/2025
    * @param {string} token
    * @returns {*}  {(Promise<string | null | undefined>)}
-   * @memberof RedisService
+   * @memberof StoreService
    */
   async getUserId(token: string): Promise<string | null | undefined> {
     try {
       this.logger.log(`${READ} the user...`);
 
-      return await this.redis.get(`${PREFIX}${token}`);
+      return await this.store.get(`${PREFIX}${token}`);
     } catch (error) {
       const message = `User ${FIND}`;
 
@@ -55,7 +55,7 @@ class RedisService {
    * @date 28/10/2025
    * @param {string} token
    * @returns {*}  {Promise<void>}
-   * @memberof RedisService
+   * @memberof StoreService
    */
   async deleteRefreshToken(token: string): Promise<void> {
     const messageSuffix = 'refresh token';
@@ -63,7 +63,7 @@ class RedisService {
     try {
       this.logger.log(`${DELETE} the ${messageSuffix}...`);
 
-      await this.redis.del(`${PREFIX}${token}`);
+      await this.store.del(`${PREFIX}${token}`);
 
       this.logger.log(`${messageSuffix} ${DELETED}`);
     } catch (error) {
@@ -82,7 +82,7 @@ class RedisService {
    * @param {string} token
    * @param {string} userId
    * @returns {*}  {Promise<void>}
-   * @memberof RedisService
+   * @memberof StoreService
    */
   async setRefreshToken(
     expiration: number,
@@ -92,7 +92,7 @@ class RedisService {
     try {
       this.logger.log(REFRESH);
 
-      await this.redis.set(`${PREFIX}${token}`, userId, 'PX', expiration);
+      await this.store.set(`${PREFIX}${token}`, userId, 'PX', expiration);
 
       this.logger.log(REFRESH_SAVED);
     } catch (error) {
@@ -104,4 +104,4 @@ class RedisService {
   }
 }
 
-export default RedisService;
+export default StoreService;

@@ -17,13 +17,15 @@ import cookieConfig from '../../config/cookie.config';
 import databaseConfig from '../../config/database.config';
 import AuthModule from '../auth/auth.module';
 import NotesModule from '../notes/notes.module';
-import RedisModule from '../redis/redis.module';
+import StoreModule from '../store/store.module';
 import UsersModule from '../users/users.module';
 import TagsModule from '../tags/tags.module';
 import SslMiddleware from '../../middlewares/ssl.middleware';
+import storeConfig from '../../config/store.config';
 import LoggingInterceptor from '../../interceptors/logging.interceptor';
 import TimeoutInterceptor from '../../interceptors/timeout.interceptor';
 import throttleConfig from '../../config/throttle.config';
+
 //import AuthGuard from './guards/auth.guard';
 import {
   CONFIGURATION_NAME,
@@ -31,7 +33,6 @@ import {
   CONTROLLER,
   ENVIRONMENTS,
 } from '../../utilities/constants';
-import redisConfig from 'src/config/redis.config';
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
@@ -65,7 +66,7 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
         cacheConfig,
         cookieConfig,
         databaseConfig,
-        redisConfig,
+        storeConfig,
         throttleConfig,
       ],
     }),
@@ -89,7 +90,7 @@ const { NOTES, TAGS, USERS } = CONTROLLER;
       }),
     }),
     NotesModule,
-    RedisModule,
+    StoreModule,
     TagsModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],

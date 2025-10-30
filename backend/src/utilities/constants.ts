@@ -15,7 +15,7 @@ const CONFIGURATION_NAME = {
   CACHE: 'cache',
   COOKIE: 'cookie',
   DATABASE: 'database',
-  REDIS: 'redis',
+  STORE: 'store',
   THROTTLE: 'throttle',
 };
 const CONNECTION = {
@@ -92,11 +92,11 @@ const RATE_LIMIT = {
   WINDOW_LONG: 60 * 1000,
   WINDOW_SHORT: 1 * 1000,
 };
-const REDIS = {
-  CLIENT: 'REDIS_CLIENT',
+const STORE = {
+  CLIENT: 'STORE_CLIENT',
   CONNECTION: {
-    CONNECTED: 'Redis connected',
-    ERROR: 'Redis error: ',
+    CONNECTED: 'Store connected',
+    ERROR: 'Store error: ',
   },
   PREFIX: 'refresh:',
 };
@@ -154,7 +154,7 @@ export {
   MESSAGE,
   PROTOCOL,
   RATE_LIMIT,
-  REDIS,
+  STORE,
   ROOT,
   ROUTE,
   SCHEMA,
