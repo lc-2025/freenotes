@@ -7,8 +7,9 @@ import CustomButton from '@/components/Layout/CustomButton';
 import { useUserContext } from '@/hooks/State';
 import { NOTE, ROUTE, SECTION, STATE, STORAGE } from '@/utils/constants';
 import { TNote } from '@/types/components/Note';
-import useStorage from '@/hooks/Storage';
+import { useStorage } from '@lc-2025/storage-manager';
 import { useRouter } from 'next/navigation';
+import useStore from '@/hooks/Store';
 
 /**
  * @description New note component
@@ -22,7 +23,8 @@ const NoteNew = (): React.ReactNode => {
   const router = useRouter();
   const [note, setNote] = useState<TNote>(STATE.DEFAULT.NOTE);
   const { email } = useUserContext();
-  const { getStorage } = useStorage();
+  const { getStorage } = useStorage('session');
+  const { getAccessToken } = useStore();
   const { content, title } = note;
   const fields = [
     {
@@ -64,6 +66,7 @@ const NoteNew = (): React.ReactNode => {
    * @returns {*}  {Promise<void>}
    */
   const handleSave = async (): Promise<void> => {
+    const userEmail = email ?? getStorage(STORAGE.EMAIL);
     const { data, error } = await apiClient(
       `${ROUTE.API.NOTES}`,
       {
@@ -73,7 +76,7 @@ const NoteNew = (): React.ReactNode => {
         user: { email: 'asd@asd.com' },
       },
       {
-        access_token: getStorage(STORAGE.TOKEN.ACCESS) ?? '',
+        access_token: (await getAccessToken(userEmail)) ?? '',
       },
     );
 

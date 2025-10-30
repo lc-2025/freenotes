@@ -226,11 +226,16 @@ const ERROR = {
 const CACHE = 60 * 1000;
 const TIMEOUT = 60 * 1000;
 const STORAGE = {
-  TOKEN: {
-    ACCESS: 'access_token',
-    REFRESH: 'refresh_token',
-  },
   EMAIL: 'email',
+};
+const STORE = {
+  MESSAGE: {
+    CONNECTED: 'Store connected',
+    ERROR: 'Store error',
+  },
+  PREFIX: 'access:',
+  // 5 mins
+  EXPIRATION: 5 * 60 * 1000,
 };
 
 export {
@@ -253,4 +258,5 @@ export {
   COOKIE,
   REQUEST,
   NEW,
+  STORE,
 };

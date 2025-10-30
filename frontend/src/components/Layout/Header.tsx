@@ -34,13 +34,13 @@ import {
   useErrorContext,
   useUserContext,
 } from '@/hooks/State';
-import useStorage from '@/hooks/Storage';
-import useApi from '@/hooks/Api';
+import { useStorage } from '@lc-2025/storage-manager';
 import handleState from '@/state/actions';
 import apiClient from '@/apiClient';
 import { TStateUser } from '@/types/state/State';
 import { TError } from '@/types/Error';
 import useAuthentication from '@/hooks/Authentication';
+import useStore from '@/hooks/Store';
 
 /**
  * @description Header component
@@ -52,11 +52,12 @@ const Header = (): React.ReactNode => {
   const { BACK, PIN, ACCOUNT } = ARIA;
   const { AUTHENTICATION, NOTES, NOTE, NEW, SETTINGS } = ROUTE;
   const { HEADER } = STATE.DEFAULT;
-  const { ACCESS } = STORAGE.TOKEN;
+  const { EMAIL } = STORAGE;
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
-  const { getStorage } = useStorage();
+  const { getStorage } = useStorage('session');
+  const { getAccessToken } = useStore();
   const [header, setHeader] = useState<THeader>(HEADER);
   const { title, showBack, showPin, showToggle, showSettings } = header;
   const { authenticated } = useAuthenticationContext();
@@ -78,14 +79,14 @@ const Header = (): React.ReactNode => {
    */
   const initUser = async (): Promise<void> => {
     if (pathname !== AUTHENTICATION.PATH && !name) {
+      const userEmail = email ?? getStorage(EMAIL);
       const { data, error } = await apiClient(
         `${ROUTE.API.USER}`,
         {
-          // TODO: Get `email` from storage or redis if missing in state
-          email,
+          email: userEmail,
         },
         {
-          access_token: getStorage(ACCESS) ?? '',
+          access_token: (await getAccessToken(userEmail)) ?? '',
         },
       );
 

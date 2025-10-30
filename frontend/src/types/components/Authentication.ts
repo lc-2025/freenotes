@@ -1,4 +1,5 @@
 type TAuthenticationFields = {
+  id: string;
   acceptance: string;
   email: string;
   name: string;
