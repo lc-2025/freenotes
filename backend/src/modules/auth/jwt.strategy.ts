@@ -4,7 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import UsersService from 'src/modules/users/users.service';
-import { APP, STRATEGY } from 'src/utilities/constants';
+import { APP, ERROR, STRATEGY } from 'src/utilities/constants';
 import {
   TAuthentication,
   TAuthenticationToken,
@@ -12,6 +12,8 @@ import {
 } from './types/auth.type';
 import { extractCookieToken } from 'src/utilities/utils';
 import StoreService from '../store/store.service';
+
+const { MISSING_TOKEN, MISSING_USER, MISSING_USER_ID } = ERROR;
 
 /**
  * @description Authentication JWT strategy class
@@ -51,7 +53,7 @@ class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userService.find('id', payload.sub);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(MISSING_USER);
     }
 
     const { email, sub } = payload;
@@ -90,8 +92,7 @@ class JwtStrategyRefresh extends PassportStrategy(
     private readonly userService: UsersService,
   ) {
     super({
-      // Manual check
-      ignoreExpiration: true,
+      ignoreExpiration: false,
       // Extract token from cookie instead of request header to improve security
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => extractCookieToken(request),
@@ -117,19 +118,19 @@ class JwtStrategyRefresh extends PassportStrategy(
     const token = extractCookieToken(request);
 
     if (!token || payload.exp < Date.now()) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(MISSING_TOKEN);
     }
 
     const userId = await this.redisService.getUserId(token);
 
     if (!userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(MISSING_USER_ID);
     }
 
     const user = await this.userService.find('id', userId);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(MISSING_USER);
     }
 
     return {

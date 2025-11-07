@@ -2,7 +2,7 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import AuthService from './auth.service';
-import { ROUTE } from 'src/utilities/constants';
+import { ERROR, ROUTE } from 'src/utilities/constants';
 
 /**
  * @description Authentication local strategy class
@@ -39,7 +39,7 @@ class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.validateUser(email, password);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(ERROR.MISSING_USER);
     }
 
     return user;

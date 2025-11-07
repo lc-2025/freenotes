@@ -5,7 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SCHEMA, TOKEN } from 'src/utilities/constants';
+import { ERROR, SCHEMA, TOKEN } from 'src/utilities/constants';
+
+const { MISSING_TOKEN, UNAUTHORIZED } = ERROR;
 
 /**
  * @description Authentication guard
@@ -41,7 +43,7 @@ class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(MISSING_TOKEN);
     }
 
     try {
@@ -53,7 +55,7 @@ class AuthGuard implements CanActivate {
         },
       );
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(UNAUTHORIZED);
     }
 
     return true;
