@@ -7,7 +7,6 @@ import {
   ROUTE,
   TOKEN,
 } from 'src/utilities/constants';
-import { TCookieStrict } from 'src/types/cookie.type';
 
 const { DOMAIN, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === ENVIRONMENTS[0];
@@ -17,11 +16,11 @@ export default registerAs(CONFIGURATION_NAME.COOKIE, () => ({
   refreshToken: {
     name: TOKEN.REFRESH,
     options: {
-      domain: DOMAIN,
+      domain: isProduction ? DOMAIN : undefined,
       httpOnly: true,
       maxAge: JWT.EXPIRATION_REFRESH_INVALIDATION,
-      path: isDevelopment ? '/' : ROUTE.AUTH.REFRESH_TOKEN,
-      sameSite: isDevelopment ? COOKIE.NONE : (COOKIE.STRICT as TCookieStrict),
+      path: '/',
+      sameSite: isDevelopment ? COOKIE.LAX : COOKIE.NONE,
       secure: isProduction,
     },
   },

@@ -116,7 +116,7 @@ class JwtStrategyRefresh extends PassportStrategy(
   ): Promise<TAuthenticationTokenRefresh> {
     const token = extractCookieToken(request);
 
-    if (!token || payload.exp * 1000 < Date.now()) {
+    if (!token || payload.exp < Date.now()) {
       throw new UnauthorizedException();
     }
 

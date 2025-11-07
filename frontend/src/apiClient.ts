@@ -27,7 +27,7 @@ const apiClient = async (
   authentication?: TAuthenticationToken,
 ): Promise<TApiResponse> => {
   const { DELETE, GET, PATCH, POST } = METHOD;
-  const { LOGIN, NOTES, REGISTER, USER, REFRESH } = ROUTE.API;
+  const { LOGIN, LOGOUT, NOTES, REGISTER, USER, REFRESH } = ROUTE.API;
   const { AUTHENTICATION } = ERROR;
   const defaultOptions = {
     get: {
@@ -39,6 +39,10 @@ const apiClient = async (
   };
   const route = {
     [LOGIN]: {
+      ...defaultOptions.post,
+      body: JSON.stringify(body),
+    },
+    [LOGOUT]: {
       ...defaultOptions.post,
       body: JSON.stringify(body),
     },
@@ -88,7 +92,6 @@ const apiClient = async (
 
     // JWT rotation
     if (response.status === 401) {
-      console.log(111, payload);
       response = await fetch(`${baseUrl}/${REFRESH}`, {
         ...payload,
         ...route[REFRESH],

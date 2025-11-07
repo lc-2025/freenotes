@@ -3,6 +3,7 @@ type TStateAction = {
   element: any;
 };
 type TStateAuthentication = {
+  accessToken: string;
   authenticated: boolean;
 };
 type TStateError = {

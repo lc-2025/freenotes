@@ -1,7 +1,12 @@
+import { METHODS } from 'http';
 import * as packageJson from '../../package.json';
 
 const { description, version } = packageJson;
 
+const API = {
+  HEADERS: ['Content-Type', 'Authorization'],
+  METHODS: ['GET', 'POST', 'PATCH', 'DELETE'],
+};
 const APP = {
   CONFIGURATION: 'app',
   DESCRIPTION: description,
@@ -32,8 +37,8 @@ const CONTROLLER = {
   USERS: 'users',
 };
 const COOKIE = {
-  NONE: 'none',
-  STRICT: 'strict',
+  NONE: 'None',
+  LAX: 'Lax',
 };
 const DECORATOR = {
   PUBLIC: 'isPublic',
@@ -141,6 +146,7 @@ const TOKEN = {
 };
 
 export {
+  API,
   APP,
   CONNECTION,
   CONFIGURATION_NAME,

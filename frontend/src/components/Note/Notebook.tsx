@@ -37,7 +37,7 @@ const Notebook = (): React.ReactNode => {
 
     if (error) {
       if (error.name === ERROR.AUTHENTICATION) {
-        redirectLogin(error);
+        // redirectLogin(error);
       } else {
         // TODO: Show error
       }

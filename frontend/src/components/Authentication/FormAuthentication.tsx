@@ -7,17 +7,15 @@ import apiClient from '@/apiClient';
 import FormAuthenticationField from './FormAuthenticationField';
 import CustomButton from '../Layout/CustomButton';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { useStorage } from '@lc-2025/storage-manager';
 import { setInitial } from '@/utils/utilities';
-import { FORM, ROUTE, STATE, STATE_ACTION, STORAGE } from '@/utils/constants';
+import { FORM, ROUTE, STATE, STATE_ACTION } from '@/utils/constants';
 import {
   TAuthenticationFields,
   TAuthenticationFieldType,
   TAuthenticationToken,
 } from '@/types/components/Authentication';
-import { useDispatchContext } from '@/hooks/State';
+import { useAuthenticationContext, useDispatchContext } from '@/hooks/State';
 import handleState from '@/state/actions';
-import useStore from '@/hooks/Store';
 
 /**
  * @description Authentication form component
@@ -31,12 +29,10 @@ const FormAuthentication = (): React.ReactNode => {
   const { API, NOTES } = ROUTE;
   const { REGISTER } = API;
   const { AUTHENTICATION, USER } = STATE_ACTION;
-  const {EMAIL} = STORAGE;
   const router = useRouter();
-  const { getStorage, setStorage } = useStorage('session');
-  const { getAccessToken, setAccessToken } = useStore();
   const [type, setType] = useState<string>(STATE.DEFAULT.FORM);
   const [message, setMessage] = useState<string>('');
+  const { accessToken } = useAuthenticationContext();
   const dispatch = useDispatchContext();
   const methods = useForm<TAuthenticationFields>();
   const { formState, handleSubmit, reset } = methods;
@@ -86,11 +82,7 @@ const FormAuthentication = (): React.ReactNode => {
    * @date 21/10/2025
    */
   const initType = async (): Promise<void> => {
-    setType(
-      (await getAccessToken(getStorage(EMAIL) ?? ''))
-        ? FORM.TYPE.LOGIN
-        : STATE.DEFAULT.FORM,
-    );
+    setType((type ?? accessToken) ? FORM.TYPE.LOGIN : STATE.DEFAULT.FORM);
   };
 
   /**
@@ -127,7 +119,10 @@ const FormAuthentication = (): React.ReactNode => {
       let payload = null;
       let action = {
         type: AUTHENTICATION,
-        element: { authenticated: false },
+        element: {
+          accessToken: '',
+          authenticated: false,
+        },
       };
 
       const emitError = (error: Error): void => {
@@ -158,11 +153,6 @@ const FormAuthentication = (): React.ReactNode => {
         const { data, error } = await apiClient(
           type === SIGNUP ? REGISTER : ROUTE.API.LOGIN,
           payload!,
-          type === LOGIN
-            ? {
-                access_token: (await getAccessToken(payload.email)) ?? '',
-              }
-            : undefined,
         );
 
         if (error) {
@@ -170,13 +160,14 @@ const FormAuthentication = (): React.ReactNode => {
         } else if (data) {
           const { email } = payload;
 
-          setStorage(EMAIL, email);
           // Storing access token only to improve security vs CSRF attacks
-          setAccessToken(email, (data as TAuthenticationToken).access_token);
           handleState(
             {
               ...action,
-              element: { authenticated: true },
+              element: {
+                accessToken: (data as TAuthenticationToken).access_token,
+                authenticated: true,
+              },
             },
             dispatch,
           );

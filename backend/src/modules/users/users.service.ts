@@ -109,7 +109,12 @@ class UsersService {
 
     try {
       const property = {
-        id: { id: element },
+        id: {
+          id:
+            type === 'id' && typeof element === 'string'
+              ? new Types.ObjectId(`${element}`)
+              : element,
+        },
         email: { email: element },
       };
 

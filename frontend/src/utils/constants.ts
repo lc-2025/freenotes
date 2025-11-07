@@ -145,6 +145,7 @@ const ROUTE_PREFIX = {
 const ROUTE = {
   API: {
     LOGIN: `${ROUTE_PREFIX.AUTHENTICATION}/login`,
+    LOGOUT: `${ROUTE_PREFIX.AUTHENTICATION}/logout`,
     NOTES: 'notes',
     REGISTER: `${ROUTE_PREFIX.AUTHENTICATION}/register`,
     USER: 'users',
@@ -195,6 +196,7 @@ const STATE = {
     FORM: FORM.TYPE.SIGNUP,
     SETTINGS_OPTION: false,
     AUTHENTICATION: {
+      accessToken: '',
       authenticated: false,
     },
     USER: {

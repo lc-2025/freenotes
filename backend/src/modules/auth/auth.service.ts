@@ -129,8 +129,9 @@ class AuthService {
    * @param {Response} response
    * @memberof AuthService
    */
-  logout(response: Response): void {
+  logout(token: string, response: Response): void {
     this.logger.log(LOGOUT);
+    this.storeService.deleteRefreshToken(token);
     response.clearCookie(this.getConfiguration(COOKIE).name);
   }
 

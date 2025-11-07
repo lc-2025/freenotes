@@ -11,12 +11,11 @@
   "dependencies": {
     "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
-    "@lc-2025/storage-manager": "^1.0.3",
+    "@lc-2025/storage-manager": "^1.0.4",
     "@next/env": "^15.5.2",
     "@types/cookie": "^0.6.0",
     "alova": "^3.3.4",
     "cookie": "^1.0.2",
-    "ioredis": "^5.8.2",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",

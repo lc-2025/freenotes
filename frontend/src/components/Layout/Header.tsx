@@ -25,7 +25,6 @@ import {
   ROUTE,
   STATE,
   STATE_ACTION,
-  STORAGE,
   THEME,
 } from '@/utils/constants';
 import {
@@ -34,13 +33,11 @@ import {
   useErrorContext,
   useUserContext,
 } from '@/hooks/State';
-import { useStorage } from '@lc-2025/storage-manager';
+import useAuthentication from '@/hooks/Authentication';
 import handleState from '@/state/actions';
 import apiClient from '@/apiClient';
 import { TStateUser } from '@/types/state/State';
 import { TError } from '@/types/Error';
-import useAuthentication from '@/hooks/Authentication';
-import useStore from '@/hooks/Store';
 
 /**
  * @description Header component
@@ -52,15 +49,12 @@ const Header = (): React.ReactNode => {
   const { BACK, PIN, ACCOUNT } = ARIA;
   const { AUTHENTICATION, NOTES, NOTE, NEW, SETTINGS } = ROUTE;
   const { HEADER } = STATE.DEFAULT;
-  const { EMAIL } = STORAGE;
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
-  const { getStorage } = useStorage('session');
-  const { getAccessToken } = useStore();
   const [header, setHeader] = useState<THeader>(HEADER);
   const { title, showBack, showPin, showToggle, showSettings } = header;
-  const { authenticated } = useAuthenticationContext();
+  const { authenticated, accessToken } = useAuthenticationContext();
   const error = useErrorContext();
   const { email, name } = useUserContext();
   const dispatch = useDispatchContext();
@@ -79,14 +73,13 @@ const Header = (): React.ReactNode => {
    */
   const initUser = async (): Promise<void> => {
     if (pathname !== AUTHENTICATION.PATH && !name) {
-      const userEmail = email ?? getStorage(EMAIL);
       const { data, error } = await apiClient(
         `${ROUTE.API.USER}`,
         {
-          email: userEmail,
+          email,
         },
         {
-          access_token: (await getAccessToken(userEmail)) ?? '',
+          access_token: accessToken,
         },
       );
 
@@ -183,9 +176,21 @@ const Header = (): React.ReactNode => {
    * @author Luca Cattide
    * @date 26/09/2025
    */
-  const handleLogout = (): void => {
-    handleState({ type: STATE_ACTION.RESET, element: null }, dispatch);
-    router.push(AUTHENTICATION.PATH);
+  const handleLogout = async (): Promise<void> => {
+    const { error } = await apiClient(ROUTE.API.LOGOUT, undefined, {
+      access_token: accessToken,
+    });
+
+    if (error) {
+      if (error.name === ERROR.AUTHENTICATION) {
+        //redirectLogin(error);
+      } else {
+        // TODO: Show error
+      }
+    } else {
+      handleState({ type: STATE_ACTION.RESET, element: null }, dispatch);
+      router.push(AUTHENTICATION.PATH);
+    }
   };
 
   /**

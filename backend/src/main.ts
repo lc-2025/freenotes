@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './modules/app/app.module';
-import { APP, ENVIRONMENTS, MESSAGE } from './utilities/constants';
+import { API, APP, ENVIRONMENTS, MESSAGE } from './utilities/constants';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 
 /**
@@ -13,6 +13,7 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
  * TODO: See https://docs.nestjs.com/recipes/terminus
  */
 async function bootstrap() {
+  const { HEADERS, METHODS } = API;
   const { CONFIGURATION, DESCRIPTION, ENDPOINT, NAME, PORT, VERSION } = APP;
   const { BASE_URL, START } = MESSAGE;
   const env = process.env.NODE_ENV;
@@ -49,7 +50,9 @@ async function bootstrap() {
   );
   // CORS
   app.enableCors({
+    allowedHeaders: HEADERS,
     credentials: true,
+    methods: METHODS,
     origin: process.env.FRONTEND_URL,
   });
 

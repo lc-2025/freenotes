@@ -25,7 +25,7 @@ class JwtAuthGuard extends AuthGuard(STRATEGY.JWT) {
   }
 
   /**
-   * @description
+   * @description Activation checker method
    * @author Luca Cattide
    * @date 20/08/2025
    * @param {ExecutionContext} context
@@ -53,6 +53,31 @@ class JwtAuthGuard extends AuthGuard(STRATEGY.JWT) {
  * @extends {AuthGuard(STRATEGY.JWT_REFRESH)}
  */
 @Injectable()
-class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {}
+class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {
+  /**
+   * Creates an instance of JwtRefreshAuthGuard.
+   * @author Luca Cattide
+   * @date 07/11/2025
+   * @param {Reflector} reflector
+   * @memberof JwtRefreshAuthGuard
+   */
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
+  /**
+   * @description Activation checker method
+   * @author Luca Cattide
+   * @date 07/11/2025
+   * @param {ExecutionContext} context
+   * @returns {*}  {(Promise<boolean> | boolean | Observable<boolean>)}
+   * @memberof JwtRefreshAuthGuard
+   */
+  canActivate(
+    context: ExecutionContext,
+  ): Promise<boolean> | boolean | Observable<boolean> {
+    return super.canActivate(context);
+  }
+}
 
 export { JwtAuthGuard, JwtRefreshAuthGuard };
