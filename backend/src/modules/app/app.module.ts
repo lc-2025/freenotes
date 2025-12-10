@@ -7,6 +7,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import compression from 'compression';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 // FIXME: import ExpressMongoSanitize from 'express-mongo-sanitize';
 import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
@@ -25,7 +26,6 @@ import storeConfig from '../../config/store.config';
 import LoggingInterceptor from '../../interceptors/logging.interceptor';
 import TimeoutInterceptor from '../../interceptors/timeout.interceptor';
 import throttleConfig from '../../config/throttle.config';
-
 //import AuthGuard from './guards/auth.guard';
 import {
   CONFIGURATION_NAME,
@@ -36,7 +36,7 @@ import {
 
 const { CONNECTED, DISCONNECTED, DISCONNECTION, OPEN, RECONNECTED } =
   CONNECTION;
-const { NOTES, TAGS, USERS } = CONTROLLER;
+const { AUTH, NOTES, TAGS, USERS } = CONTROLLER;
 
 /**
  * @description Root module
@@ -142,9 +142,15 @@ export class AppModule implements NestModule {
    */
   configure(consumer: MiddlewareConsumer) {
     consumer
-      // FIXME: Sanitization plugin bug
-      .apply(compression(), helmet(), /*ExpressMongoSanitize(),*/ SslMiddleware)
-      .forRoutes(NOTES, TAGS, USERS);
+      .apply(
+        compression(),
+        cookieParser(),
+        helmet(),
+        // FIXME: Sanitization plugin bug
+        /*ExpressMongoSanitize(),*/
+        SslMiddleware,
+      )
+      .forRoutes(AUTH, NOTES, TAGS, USERS);
   }
 
   /**

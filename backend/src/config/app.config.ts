@@ -9,7 +9,7 @@ export default registerAs(CONFIGURATION_NAME.APP, () => ({
   cache: NODE_ENV === ENVIRONMENTS[1],
   port: APP_PORT,
   secret: SECRET,
-  secretRefresh: SECRET_REFRESH,
+  secretRefresh: SECRET_REFRESH?.trim(),
   validationOptions: {
     // Disallow unknown env vars and stop execution
     allowUnknown: false,

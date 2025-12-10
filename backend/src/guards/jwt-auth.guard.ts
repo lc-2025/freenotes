@@ -1,8 +1,11 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
-import { DECORATOR, STRATEGY } from 'src/utilities/constants';
+import { APP, DECORATOR, STRATEGY } from 'src/utilities/constants';
+import { extractCookieToken } from 'src/utilities/utils';
 
 /**
  * @description Authentication JWT guard
@@ -61,7 +64,11 @@ class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {
    * @param {Reflector} reflector
    * @memberof JwtRefreshAuthGuard
    */
-  constructor(private reflector: Reflector) {
+  constructor(
+    private configService: ConfigService,
+    private jwtService: JwtService,
+    private reflector: Reflector,
+  ) {
     super();
   }
 
@@ -76,7 +83,85 @@ class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {
   canActivate(
     context: ExecutionContext,
   ): Promise<boolean> | boolean | Observable<boolean> {
+    const req = context.switchToHttp().getRequest();
+    // DEBUG: mostra cosa arriva realmente
+    console.log('[JwtRefreshAuthGuard] req.cookies:', req.cookies);
+    console.log(
+      '[JwtRefreshAuthGuard] req.headers.cookie:',
+      req.headers?.cookie,
+    );
+    const token = extractCookieToken(req);
+    console.log(
+      '[JwtRefreshAuthGuard] token found:',
+      !!token,
+      'rawToken:',
+      token?.slice?.(0, 50),
+    );
+
+    if (token) {
+      const secretRefresh = this.configService.get(
+        APP.CONFIGURATION,
+      ).secretRefresh;
+      console.log(
+        '[JwtRefreshAuthGuard] secret type/len/prefix:',
+        typeof secretRefresh,
+        secretRefresh?.length,
+        String(secretRefresh)?.slice(0, 12),
+      );
+      console.log(
+        '[JwtRefreshAuthGuard] secret charCodes prefix:',
+        (String(secretRefresh) || '')
+          .split('')
+          .slice(0, 8)
+          .map((c) => c.charCodeAt(0)),
+      );
+      console.log(
+        '[JwtRefreshAuthGuard] secretRefresh prefix:',
+        String(secretRefresh)?.slice(0, 8),
+      );
+      console.log(
+        '[JwtRefreshAuthGuard] token (prefix/uffix):',
+        String(token).slice(0, 24),
+        '...',
+        String(token).slice(-12),
+      );
+
+      try {
+        const decoded: any = this.jwtService.verify(token, secretRefresh);
+        console.log('[JwtRefreshAuthGuard] jwt.verify OK, exp:', decoded?.exp);
+      } catch (err: any) {
+        console.error(
+          '[JwtRefreshAuthGuard] jwt.verify error:',
+          err?.message || err,
+        );
+        return false;
+      }
+    }
+
     return super.canActivate(context);
+  }
+
+  // log di cosa Passport passa qui (err, user, info)
+  handleRequest(
+    err: any,
+    user: any,
+    info: any,
+    context: ExecutionContext,
+    status?: any,
+  ) {
+    console.log(
+      '[JwtRefreshAuthGuard] handleRequest - err:',
+      err?.message || err,
+      'user:',
+      !!user,
+      'info:',
+      info,
+    );
+    // lascia il comportamento di default (genera 401 se err o !user)
+    if (err || !user) {
+      return super.handleRequest(err, user, info, context, status);
+    }
+    return user;
   }
 }
 

@@ -12,7 +12,9 @@ import { TOKEN } from './constants';
  * @returns {*}  {(string | null)}
  */
 const extractCookieToken = (request: Request): string | null => {
-  const cookies = request.headers.cookie?.split('; ');
+  const cookies = request.cookies
+    ? Object.entries(request.cookies).map(([key, value]) => `${key}=${value}`)
+    : request.headers.cookie?.split('; ');
   let token: string | null = null;
 
   if (cookies && cookies.length) {

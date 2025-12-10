@@ -63,25 +63,6 @@ class AuthService {
   ) {}
 
   /**
-   * @description Configuration getter
-   * @author Luca Cattide
-   * @date 27/09/2025
-   * @param {string} name
-   * @returns {*}
-   * @memberof AuthService
-   */
-  getConfiguration(name: string) {
-    const configuration = {
-      [CONFIGURATION]: this.configService.get(name).secretRefresh,
-      [COOKIE]: this.configService.get(name).refreshToken,
-    };
-
-    this.logger.log(`${MESSAGE.CONFIGURATION} ${name}...`);
-
-    return configuration[name];
-  }
-
-  /**
    * @description Authentication login method
    * @author Luca Cattide
    * @date 27/09/2025
@@ -132,7 +113,7 @@ class AuthService {
   logout(token: string, response: Response): void {
     this.logger.log(LOGOUT);
     this.storeService.deleteRefreshToken(token);
-    response.clearCookie(this.getConfiguration(COOKIE).name);
+    response.clearCookie(this.configService.get(COOKIE).refreshToken.name);
   }
 
   /**
@@ -160,7 +141,7 @@ class AuthService {
 
       const decoded = this.jwtService.verify(refreshToken, {
         algorithms: ['HS256', 'RS256'],
-        audience: this.getConfiguration(CONFIGURATION).name,
+        audience: this.configService.get(CONFIGURATION).name,
         issuer: MESSAGE.BASE_URL,
       });
 
@@ -253,7 +234,7 @@ class AuthService {
             sub: id,
           },
           {
-            secret: this.getConfiguration(CONFIGURATION).secret,
+            secret: this.configService.get(CONFIGURATION).secret,
             expiresIn: JWT.EXPIRATION,
           },
         ),
@@ -278,7 +259,7 @@ class AuthService {
    */
   async setTokenCookie(user: User, response: Response): Promise<TToken> {
     const token = await this.setToken(user!);
-    const cookieConfiguration = this.getConfiguration(COOKIE);
+    const cookieConfiguration = this.configService.get(COOKIE);
     let result: TJWT | undefined;
 
     if (token) {
@@ -294,10 +275,10 @@ class AuthService {
        */
       this.logger.log(MESSAGE.COOKIE);
       response.cookie(
-        cookieConfiguration.name,
+        cookieConfiguration.refreshToken.name,
         // Storing only the refresh one to secure vs CSRF attacks
         refresh_token,
-        cookieConfiguration.options,
+        cookieConfiguration.refreshToken.options,
       );
     }
 
@@ -325,10 +306,31 @@ class AuthService {
       this.logger.log(`${MESSAGE.AUTH_REFRESH}...`);
 
       const { id } = user;
+      const secret = this.configService.get(CONFIGURATION).secretRefresh;
+      console.log(
+        '[AuthService] secret type/len/prefix:',
+        typeof secret,
+        secret?.length,
+        String(secret)?.slice(0, 12),
+      );
+      console.log(
+        '[AuthService] secret charCodes prefix:',
+        (String(secret) || '')
+          .split('')
+          .slice(0, 8)
+          .map((c) => c.charCodeAt(0)),
+      );
+      console.log(
+        '[AuthService] refresh token signing - will log token prefix after sign',
+      );
+      console.log(
+        '[AuthService] signing refreshToken - secretRefresh prefix:',
+        String(secret)?.slice(0, 8),
+      );
       const refreshToken = await this.jwtService.signAsync(
         { sub: id },
         {
-          secret: this.getConfiguration(CONFIGURATION).secretRefresh,
+          secret,//: this.configService.get(CONFIGURATION).secretRefresh,
           expiresIn: JWT.EXPIRATION_REFRESH,
         },
       );

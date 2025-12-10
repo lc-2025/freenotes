@@ -23,7 +23,7 @@ const { MISSING_TOKEN, MISSING_USER, MISSING_USER_ID } = ERROR;
  * @extends {PassportStrategy(Strategy)}
  */
 @Injectable()
-class JwtStrategy extends PassportStrategy(Strategy) {
+class JwtStrategy extends PassportStrategy(Strategy, STRATEGY.JWT) {
   /**
    * Creates an instance of JwtStrategy.
    * @author Luca Cattide
@@ -91,6 +91,24 @@ class JwtStrategyRefresh extends PassportStrategy(
     private readonly redisService: StoreService,
     private readonly userService: UsersService,
   ) {
+    // secret provider usa il parametro configService (non this) e logga quando passport lo chiama
+    const secretOrKeyProvider = (
+      req: Request | undefined,
+      rawJwtToken: any,
+      done: (err: any, secret?: string) => void,
+    ) => {
+      try {
+        const secret = configService.get(APP.CONFIGURATION).secretRefresh;
+        console.log(
+          '[JwtStrategyRefresh] secretOrKeyProvider called - secret prefix:',
+          String(secret)?.slice(0, 8),
+        );
+        done(null, secret);
+      } catch (err) {
+        console.error('[JwtStrategyRefresh] secretOrKeyProvider error', err);
+        done(err);
+      }
+    };
     super({
       ignoreExpiration: false,
       // Extract token from cookie instead of request header to improve security
@@ -99,8 +117,14 @@ class JwtStrategyRefresh extends PassportStrategy(
       ]),
       // Get the raw token
       passReqToCallback: true,
-      secretOrKey: configService.get(APP.CONFIGURATION).secretRefresh,
+      secretOrKeyProvider, //secretOrKey: configService.get(APP.CONFIGURATION).secretRefresh,
     });
+    // debug safe: can call configService here as well
+    console.log(
+      '[JwtStrategyRefresh] constructor - secretRefresh prefix:',
+      String(configService.get(APP.CONFIGURATION).secretRefresh)?.slice(0, 8),
+    );
+    console.log('[JwtStrategyRefresh] constructor - instance created');
   }
 
   /**
@@ -112,12 +136,18 @@ class JwtStrategyRefresh extends PassportStrategy(
    * @memberof JwtStrategyRefresh
    */
   async validate(
-    payload: any,
     request: Request,
+    payload: any,
   ): Promise<TAuthenticationTokenRefresh> {
+    console.log(
+      '[JwtStrategyRefresh] validate called - payload:',
+      payload?.sub || '[no-sub]',
+      'cookies:',
+      !!request?.cookies,
+    );
     const token = extractCookieToken(request);
 
-    if (!token || payload.exp < Date.now()) {
+    if (!token || payload.exp * 1000 < Date.now()) {
       throw new UnauthorizedException(MISSING_TOKEN);
     }
 
