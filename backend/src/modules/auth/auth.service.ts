@@ -17,7 +17,6 @@ import {
   JWT,
   MESSAGE,
   ROUTE,
-  TOKEN,
 } from 'src/utilities/constants';
 import { TJWT, TToken } from './types/auth.type';
 import { Response } from 'express';
@@ -306,31 +305,10 @@ class AuthService {
       this.logger.log(`${MESSAGE.AUTH_REFRESH}...`);
 
       const { id } = user;
-      const secret = this.configService.get(CONFIGURATION).secretRefresh;
-      console.log(
-        '[AuthService] secret type/len/prefix:',
-        typeof secret,
-        secret?.length,
-        String(secret)?.slice(0, 12),
-      );
-      console.log(
-        '[AuthService] secret charCodes prefix:',
-        (String(secret) || '')
-          .split('')
-          .slice(0, 8)
-          .map((c) => c.charCodeAt(0)),
-      );
-      console.log(
-        '[AuthService] refresh token signing - will log token prefix after sign',
-      );
-      console.log(
-        '[AuthService] signing refreshToken - secretRefresh prefix:',
-        String(secret)?.slice(0, 8),
-      );
       const refreshToken = await this.jwtService.signAsync(
         { sub: id },
         {
-          secret,//: this.configService.get(CONFIGURATION).secretRefresh,
+          secret: this.configService.get(CONFIGURATION).secretRefresh,
           expiresIn: JWT.EXPIRATION_REFRESH,
         },
       );

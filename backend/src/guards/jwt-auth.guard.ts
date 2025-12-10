@@ -84,56 +84,23 @@ class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {
     context: ExecutionContext,
   ): Promise<boolean> | boolean | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    // DEBUG: mostra cosa arriva realmente
-    console.log('[JwtRefreshAuthGuard] req.cookies:', req.cookies);
-    console.log(
-      '[JwtRefreshAuthGuard] req.headers.cookie:',
-      req.headers?.cookie,
-    );
     const token = extractCookieToken(req);
-    console.log(
-      '[JwtRefreshAuthGuard] token found:',
-      !!token,
-      'rawToken:',
-      token?.slice?.(0, 50),
-    );
 
     if (token) {
       const secretRefresh = this.configService.get(
         APP.CONFIGURATION,
       ).secretRefresh;
-      console.log(
-        '[JwtRefreshAuthGuard] secret type/len/prefix:',
-        typeof secretRefresh,
-        secretRefresh?.length,
-        String(secretRefresh)?.slice(0, 12),
-      );
-      console.log(
-        '[JwtRefreshAuthGuard] secret charCodes prefix:',
-        (String(secretRefresh) || '')
-          .split('')
-          .slice(0, 8)
-          .map((c) => c.charCodeAt(0)),
-      );
-      console.log(
-        '[JwtRefreshAuthGuard] secretRefresh prefix:',
-        String(secretRefresh)?.slice(0, 8),
-      );
-      console.log(
-        '[JwtRefreshAuthGuard] token (prefix/uffix):',
-        String(token).slice(0, 24),
-        '...',
-        String(token).slice(-12),
-      );
 
       try {
         const decoded: any = this.jwtService.verify(token, secretRefresh);
+
         console.log('[JwtRefreshAuthGuard] jwt.verify OK, exp:', decoded?.exp);
       } catch (err: any) {
         console.error(
           '[JwtRefreshAuthGuard] jwt.verify error:',
           err?.message || err,
         );
+
         return false;
       }
     }
@@ -141,7 +108,18 @@ class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {
     return super.canActivate(context);
   }
 
-  // log di cosa Passport passa qui (err, user, info)
+  /**
+   * @description Request handler method
+   * @author Luca Cattide
+   * @date 10/12/2025
+   * @param {*} err
+   * @param {*} user
+   * @param {*} info
+   * @param {ExecutionContext} context
+   * @param {*} [status]
+   * @returns {*}
+   * @memberof JwtRefreshAuthGuard
+   */
   handleRequest(
     err: any,
     user: any,
@@ -149,18 +127,10 @@ class JwtRefreshAuthGuard extends AuthGuard(STRATEGY.JWT_REFRESH) {
     context: ExecutionContext,
     status?: any,
   ) {
-    console.log(
-      '[JwtRefreshAuthGuard] handleRequest - err:',
-      err?.message || err,
-      'user:',
-      !!user,
-      'info:',
-      info,
-    );
-    // lascia il comportamento di default (genera 401 se err o !user)
     if (err || !user) {
       return super.handleRequest(err, user, info, context, status);
     }
+
     return user;
   }
 }

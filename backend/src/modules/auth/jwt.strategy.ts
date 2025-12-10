@@ -91,21 +91,12 @@ class JwtStrategyRefresh extends PassportStrategy(
     private readonly redisService: StoreService,
     private readonly userService: UsersService,
   ) {
-    // secret provider usa il parametro configService (non this) e logga quando passport lo chiama
-    const secretOrKeyProvider = (
-      req: Request | undefined,
-      rawJwtToken: any,
-      done: (err: any, secret?: string) => void,
-    ) => {
+    const secretOrKeyProvider = (done: (err: any, secret?: string) => void) => {
       try {
-        const secret = configService.get(APP.CONFIGURATION).secretRefresh;
-        console.log(
-          '[JwtStrategyRefresh] secretOrKeyProvider called - secret prefix:',
-          String(secret)?.slice(0, 8),
-        );
-        done(null, secret);
+        done(null, configService.get(APP.CONFIGURATION).secretRefresh);
       } catch (err) {
         console.error('[JwtStrategyRefresh] secretOrKeyProvider error', err);
+
         done(err);
       }
     };
@@ -119,12 +110,6 @@ class JwtStrategyRefresh extends PassportStrategy(
       passReqToCallback: true,
       secretOrKeyProvider, //secretOrKey: configService.get(APP.CONFIGURATION).secretRefresh,
     });
-    // debug safe: can call configService here as well
-    console.log(
-      '[JwtStrategyRefresh] constructor - secretRefresh prefix:',
-      String(configService.get(APP.CONFIGURATION).secretRefresh)?.slice(0, 8),
-    );
-    console.log('[JwtStrategyRefresh] constructor - instance created');
   }
 
   /**
@@ -139,12 +124,6 @@ class JwtStrategyRefresh extends PassportStrategy(
     request: Request,
     payload: any,
   ): Promise<TAuthenticationTokenRefresh> {
-    console.log(
-      '[JwtStrategyRefresh] validate called - payload:',
-      payload?.sub || '[no-sub]',
-      'cookies:',
-      !!request?.cookies,
-    );
     const token = extractCookieToken(request);
 
     if (!token || payload.exp * 1000 < Date.now()) {

@@ -84,12 +84,6 @@ class AuthController {
   @ApiInternalServerErrorResponse({ description: `${AUTHENTICATE} the user` })
   @ApiUnauthorizedResponse({ description: UNAUTHORIZED })
   logout(@Req() request, @Res({ passthrough: true }) response) {
-    console.log(
-      '[AuthController] logout called, cookies:',
-      request.cookies,
-      'header cookie:',
-      request.headers.cookie,
-    );
     this.authService.logout(request.user.refreshToken, response);
   }
 

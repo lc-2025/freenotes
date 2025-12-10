@@ -73,6 +73,7 @@ class NotesService {
       const message = `${CREATE} ${messageSuffix}`;
 
       await session.abortTransaction();
+
       this.logger.error(message);
       setError(HttpStatus.INTERNAL_SERVER_ERROR, message, error);
     } finally {
